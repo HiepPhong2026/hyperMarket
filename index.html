@@ -834,6 +834,89 @@ textarea { resize: vertical; min-height: 68px; }
 }
 
 /* =============================================
+   MEDIA — trong modal + card gallery
+   ============================================= */
+.media-section { margin-top: 4px; }
+.media-add-row {
+  display: flex; gap: 8px; margin-bottom: 10px;
+}
+.media-add-row input {
+  flex: 1; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 13px; font-family: var(--font-ui);
+  color: var(--fg); background: var(--bg); outline: none;
+}
+.media-add-row input:focus { border-color: var(--accent); }
+.media-add-btn {
+  white-space: nowrap; flex-shrink: 0; padding: 8px 14px; font-size: 13px;
+}
+.media-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.media-item-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface-2); border-radius: var(--r-sm); padding: 7px 10px;
+}
+.media-item-thumb {
+  width: 36px; height: 36px; border-radius: 5px; object-fit: cover; flex-shrink: 0;
+  background: var(--border);
+}
+.media-item-icon { font-size: 20px; flex-shrink: 0; width: 36px; text-align: center; }
+.media-item-label {
+  flex: 1; font-size: 12px; color: var(--fg-muted); overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.media-item-del {
+  background: none; border: none; color: var(--fg-muted); cursor: pointer;
+  font-size: 14px; padding: 2px 4px; flex-shrink: 0;
+}
+.media-item-del:hover { color: var(--danger); }
+
+/* Card media strip */
+.card-media-strip {
+  display: flex; gap: 5px; overflow-x: auto; padding-bottom: 2px;
+  scrollbar-width: none; margin-top: 4px;
+}
+.card-media-strip::-webkit-scrollbar { display: none; }
+.card-media-thumb {
+  width: 52px; height: 38px; border-radius: 5px; object-fit: cover;
+  flex-shrink: 0; cursor: pointer; border: 1.5px solid var(--border);
+  transition: transform 0.15s;
+}
+.card-media-thumb:hover { transform: scale(1.06); }
+.card-media-chip {
+  display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 38px; border-radius: 5px; background: var(--surface-2);
+  border: 1.5px solid var(--border); cursor: pointer; font-size: 18px;
+  flex-shrink: 0; transition: transform 0.15s;
+}
+.card-media-chip:hover { transform: scale(1.06); }
+
+/* Media Viewer Popup */
+.media-viewer-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 16px;
+}
+.media-viewer-overlay.open { display: flex; }
+.media-viewer-box {
+  position: relative; background: #000; border-radius: var(--r-lg);
+  max-width: 640px; width: 100%; max-height: 90dvh; overflow: hidden;
+}
+.media-viewer-close {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer; font-size: 16px; line-height: 1;
+}
+.media-viewer-content img {
+  width: 100%; max-height: 85dvh; object-fit: contain; display: block;
+}
+.media-viewer-content .video-wrap {
+  position: relative; width: 100%; padding-bottom: 56.25%;
+}
+.media-viewer-content .video-wrap iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+}
+
+/* =============================================
    THÔNG BÁO PANEL — chỉ hiện trên mobile ≤ 768px
    ============================================= */
 .notif-panel {
@@ -1249,11 +1332,29 @@ textarea { resize: vertical; min-height: 68px; }
       </div>
     </div>
 
+    <!-- MEDIA SECTION -->
+    <div class="form-group full media-section">
+      <label>🎬 Media đính kèm</label>
+      <div class="media-add-row">
+        <input type="text" id="f-media-url" placeholder="Dán link YouTube, TikTok hoặc URL ảnh..." autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addMediaItem();}">
+        <button type="button" class="btn btn-secondary media-add-btn" onclick="addMediaItem()">＋ Thêm</button>
+      </div>
+      <div class="media-list" id="f-media-list"></div>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-danger" id="delete-btn" onclick="deleteProject()" hidden>🗑 Xoá</button>
       <button class="btn btn-ghost" onclick="closeModal()">Huỷ</button>
       <button class="btn btn-primary" onclick="saveProject()">Lưu Dự án</button>
     </div>
+  </div>
+</div>
+
+<!-- MEDIA VIEWER POPUP -->
+<div class="media-viewer-overlay" id="media-viewer-overlay" onclick="closeMediaViewer()">
+  <div class="media-viewer-box" onclick="event.stopPropagation()">
+    <button class="media-viewer-close" onclick="closeMediaViewer()">✕</button>
+    <div class="media-viewer-content" id="media-viewer-content"></div>
   </div>
 </div>
 
@@ -1403,6 +1504,7 @@ function renderCard(p,delay){
       <div class="members">${memberAvatars(p.members,p.color)}</div>
       ${dlText?`<span class="card-deadline ${dlClass}">📅 ${dlText}</span>`:''}
     </div>
+    ${renderCardMediaStrip(p)}
     <!-- Mobile price chip: shown via CSS only on phone -->
     <div class="mobile-price-chip" style="display:none">${fmtPrice(p.price)}</div>
   </div>`;
@@ -1446,6 +1548,7 @@ function openModal(id=null){
     document.getElementById('f-icon').value=p.icon||'📁';
     document.getElementById('range-display').textContent=p.progress+'%';
     selectedColor=p.color||COLORS[0];
+    editingMedia=[...(p.media||[])];
   } else {
     titleEl.textContent='Thêm Dự án mới'; deleteBtn.hidden=true;
     ['f-name','f-client','f-desc'].forEach(id=>document.getElementById(id).value='');
@@ -1457,7 +1560,9 @@ function openModal(id=null){
     document.getElementById('f-icon').value='🛒';
     document.getElementById('range-display').textContent='0%';
     selectedColor=COLORS[0];
+    editingMedia=[];
   }
+  renderModalMediaList();
   buildColorGrid();
   overlay.hidden=false;
   // slight delay so mobile keyboard doesn't jump layout
@@ -1485,6 +1590,7 @@ function saveProject(){
     progress: Number(document.getElementById('f-progress').value)||0,
     icon:     document.getElementById('f-icon').value,
     color:    selectedColor,
+    media:    [...editingMedia],
   };
   if(editingId){
     const idx=projects.findIndex(p=>p.id===editingId);
@@ -1789,6 +1895,140 @@ function renderReportFinance() {
     </tr></tfoot>
   `;
 }
+
+/* ============================================================
+   MEDIA HELPERS
+   ============================================================ */
+let editingMedia = []; // temporary list while modal is open
+
+function detectMediaType(url) {
+  if (!url) return null;
+  const u = url.trim();
+  // YouTube
+  if (/youtube\.com\/watch|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\//.test(u)) return 'youtube';
+  // TikTok
+  if (/tiktok\.com/.test(u)) return 'tiktok';
+  // Image
+  if (/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(u)) return 'image';
+  // Try to treat as image anyway if no other match
+  if (/^https?:\/\//i.test(u)) return 'image';
+  return null;
+}
+
+function getYtId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function getTikTokVideoId(url) {
+  const m = url.match(/video\/(\d+)/);
+  return m ? m[1] : null;
+}
+
+function mediaIcon(type) {
+  if (type === 'youtube') return '▶️';
+  if (type === 'tiktok') return '🎵';
+  return '🖼️';
+}
+
+function renderModalMediaList() {
+  const el = document.getElementById('f-media-list');
+  if (!el) return;
+  if (editingMedia.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = editingMedia.map((m, i) => {
+    const type = detectMediaType(m);
+    let thumbHtml;
+    if (type === 'youtube') {
+      const ytId = getYtId(m);
+      thumbHtml = ytId
+        ? `<img class="media-item-thumb" src="https://img.youtube.com/vi/${ytId}/default.jpg" alt="yt">`
+        : `<div class="media-item-icon">▶️</div>`;
+    } else if (type === 'tiktok') {
+      thumbHtml = `<div class="media-item-icon">🎵</div>`;
+    } else {
+      thumbHtml = `<img class="media-item-thumb" src="${esc(m)}" alt="img" onerror="this.style.display='none'">`;
+    }
+    const label = m.length > 50 ? m.slice(0, 48) + '…' : m;
+    return `<div class="media-item-row">
+      ${thumbHtml}
+      <span class="media-item-label">${esc(label)}</span>
+      <button class="media-item-del" onclick="removeMediaItem(${i})" title="Xoá">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function addMediaItem() {
+  const inp = document.getElementById('f-media-url');
+  const url = inp.value.trim();
+  if (!url) { inp.focus(); return; }
+  const type = detectMediaType(url);
+  if (!type) { inp.style.borderColor = 'var(--danger)'; setTimeout(() => inp.style.borderColor = '', 1200); return; }
+  editingMedia.push(url);
+  inp.value = '';
+  inp.focus();
+  renderModalMediaList();
+}
+
+function removeMediaItem(i) {
+  editingMedia.splice(i, 1);
+  renderModalMediaList();
+}
+
+// Card media strip (thumbnails inline in card)
+function renderCardMediaStrip(p) {
+  const media = p.media;
+  if (!media || media.length === 0) return '';
+  const items = media.slice(0, 5).map(url => {
+    const type = detectMediaType(url);
+    if (type === 'youtube') {
+      const ytId = getYtId(url);
+      return ytId
+        ? `<img class="card-media-thumb" src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" alt="video" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" title="Xem video">`
+        : `<div class="card-media-chip" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" title="Xem video">▶️</div>`;
+    } else if (type === 'tiktok') {
+      return `<div class="card-media-chip" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" title="Xem TikTok">🎵</div>`;
+    } else {
+      return `<img class="card-media-thumb" src="${esc(url)}" alt="ảnh" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" onerror="this.style.display='none'">`;
+    }
+  }).join('');
+  const more = media.length > 5 ? `<div class="card-media-chip" style="font-size:12px;font-weight:700;color:var(--fg-muted)">+${media.length-5}</div>` : '';
+  return `<div class="card-media-strip">${items}${more}</div>`;
+}
+
+// Media viewer popup
+function openMediaViewer(url) {
+  const type = detectMediaType(url);
+  let html = '';
+  if (type === 'youtube') {
+    const ytId = getYtId(url);
+    html = ytId
+      ? `<div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allowfullscreen allow="autoplay"></iframe></div>`
+      : `<div style="color:#fff;padding:20px">Không đọc được link YouTube</div>`;
+  } else if (type === 'tiktok') {
+    // TikTok embed
+    const vidId = getTikTokVideoId(url);
+    html = vidId
+      ? `<div class="video-wrap"><iframe src="https://www.tiktok.com/embed/v2/${vidId}" allowfullscreen></iframe></div>`
+      : `<div style="color:#fff;padding:20px;text-align:center">
+          <div style="font-size:40px">🎵</div>
+          <p style="margin:10px 0">Mở TikTok để xem video</p>
+          <a href="${esc(url)}" target="_blank" style="color:#4F6EF7">Mở TikTok ↗</a>
+        </div>`;
+  } else {
+    html = `<img src="${esc(url)}" alt="media" style="width:100%;max-height:85dvh;object-fit:contain;display:block">`;
+  }
+  document.getElementById('media-viewer-content').innerHTML = html;
+  document.getElementById('media-viewer-overlay').classList.add('open');
+}
+
+function closeMediaViewer() {
+  document.getElementById('media-viewer-overlay').classList.remove('open');
+  document.getElementById('media-viewer-content').innerHTML = ''; // stop video
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMediaViewer();
+});
 
 /* ============================================================
    INIT

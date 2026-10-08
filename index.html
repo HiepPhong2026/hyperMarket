@@ -60,6 +60,119 @@
 }
 
 /* =============================================
+   GOOGLE SHEETS SYNC PANEL
+   ============================================= */
+.sync-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 380px; max-width: 100vw;
+  background: var(--surface); border-left: 1px solid var(--border);
+  z-index: 200; padding: 24px 20px;
+  display: flex; flex-direction: column; gap: 16px;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: -8px 0 32px #0002;
+  overflow-y: auto;
+}
+.sync-panel.open { transform: translateX(0); }
+.sync-overlay {
+  position: fixed; inset: 0; background: #0006; z-index: 199;
+  opacity: 0; pointer-events: none; transition: opacity .3s;
+}
+.sync-overlay.open { opacity: 1; pointer-events: all; }
+
+.sync-panel-header { display: flex; align-items: center; justify-content: space-between; }
+.sync-panel-title { font-size: 16px; font-weight: 700; color: var(--fg); }
+.sync-close {
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: var(--surface-2); cursor: pointer; font-size: 16px; color: var(--fg-muted);
+  display: flex; align-items: center; justify-content: center;
+}
+.sync-close:hover { background: var(--border); color: var(--fg); }
+
+.sync-section { background: var(--surface-2); border-radius: var(--r-md); padding: 16px; }
+.sync-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--fg-muted); margin-bottom: 10px; }
+
+.sync-status {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border); background: var(--surface);
+  margin-bottom: 12px;
+}
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sync-dot.connected    { background: var(--success); box-shadow: 0 0 0 2px #16a34a33; }
+.sync-dot.disconnected { background: var(--fg-muted); }
+.sync-dot.syncing      { background: var(--warning); animation: pulse 1s infinite; }
+.sync-dot.error        { background: var(--danger); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.sync-url-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.sync-url-group label { font-size: 12px; font-weight: 600; color: var(--fg-muted); }
+.sync-url-input {
+  width: 100%; padding: 9px 12px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: var(--font-ui); font-size: 12px; color: var(--fg);
+  outline: none;
+}
+.sync-url-input:focus { border-color: var(--accent); }
+.sync-url-input::placeholder { color: var(--fg-muted); font-size: 11px; }
+
+.sync-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.sync-btn {
+  flex: 1; min-width: 80px; padding: 9px 12px; border-radius: var(--r-sm); border: none;
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: opacity .15s; display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.sync-btn:active { transform: scale(0.97); }
+.sync-btn-connect  { background: var(--accent); color: white; }
+.sync-btn-push     { background: var(--success); color: white; }
+.sync-btn-pull     { background: var(--info); color: white; }
+.sync-btn-disconnect { background: var(--surface); color: var(--danger); border: 1px solid var(--danger); }
+.sync-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+.sync-log {
+  font-size: 11px; font-family: var(--font-mono);
+  color: var(--fg-muted); max-height: 140px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.sync-log-line { display: flex; gap: 6px; }
+.sync-log-time { color: var(--fg-muted); flex-shrink: 0; }
+.sync-log-msg  { color: var(--fg); }
+.sync-log-msg.ok   { color: var(--success); }
+.sync-log-msg.err  { color: var(--danger); }
+.sync-log-msg.info { color: var(--info); }
+
+.sync-steps { counter-reset: step; display: flex; flex-direction: column; gap: 10px; }
+.sync-step {
+  display: flex; gap: 10px; align-items: flex-start;
+  counter-increment: step;
+}
+.sync-step::before {
+  content: counter(step);
+  min-width: 20px; height: 20px; border-radius: 50%; background: var(--accent);
+  color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.sync-step p { font-size: 12px; color: var(--fg-muted); line-height: 1.5; }
+.sync-step p b { color: var(--fg); }
+.sync-step code {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 1px 5px; border-radius: 4px; font-size: 11px;
+  font-family: var(--font-mono); color: var(--accent);
+}
+
+/* Sync indicator in topbar */
+.sync-indicator {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; color: var(--fg-muted);
+  padding: 5px 8px; border-radius: var(--r-sm);
+  background: var(--surface-2); border: 1px solid var(--border);
+  cursor: pointer; transition: background .15s;
+}
+.sync-indicator:hover { background: var(--border); }
+.sync-indicator .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-muted); }
+.sync-indicator .dot.on { background: var(--success); box-shadow: 0 0 0 2px #16a34a22; }
+
+/* =============================================
    REPORT STYLES
    ============================================= */
 .report-header { margin-bottom: 20px; }
@@ -836,6 +949,72 @@ textarea { resize: vertical; min-height: 68px; }
 </style>
 
 <!-- =============================================
+     GOOGLE SHEETS SYNC OVERLAY + PANEL
+     ============================================= -->
+<div class="sync-overlay" id="sync-overlay" onclick="closeSyncPanel()"></div>
+
+<div class="sync-panel" id="sync-panel">
+  <div class="sync-panel-header">
+    <div class="sync-panel-title">🔄 Đồng bộ Google Sheets</div>
+    <button class="sync-close" onclick="closeSyncPanel()">✕</button>
+  </div>
+
+  <!-- Status -->
+  <div>
+    <div class="sync-status" id="sync-status-bar">
+      <div class="sync-dot disconnected" id="sync-dot"></div>
+      <span id="sync-status-text">Chưa kết nối</span>
+    </div>
+  </div>
+
+  <!-- Setup section -->
+  <div class="sync-section" id="sync-setup-section">
+    <div class="sync-section-title">⚙️ Cài đặt kết nối</div>
+    <div class="sync-url-group">
+      <label for="sync-url-input">URL Google Apps Script Web App</label>
+      <input type="text" class="sync-url-input" id="sync-url-input"
+        placeholder="https://script.google.com/macros/s/AKfy.../exec">
+    </div>
+    <div class="sync-actions">
+      <button class="sync-btn sync-btn-connect" onclick="connectSheet()">🔗 Kết nối</button>
+      <button class="sync-btn sync-btn-disconnect" id="btn-disconnect" onclick="disconnectSheet()" style="display:none">Ngắt kết nối</button>
+    </div>
+  </div>
+
+  <!-- Sync actions -->
+  <div class="sync-section" id="sync-action-section" style="display:none">
+    <div class="sync-section-title">🔁 Đồng bộ dữ liệu</div>
+    <div class="sync-actions" style="margin-bottom:10px">
+      <button class="sync-btn sync-btn-push" onclick="pushToSheet()">⬆️ Đẩy lên Sheet</button>
+      <button class="sync-btn sync-btn-pull" onclick="pullFromSheet()">⬇️ Kéo từ Sheet</button>
+    </div>
+    <div style="font-size:11px;color:var(--fg-muted);line-height:1.6">
+      <b style="color:var(--fg)">Auto-sync:</b> Mỗi khi lưu/xoá dự án sẽ tự động đẩy lên Sheet.
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="sync-section">
+    <div class="sync-section-title">📋 Nhật ký hoạt động</div>
+    <div class="sync-log" id="sync-log">
+      <div class="sync-log-line"><span class="sync-log-time">--:--</span><span class="sync-log-msg info">Sẵn sàng kết nối...</span></div>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="sync-section">
+    <div class="sync-section-title">📖 Hướng dẫn thiết lập</div>
+    <div class="sync-steps">
+      <div class="sync-step"><p>Mở <b>Google Sheets</b> mới → <b>Extensions → Apps Script</b></p></div>
+      <div class="sync-step"><p>Dán code từ nút <b>"Sao chép Script"</b> bên dưới vào editor</p></div>
+      <div class="sync-step"><p>Nhấn <b>Deploy → New deployment → Web app</b><br>Execute as: <code>Me</code> · Access: <code>Anyone</code></p></div>
+      <div class="sync-step"><p>Sao chép <b>Web app URL</b> và dán vào ô bên trên</p></div>
+    </div>
+    <button class="sync-btn sync-btn-connect" style="margin-top:12px;width:100%" onclick="copyScript()">📋 Sao chép Google Apps Script</button>
+  </div>
+</div>
+
+<!-- =============================================
      DRAWER OVERLAY (mobile)
      ============================================= -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeSidebar()"></div>
@@ -905,6 +1084,10 @@ textarea { resize: vertical; min-height: 68px; }
         <span class="search-icon">🔍</span>
         <input type="text" placeholder="Tìm dự án..." id="search-input" autocomplete="off">
       </div>
+      <button class="sync-indicator" id="sync-indicator-btn" onclick="openSyncPanel()" title="Đồng bộ Google Sheets">
+        <div class="dot" id="sync-indicator-dot"></div>
+        <span id="sync-indicator-label">Sheets</span>
+      </button>
       <button class="btn btn-primary topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
     </div>
   </header>
@@ -1661,6 +1844,255 @@ function renderReportFinance() {
       <th></th>
     </tr></tfoot>
   `;
+}
+
+/* ============================================================
+   GOOGLE SHEETS SYNC
+   ============================================================ */
+const SHEET_KEY = 'hm_sheet_url';
+let sheetUrl = '';
+let syncConnected = false;
+
+// ── Load saved URL ──────────────────────────────────────────
+(()=>{
+  try {
+    const saved = localStorage.getItem(SHEET_KEY);
+    if (saved) { sheetUrl = saved; syncConnected = true; updateSyncUI(); }
+  } catch {}
+})();
+
+function updateSyncUI(){
+  const dot    = document.getElementById('sync-dot');
+  const text   = document.getElementById('sync-status-text');
+  const actions = document.getElementById('sync-action-section');
+  const discBtn = document.getElementById('btn-disconnect');
+  const indDot  = document.getElementById('sync-indicator-dot');
+  const indLbl  = document.getElementById('sync-indicator-label');
+  const urlInput = document.getElementById('sync-url-input');
+  if (syncConnected) {
+    dot.className = 'sync-dot connected';
+    text.textContent = 'Đã kết nối Google Sheets ✓';
+    actions.style.display = 'block';
+    discBtn.style.display = 'flex';
+    indDot.className = 'dot on';
+    indLbl.textContent = 'Đã sync';
+    urlInput.value = sheetUrl;
+  } else {
+    dot.className = 'sync-dot disconnected';
+    text.textContent = 'Chưa kết nối';
+    actions.style.display = 'none';
+    discBtn.style.display = 'none';
+    indDot.className = 'dot';
+    indLbl.textContent = 'Sheets';
+  }
+}
+
+function setSyncStatus(type, msg){
+  const dot  = document.getElementById('sync-dot');
+  const text = document.getElementById('sync-status-text');
+  dot.className = 'sync-dot ' + type;
+  text.textContent = msg;
+}
+
+function addLog(msg, cls=''){
+  const log = document.getElementById('sync-log');
+  const now = new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const line = document.createElement('div');
+  line.className = 'sync-log-line';
+  line.innerHTML = `<span class="sync-log-time">${now}</span><span class="sync-log-msg ${cls}">${msg}</span>`;
+  log.insertBefore(line, log.firstChild);
+  // keep last 30 lines
+  while (log.children.length > 30) log.removeChild(log.lastChild);
+}
+
+async function connectSheet(){
+  const input = document.getElementById('sync-url-input').value.trim();
+  if (!input || !input.startsWith('https://script.google.com')) {
+    addLog('❌ URL không hợp lệ. Phải bắt đầu bằng https://script.google.com', 'err'); return;
+  }
+  setSyncStatus('syncing', 'Đang kiểm tra kết nối...');
+  addLog('🔗 Đang kết nối...', 'info');
+  try {
+    const res = await fetchSheet(input, { action: 'ping' });
+    if (res && res.ok) {
+      sheetUrl = input;
+      syncConnected = true;
+      try { localStorage.setItem(SHEET_KEY, sheetUrl); } catch {}
+      updateSyncUI();
+      addLog('✅ Kết nối thành công!', 'ok');
+      // auto push on connect
+      await pushToSheet();
+    } else {
+      setSyncStatus('error', 'Kết nối thất bại');
+      addLog('❌ Script phản hồi lỗi: ' + (res?.error || 'không xác định'), 'err');
+    }
+  } catch(e) {
+    setSyncStatus('error', 'Không thể kết nối');
+    addLog('❌ Lỗi: ' + e.message, 'err');
+  }
+}
+
+function disconnectSheet(){
+  sheetUrl = ''; syncConnected = false;
+  try { localStorage.removeItem(SHEET_KEY); } catch {}
+  updateSyncUI();
+  addLog('🔌 Đã ngắt kết nối', 'info');
+}
+
+async function fetchSheet(url, payload) {
+  const params = new URLSearchParams({ data: JSON.stringify(payload) });
+  const res = await fetch(url + '?' + params, { method: 'GET', redirect: 'follow' });
+  return res.json();
+}
+
+async function pushToSheet(){
+  if (!syncConnected || !sheetUrl) return;
+  setSyncStatus('syncing', 'Đang đẩy dữ liệu...');
+  addLog('⬆️ Đang đẩy ' + projects.length + ' dự án lên Sheets...', 'info');
+  try {
+    const res = await fetchSheet(sheetUrl, { action: 'write', projects });
+    if (res && res.ok) {
+      setSyncStatus('connected', 'Đồng bộ thành công ✓');
+      addLog('✅ Đẩy xong — ' + projects.length + ' dự án đã lưu', 'ok');
+      updateSyncUI();
+    } else {
+      setSyncStatus('error', 'Lỗi đẩy dữ liệu');
+      addLog('❌ ' + (res?.error || 'Lỗi không xác định'), 'err');
+    }
+  } catch(e) {
+    setSyncStatus('error', 'Lỗi kết nối');
+    addLog('❌ Push thất bại: ' + e.message, 'err');
+  }
+}
+
+async function pullFromSheet(){
+  if (!syncConnected || !sheetUrl) return;
+  setSyncStatus('syncing', 'Đang kéo dữ liệu...');
+  addLog('⬇️ Đang kéo dữ liệu từ Sheets...', 'info');
+  try {
+    const res = await fetchSheet(sheetUrl, { action: 'read' });
+    if (res && res.ok && Array.isArray(res.projects)) {
+      projects = res.projects;
+      saveProjects(); renderAll();
+      setSyncStatus('connected', 'Đồng bộ thành công ✓');
+      addLog('✅ Kéo xong — ' + projects.length + ' dự án đã cập nhật', 'ok');
+      updateSyncUI();
+    } else {
+      setSyncStatus('error', 'Lỗi kéo dữ liệu');
+      addLog('❌ ' + (res?.error || 'Dữ liệu trống hoặc lỗi'), 'err');
+    }
+  } catch(e) {
+    setSyncStatus('error', 'Lỗi kết nối');
+    addLog('❌ Pull thất bại: ' + e.message, 'err');
+  }
+}
+
+// Auto-push after save/delete
+const _origSaveProjects = saveProjects;
+function saveProjects(){
+  _origSaveProjects();
+  if (syncConnected) {
+    setTimeout(()=>pushToSheet(), 300); // async, don't block UI
+  }
+}
+
+// ── Panel open/close ─────────────────────────────────────
+function openSyncPanel(){
+  document.getElementById('sync-panel').classList.add('open');
+  document.getElementById('sync-overlay').classList.add('open');
+}
+function closeSyncPanel(){
+  document.getElementById('sync-panel').classList.remove('open');
+  document.getElementById('sync-overlay').classList.remove('open');
+}
+
+// ── Copy Apps Script code ─────────────────────────────────
+function copyScript(){
+  const script = `// HyperMarket — Google Apps Script Backend
+// Deploy as Web App: Execute as Me, Access: Anyone
+
+const SHEET_NAME = 'Projects';
+
+function doGet(e) {
+  try {
+    const raw = e.parameter.data || '{}';
+    const payload = JSON.parse(raw);
+    const action = payload.action || 'ping';
+
+    if (action === 'ping') {
+      return json({ ok: true, message: 'HyperMarket API OK', time: new Date().toISOString() });
+    }
+    if (action === 'write') {
+      writeProjects(payload.projects || []);
+      return json({ ok: true, written: (payload.projects || []).length });
+    }
+    if (action === 'read') {
+      const projects = readProjects();
+      return json({ ok: true, projects });
+    }
+    return json({ ok: false, error: 'Unknown action: ' + action });
+  } catch(err) {
+    return json({ ok: false, error: err.message });
+  }
+}
+
+function json(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    const headers = ['id','name','client','desc','price','status','progress','deadline','members','color','icon','created'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+function writeProjects(projects) {
+  const sheet = getSheet();
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) sheet.deleteRows(2, lastRow - 1);
+  if (!projects.length) return;
+  const fields = ['id','name','client','desc','price','status','progress','deadline','members','color','icon','created'];
+  const rows = projects.map(p => fields.map(f => p[f] !== undefined ? p[f] : ''));
+  sheet.getRange(2, 1, rows.length, fields.length).setValues(rows);
+}
+
+function readProjects() {
+  const sheet = getSheet();
+  const data = sheet.getDataRange().getValues();
+  if (data.length < 2) return [];
+  const headers = data[0];
+  return data.slice(1).map(row => {
+    const obj = {};
+    headers.forEach((h, i) => {
+      let v = row[i];
+      if (h === 'price' || h === 'progress' || h === 'members') v = Number(v) || 0;
+      if (h === 'created') v = Number(v) || Date.now();
+      if (h === 'id') v = Number(v) || Date.now();
+      obj[h] = v;
+    });
+    return obj;
+  });
+}`;
+
+  navigator.clipboard.writeText(script).then(()=>{
+    addLog('📋 Đã sao chép script vào clipboard!', 'ok');
+    openSyncPanel();
+  }).catch(()=>{
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = script; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    addLog('📋 Đã sao chép script!', 'ok');
+  });
 }
 
 /* ============================================================

@@ -701,10 +701,14 @@ textarea { resize: vertical; min-height: 68px; }
   /* Main fills full width */
   .main { grid-column: 1; padding: 16px 16px 90px; }
 
-  /* Stats 2 columns */
+  /* Stats 2 columns — ẩn Ngân sách & Tiến độ TB, chỉ giữ Tổng + Hoàn thành */
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .stat-card  { padding: 12px 14px; }
   .stat-value { font-size: 22px; }
+  .stat-card--budget, .stat-card--progress { display: none; }
+
+  /* Panel Thông báo — chỉ hiện trên mobile */
+  .notif-panel { display: flex; }
 
   /* Bottom nav visible */
   .bottom-nav { display: flex; }
@@ -739,9 +743,9 @@ textarea { resize: vertical; min-height: 68px; }
   .search-box input { font-size: 12px; }
   .search-icon { font-size: 13px; }
 
-  /* ── Stats: 4 inline pills in one row ── */
+  /* ── Stats: 2 inline pills (ẩn budget + progress) ── */
   .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 6px;
   }
   .stat-card {
@@ -828,6 +832,94 @@ textarea { resize: vertical; min-height: 68px; }
   .deadline-badge { font-size: 10px; padding: 2px 6px; }
   .fin-table th, .fin-table td { padding: 6px 8px; font-size: 11px; }
 }
+
+/* =============================================
+   THÔNG BÁO PANEL — chỉ hiện trên mobile ≤ 768px
+   ============================================= */
+.notif-panel {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.notif-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.notif-title {
+  font-size: 13px; font-weight: 700; color: var(--fg);
+  display: flex; align-items: center; gap: 6px;
+}
+.notif-title span { font-size: 15px; }
+.notif-add-btn {
+  background: var(--accent); color: #fff; border: none; border-radius: 99px;
+  padding: 4px 12px; font-size: 11px; font-weight: 600; cursor: pointer;
+  font-family: var(--font-ui);
+}
+.notif-list {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.notif-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); overflow: hidden;
+  border-left: 3px solid var(--accent);
+}
+.notif-item-body {
+  padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
+}
+.notif-item-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+}
+.notif-text {
+  font-size: 12.5px; color: var(--fg); line-height: 1.5; flex: 1;
+}
+.notif-time {
+  font-size: 10px; color: var(--fg-muted); white-space: nowrap; margin-top: 2px;
+}
+.notif-delete-btn {
+  background: none; border: none; color: var(--fg-muted); cursor: pointer;
+  font-size: 14px; padding: 0 2px; line-height: 1; flex-shrink: 0;
+}
+.notif-delete-btn:hover { color: var(--danger); }
+.notif-video-wrap {
+  position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--r-sm); overflow: hidden;
+}
+.notif-video-wrap iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+}
+.notif-empty {
+  text-align: center; font-size: 12px; color: var(--fg-muted); padding: 14px 0;
+}
+
+/* Modal thông báo */
+.notif-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.45); align-items: flex-end;
+}
+.notif-modal-overlay.open { display: flex; }
+.notif-modal {
+  background: var(--surface); width: 100%; border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 20px 18px 30px; display: flex; flex-direction: column; gap: 14px;
+  max-height: 85dvh; overflow-y: auto;
+}
+.notif-modal-title { font-size: 15px; font-weight: 700; color: var(--fg); }
+.notif-modal textarea {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 10px 12px; font-size: 13px; font-family: var(--font-ui);
+  color: var(--fg); background: var(--bg); resize: none; outline: none;
+  min-height: 80px;
+}
+.notif-modal textarea:focus { border-color: var(--accent); }
+.notif-modal input[type=text] {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 9px 12px; font-size: 13px; font-family: var(--font-ui);
+  color: var(--fg); background: var(--bg); outline: none;
+}
+.notif-modal input[type=text]:focus { border-color: var(--accent); }
+.notif-modal-label { font-size: 11px; font-weight: 600; color: var(--fg-muted); margin-bottom: 4px; }
+.notif-modal-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.notif-modal-actions button { font-family: var(--font-ui); }
 
 /* =============================================
    RESPONSIVE — LARGE DESKTOP  ≥ 1280px
@@ -923,12 +1015,12 @@ textarea { resize: vertical; min-height: 68px; }
         <div class="stat-value" id="st-total">0</div>
         <div class="stat-sub"><span class="stat-delta up" id="st-active">0</span>&nbsp;đang hoạt động</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card stat-card--budget">
         <div class="stat-header"><span class="stat-label">Ngân sách</span><span class="stat-icon">💵</span></div>
         <div class="stat-value" id="st-budget">0đ</div>
         <div class="stat-sub">Tổng giá trị dự án</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card stat-card--progress">
         <div class="stat-header"><span class="stat-label">Tiến độ TB</span><span class="stat-icon">📈</span></div>
         <div class="stat-value" id="st-avg">0%</div>
         <div class="stat-sub">Trung bình hoàn thành</div>
@@ -937,6 +1029,36 @@ textarea { resize: vertical; min-height: 68px; }
         <div class="stat-header"><span class="stat-label">Hoàn thành</span><span class="stat-icon">🏆</span></div>
         <div class="stat-value" id="st-done">0</div>
         <div class="stat-sub">Dự án đã hoàn tất</div>
+      </div>
+    </div>
+
+    <!-- Panel Thông báo (chỉ hiện mobile) -->
+    <div class="notif-panel" id="notif-panel">
+      <div class="notif-header">
+        <div class="notif-title"><span>🔔</span> Thông báo</div>
+        <button class="notif-add-btn" onclick="openNotifModal()">＋ Thêm</button>
+      </div>
+      <div class="notif-list" id="notif-list">
+        <div class="notif-empty">Chưa có thông báo nào</div>
+      </div>
+    </div>
+
+    <!-- Modal thêm thông báo -->
+    <div class="notif-modal-overlay" id="notif-modal-overlay" onclick="closeNotifModal(event)">
+      <div class="notif-modal" onclick="event.stopPropagation()">
+        <div class="notif-modal-title">🔔 Thêm Thông báo</div>
+        <div>
+          <div class="notif-modal-label">Nội dung thông báo *</div>
+          <textarea id="notif-text-input" placeholder="Nhập nội dung thông báo..." rows="3"></textarea>
+        </div>
+        <div>
+          <div class="notif-modal-label">Link video YouTube (tuỳ chọn)</div>
+          <input type="text" id="notif-yt-input" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div class="notif-modal-actions">
+          <button class="btn btn-secondary" onclick="closeNotifModal()">Huỷ</button>
+          <button class="btn btn-primary" onclick="addNotif()">Đăng thông báo</button>
+        </div>
       </div>
     </div>
 
@@ -1672,5 +1794,99 @@ function renderReportFinance() {
    INIT
    ============================================================ */
 renderAll();
+
+/* ============================================================
+   THÔNG BÁO
+   ============================================================ */
+let notifs = (() => {
+  try { const s = localStorage.getItem('hm_notifs_v1'); return s ? JSON.parse(s) : []; } catch { return []; }
+})();
+
+function saveNotifs() {
+  try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
+}
+
+function getYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/
+  ];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+  return null;
+}
+
+function formatNotifTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return 'Vừa xong';
+  if (diff < 3600000) return Math.floor(diff/60000) + ' phút trước';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' giờ trước';
+  return d.toLocaleDateString('vi-VN');
+}
+
+function renderNotifs() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+  if (notifs.length === 0) {
+    list.innerHTML = '<div class="notif-empty">Chưa có thông báo nào</div>';
+    return;
+  }
+  list.innerHTML = notifs.slice().reverse().map((n, ri) => {
+    const i = notifs.length - 1 - ri; // real index
+    const ytId = getYouTubeId(n.ytUrl);
+    const videoHtml = ytId ? `
+      <div class="notif-video-wrap">
+        <iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen loading="lazy"></iframe>
+      </div>` : '';
+    return `
+      <div class="notif-item">
+        <div class="notif-item-body">
+          <div class="notif-item-top">
+            <div class="notif-text">${n.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>
+            <button class="notif-delete-btn" onclick="deleteNotif(${i})" title="Xoá">✕</button>
+          </div>
+          <div class="notif-time">${formatNotifTime(n.ts)}</div>
+          ${videoHtml}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openNotifModal() {
+  document.getElementById('notif-text-input').value = '';
+  document.getElementById('notif-yt-input').value = '';
+  document.getElementById('notif-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('notif-text-input').focus(), 100);
+}
+
+function closeNotifModal(e) {
+  if (e && e.target !== document.getElementById('notif-modal-overlay')) return;
+  document.getElementById('notif-modal-overlay').classList.remove('open');
+}
+
+function addNotif() {
+  const text = document.getElementById('notif-text-input').value.trim();
+  if (!text) { document.getElementById('notif-text-input').focus(); return; }
+  const ytUrl = document.getElementById('notif-yt-input').value.trim();
+  notifs.push({ text, ytUrl, ts: Date.now() });
+  saveNotifs();
+  renderNotifs();
+  document.getElementById('notif-modal-overlay').classList.remove('open');
+}
+
+function deleteNotif(i) {
+  notifs.splice(i, 1);
+  saveNotifs();
+  renderNotifs();
+}
+
+// Đóng modal notif bằng Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('notif-modal-overlay').classList.remove('open');
+});
+
+renderNotifs();
 </script>
 </body></html>

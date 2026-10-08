@@ -618,119 +618,65 @@ html, body {
 #sync-dot.online  { background: var(--success, #16a34a); box-shadow: 0 0 0 2px rgba(22,163,74,.18); }
 #sync-dot.offline { background: var(--warning, #d97706); }
 
-/* ── User login overlay ─────────────────────────────────────── */
-.user-login-overlay {
-  position: fixed; inset: 0; z-index: 2000;
-  background: var(--bg);
+/* Admin lock button */
+.admin-lock-btn {
+  width: 34px; height: 34px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 32px;
+  font-size: 16px; line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.admin-lock-btn:hover { background: var(--border); }
+.admin-lock-btn.is-admin {
+  background: rgba(217,119,6,.14);
+  border-color: var(--warning);
+}
+
+/* PIN modal */
+.pin-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.25s;
+  transition: opacity 0.2s;
 }
-.user-login-overlay.open { opacity: 1; pointer-events: auto; }
-.user-login-header { text-align: center; }
-.user-login-header h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
-.user-login-header p  { font-size: 0.88rem; color: var(--fg-muted); }
-.user-cards-grid {
-  display: flex; flex-wrap: wrap; gap: 14px;
-  justify-content: center; max-width: 520px;
+.pin-overlay.open { opacity: 1; pointer-events: auto; }
+.pin-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 28px 24px;
+  width: min(320px, 90vw);
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
 }
-.user-card {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  background: var(--surface); border: 2px solid var(--border);
-  border-radius: var(--r-lg); padding: 20px 18px; cursor: pointer;
-  min-width: 110px; transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
-  user-select: none;
-}
-.user-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.14);
-}
-.user-card.selected { border-color: var(--accent); background: rgba(var(--accent-rgb,.5,.5,.8),.07); }
-.user-card-avatar {
-  width: 52px; height: 52px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; font-weight: 800; color: #fff; flex-shrink: 0;
-}
-.user-card-name { font-size: 0.88rem; font-weight: 600; }
-.user-card-role {
-  font-size: 0.72rem; color: var(--fg-muted);
-  background: var(--surface-2); border-radius: 99px; padding: 2px 8px;
-}
-/* PIN section inside login overlay */
-.user-pin-section {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 22px 28px; min-width: 280px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.15);
-}
-.user-pin-section h4 { font-size: 0.95rem; font-weight: 700; }
-.user-pin-section p  { font-size: 0.82rem; color: var(--fg-muted); margin-top:-6px; text-align:center; }
+.pin-box h3 { font-size: 1rem; font-weight: 700; }
+.pin-box p  { font-size: 0.85rem; color: var(--fg-muted); margin-top: -8px; }
 .pin-input {
-  width: 100%; background: var(--surface-2);
-  border: 1px solid var(--border); border-radius: var(--r-sm);
-  padding: 10px 12px; font-size: 1.1rem; letter-spacing: 0.3em;
-  text-align: center; color: var(--fg); font-family: var(--font-mono);
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+  text-align: center;
+  color: var(--fg);
+  font-family: var(--font-mono);
 }
 .pin-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
 .pin-error { color: var(--danger); font-size: 0.82rem; text-align: center; min-height: 18px; }
-.pin-actions { display: flex; gap: 8px; width: 100%; }
+.pin-actions { display: flex; gap: 8px; }
 .pin-actions .btn { flex: 1; }
-
-/* ── User avatar in topbar ──────────────────────────────────── */
-.user-avatar-wrap { position: relative; flex-shrink: 0; }
-.user-avatar-btn {
-  width: 34px; height: 34px; border-radius: 50%;
-  border: 2px solid var(--border); background: var(--surface-2);
-  cursor: pointer; overflow: hidden; padding: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.user-avatar-btn:hover { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,110,247,.18); }
-.user-avatar-inner {
-  width: 100%; height: 100%; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.72rem; font-weight: 800; color: #fff;
-}
-/* Dropdown */
-.user-dropdown {
-  position: absolute; top: calc(100% + 8px); right: 0;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 8px;
-  min-width: 180px; box-shadow: 0 12px 36px rgba(0,0,0,.2);
-  z-index: 500; opacity: 0; pointer-events: none;
-  transform: translateY(-6px); transition: opacity 0.15s, transform 0.15s;
-}
-.user-dropdown.open { opacity: 1; pointer-events: auto; transform: none; }
-.user-dropdown-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px 12px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
-}
-.user-dropdown-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; font-weight: 800; color: #fff; flex-shrink: 0;
-}
-.user-dropdown-info .uname { font-size: 0.88rem; font-weight: 700; }
-.user-dropdown-info .urole {
-  font-size: 0.72rem; color: var(--fg-muted);
-  background: var(--surface-2); border-radius: 99px;
-  padding: 1px 7px; display: inline-block; margin-top: 2px;
-}
-.user-dropdown-btn {
-  width: 100%; text-align: left; background: none; border: none;
-  color: var(--fg); font-size: 0.84rem; font-family: var(--font-ui);
-  padding: 7px 10px; border-radius: var(--r-sm); cursor: pointer;
-  display: flex; align-items: center; gap: 8px;
-  transition: background 0.12s;
-}
-.user-dropdown-btn:hover { background: var(--surface-2); }
-.user-dropdown-btn.danger { color: var(--danger); }
 .admin-badge {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
   background: rgba(217,119,6,.15); color: var(--warning);
-  padding: 2px 7px; border-radius: 99px; display: none;
+  padding: 2px 7px; border-radius: 99px;
+  display: none;
 }
 .admin-badge.show { display: inline; }
 
@@ -1786,22 +1732,7 @@ textarea { resize: vertical; min-height: 68px; }
       </div>
       <button class="btn btn-primary topbar-add-btn" id="topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
       <span class="admin-badge" id="admin-badge">ADMIN</span>
-      <div class="user-avatar-wrap" id="user-avatar-wrap">
-        <button class="user-avatar-btn" id="user-avatar-btn" onclick="toggleUserDropdown()" title="Tài khoản">
-          <div class="user-avatar-inner" id="user-avatar-inner" style="background:#6B7190">?</div>
-        </button>
-        <div class="user-dropdown" id="user-dropdown">
-          <div class="user-dropdown-header">
-            <div class="user-dropdown-avatar" id="dd-avatar" style="background:#6B7190">?</div>
-            <div class="user-dropdown-info">
-              <div class="uname" id="dd-name">Chưa đăng nhập</div>
-              <span class="urole" id="dd-role">—</span>
-            </div>
-          </div>
-          <button class="user-dropdown-btn" onclick="switchAccount()">🔄 Đổi tài khoản</button>
-          <button class="user-dropdown-btn danger" onclick="logoutUser()">🚪 Đăng xuất</button>
-        </div>
-      </div>
+      <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
       <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
         <span id="sync-dot"></span>
       </div>
@@ -2118,24 +2049,18 @@ textarea { resize: vertical; min-height: 68px; }
   </div>
 </div>
 
-<!-- USER LOGIN OVERLAY -->
-<div class="user-login-overlay" id="user-login-overlay">
-  <div class="user-login-header">
-    <h2>👋 Chào mừng đến hyperMarket</h2>
-    <p>Chọn tài khoản của bạn để tiếp tục</p>
-  </div>
-  <div class="user-cards-grid" id="user-cards-grid"><!-- rendered by JS --></div>
-  <!-- PIN section (hiện khi chọn Admin) -->
-  <div class="user-pin-section" id="user-pin-section" style="display:none">
-    <h4 id="pin-section-title">🔐 Xác nhận Admin</h4>
-    <p id="pin-section-desc">Nhập mã PIN để mở khóa quyền quản trị</p>
+<!-- PIN ADMIN MODAL -->
+<div class="pin-overlay" id="pin-overlay" onclick="if(event.target===this)closePinModal()">
+  <div class="pin-box">
+    <h3>🔐 Đăng nhập Admin</h3>
+    <p>Nhập mã PIN để mở khóa chức năng thêm / sửa / xoá</p>
     <input class="pin-input" id="pin-input" type="password" inputmode="numeric"
       maxlength="10" placeholder="••••" autocomplete="off"
-      onkeydown="if(event.key==='Enter')submitLoginPin()">
+      onkeydown="if(event.key==='Enter')submitPin()">
     <div class="pin-error" id="pin-error"></div>
     <div class="pin-actions">
-      <button class="btn btn-ghost" onclick="hidePinSection()">← Quay lại</button>
-      <button class="btn btn-primary" onclick="submitLoginPin()">Đăng nhập</button>
+      <button class="btn btn-ghost" onclick="closePinModal()">Huỷ</button>
+      <button class="btn btn-primary" onclick="submitPin()">Xác nhận</button>
     </div>
   </div>
 </div>
@@ -2188,174 +2113,74 @@ let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); re
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
 
 /* ============================================================
-   MULTI-USER RECOGNITION — Nhận biết người dùng
-   Thêm / sửa / xoá người dùng trong mảng USERS bên dưới.
-   role:'admin'  → cần PIN để đăng nhập
-   role:'viewer' → chỉ cần chọn tên, không cần PIN
+   ADMIN MODE — Phân quyền xem / chỉnh sửa
+   Đổi ADMIN_PIN thành mã PIN bạn muốn dùng
    ============================================================ */
-const USERS = [
-  { id:'admin', name:'Admin',  role:'admin',  pin:'1234',  color:'#D97706', initials:'AD' },
-  { id:'hiep',  name:'Hiệp',   role:'viewer', pin:null,    color:'#4F6EF7', initials:'HP' },
-  { id:'lan',   name:'Lan',    role:'viewer', pin:null,    color:'#7C3AED', initials:'LN' },
-  { id:'minh',  name:'Minh',   role:'viewer', pin:null,    color:'#059669', initials:'MN' },
-  { id:'guest', name:'Khách',  role:'viewer', pin:null,    color:'#6B7190', initials:'KH' },
-];
+const ADMIN_PIN = '1234'; // ← ĐỔI THÀNH MÃ PIN CỦA BẠN
 
-let _pendingLoginUser = null;
+let isAdmin = (() => { try { return sessionStorage.getItem('hm_admin')==='1'; } catch { return false; } })();
 
-let currentUser = (() => {
-  try {
-    const s = localStorage.getItem('hm_current_user_v1');
-    if (s) { const obj = JSON.parse(s); return USERS.find(u => u.id === obj.id) || null; }
-  } catch {} return null;
-})();
-
-let isAdmin = currentUser?.role === 'admin';
-
-function saveCurrentUser(user) {
-  try { localStorage.setItem('hm_current_user_v1', JSON.stringify({ id: user.id })); } catch {}
+function updateAdminUI() {
+  const on = isAdmin;
+  // Nút lock
+  const lb = document.getElementById('admin-lock-btn');
+  if (lb) { lb.textContent = on ? '🔓' : '🔒'; lb.classList.toggle('is-admin', on); lb.title = on ? 'Đăng xuất Admin' : 'Đăng nhập Admin'; }
+  // Badge
+  const badge = document.getElementById('admin-badge');
+  if (badge) badge.classList.toggle('show', on);
+  // Nút Thêm Dự án
+  const taBtn = document.getElementById('topbar-add-btn');
+  if (taBtn) taBtn.hidden = !on;
+  // FAB
+  const fab = document.getElementById('fab-btn');
+  if (fab) fab.hidden = !on;
+  // Notif add
+  const na = document.getElementById('notif-add-btn');
+  if (na) na.hidden = !on;
+  // Re-render để ẩn/hiện nút xóa thông báo
+  renderNotifs();
+  renderAll();
 }
 
-/* ── Login overlay ─────────────────────────────────────────── */
-function openUserLogin() {
-  renderUserCards();
-  hidePinSection();
-  const ov = document.getElementById('user-login-overlay');
-  if (ov) ov.classList.add('open');
-}
-
-function closeUserLogin() {
-  const ov = document.getElementById('user-login-overlay');
-  if (ov) ov.classList.remove('open');
-}
-
-function renderUserCards() {
-  const grid = document.getElementById('user-cards-grid');
-  if (!grid) return;
-  grid.innerHTML = USERS.map(u => `
-    <div class="user-card" onclick="selectUser('${u.id}')" title="${u.name}">
-      <div class="user-card-avatar" style="background:${u.color}">${u.initials}</div>
-      <div class="user-card-name">${u.name}</div>
-      <div class="user-card-role">${u.role === 'admin' ? '⚙️ Quản trị' : '👁 Xem'}</div>
-    </div>`).join('');
-}
-
-function selectUser(userId) {
-  const user = USERS.find(u => u.id === userId);
-  if (!user) return;
-  if (user.role === 'admin') {
-    _pendingLoginUser = user;
-    showPinSection(user);
+function toggleAdminModal() {
+  if (isAdmin) {
+    // Đăng xuất
+    isAdmin = false;
+    try { sessionStorage.removeItem('hm_admin'); } catch {}
+    updateAdminUI();
   } else {
-    loginUser(user);
+    openPinModal();
   }
 }
 
-function showPinSection(user) {
-  const sec = document.getElementById('user-pin-section');
-  const inp = document.getElementById('pin-input');
+function openPinModal() {
+  const overlay = document.getElementById('pin-overlay');
+  const input = document.getElementById('pin-input');
   const err = document.getElementById('pin-error');
-  const title = document.getElementById('pin-section-title');
-  const desc = document.getElementById('pin-section-desc');
-  if (title) title.textContent = `🔐 Đăng nhập ${user.name}`;
-  if (desc) desc.textContent = 'Nhập mã PIN để mở khóa quyền quản trị';
-  if (sec) sec.style.display = '';
-  if (inp) { inp.value = ''; inp.focus(); }
-  if (err) err.textContent = '';
-  // Scroll xuống để thấy PIN
-  sec?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (overlay) { overlay.classList.add('open'); }
+  if (input)  { input.value = ''; input.focus(); }
+  if (err)    { err.textContent = ''; }
 }
 
-function hidePinSection() {
-  const sec = document.getElementById('user-pin-section');
-  if (sec) sec.style.display = 'none';
-  _pendingLoginUser = null;
+function closePinModal() {
+  const overlay = document.getElementById('pin-overlay');
+  if (overlay) overlay.classList.remove('open');
 }
 
-function submitLoginPin() {
-  if (!_pendingLoginUser) return;
+function submitPin() {
   const val = (document.getElementById('pin-input')?.value || '').trim();
   const err = document.getElementById('pin-error');
-  if (val === _pendingLoginUser.pin) {
-    loginUser(_pendingLoginUser);
+  if (val === ADMIN_PIN) {
+    isAdmin = true;
+    try { sessionStorage.setItem('hm_admin', '1'); } catch {}
+    closePinModal();
+    updateAdminUI();
   } else {
-    if (err) err.textContent = 'Mã PIN không đúng, thử lại';
+    if (err) { err.textContent = 'Mã PIN không đúng, thử lại'; }
     const inp = document.getElementById('pin-input');
     if (inp) { inp.value = ''; inp.focus(); }
   }
 }
-
-function loginUser(user) {
-  currentUser = user;
-  isAdmin = user.role === 'admin';
-  saveCurrentUser(user);
-  closeUserLogin();
-  updateUserUI();
-  renderAll();
-}
-
-function logoutUser() {
-  currentUser = null;
-  isAdmin = false;
-  try { localStorage.removeItem('hm_current_user_v1'); } catch {}
-  closeUserDropdown();
-  updateUserUI();
-  renderAll();
-  openUserLogin();
-}
-
-function switchAccount() {
-  closeUserDropdown();
-  openUserLogin();
-}
-
-/* ── Topbar user UI ────────────────────────────────────────── */
-function updateUserUI() {
-  const u = currentUser;
-  // Avatar button
-  const inner = document.getElementById('user-avatar-inner');
-  if (inner) {
-    inner.textContent = u ? u.initials : '?';
-    inner.style.background = u ? u.color : '#6B7190';
-  }
-  // Badge admin
-  const badge = document.getElementById('admin-badge');
-  if (badge) badge.classList.toggle('show', !!(u && isAdmin));
-  // Dropdown header
-  const ddAvatar = document.getElementById('dd-avatar');
-  const ddName = document.getElementById('dd-name');
-  const ddRole = document.getElementById('dd-role');
-  if (ddAvatar) { ddAvatar.textContent = u ? u.initials : '?'; ddAvatar.style.background = u ? u.color : '#6B7190'; }
-  if (ddName)  ddName.textContent = u ? u.name : 'Chưa đăng nhập';
-  if (ddRole)  ddRole.textContent = u ? (isAdmin ? '⚙️ Quản trị' : '👁 Xem') : '—';
-  // Ẩn/hiện nút chức năng admin
-  const taBtn = document.getElementById('topbar-add-btn');
-  if (taBtn) taBtn.hidden = !isAdmin;
-  const fab = document.getElementById('fab-btn');
-  if (fab) fab.hidden = !isAdmin;
-  const na = document.getElementById('notif-add-btn');
-  if (na) na.hidden = !isAdmin;
-  renderNotifs();
-}
-
-function toggleUserDropdown() {
-  const dd = document.getElementById('user-dropdown');
-  if (!dd) return;
-  const isOpen = dd.classList.contains('open');
-  closeUserDropdown();
-  if (!isOpen) dd.classList.add('open');
-}
-
-function closeUserDropdown() {
-  const dd = document.getElementById('user-dropdown');
-  if (dd) dd.classList.remove('open');
-}
-
-// Đóng dropdown khi click ra ngoài
-document.addEventListener('click', e => {
-  const wrap = document.getElementById('user-avatar-wrap');
-  if (wrap && !wrap.contains(e.target)) closeUserDropdown();
-});
 
 function saveProjects(){
   try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{}
@@ -3283,19 +3108,11 @@ function deleteNotif(i) {
 
 // Đóng modal notif bằng Escape
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.getElementById('notif-modal-overlay')?.classList.remove('open');
-    closeUserDropdown();
-    // Nếu login overlay đang mở và đang hiện PIN thì quay lại chọn user
-    const loginOv = document.getElementById('user-login-overlay');
-    if (loginOv?.classList.contains('open')) { hidePinSection(); return; }
-  }
+  if (e.key === 'Escape') { document.getElementById('notif-modal-overlay').classList.remove('open'); closePinModal(); }
 });
 
 renderNotifs();
-updateUserUI();    // áp dụng trạng thái user ngay khi load
-renderAll();
-if (!currentUser) openUserLogin(); // hiện login nếu chưa chọn người dùng
+updateAdminUI(); // áp dụng trạng thái admin ngay khi load
 
 /* ============================================================
    FIREBASE REALTIME DATABASE — Đồng bộ đa thiết bị

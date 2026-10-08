@@ -1163,16 +1163,22 @@ textarea { resize: vertical; min-height: 68px; }
 /* FAB (floating add button on mobile) */
 .fab {
   display: none;
-  position: fixed; bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  position: fixed;
+  /* trên mobile: đẩy lên trên cả clock bar (44px) + bottom-nav (62px) + khoảng cách 8px */
+  bottom: calc(62px + 44px + 8px + env(safe-area-inset-bottom, 0px));
   right: 18px; z-index: 46;
   width: 54px; height: 54px; border-radius: 50%;
   background: var(--accent); color: white; border: none;
   font-size: 26px; cursor: pointer;
   box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 50%, transparent);
   display: none; align-items: center; justify-content: center;
-  transition: transform 0.15s, opacity 0.15s;
+  transition: transform 0.18s, opacity 0.25s, box-shadow 0.18s;
+  /* bán trong suốt khi không dùng → thấy nội dung phía sau */
+  opacity: 0.55;
 }
-.fab:active { transform: scale(0.92); }
+.fab:hover  { opacity: 0.85; }
+.fab:active { opacity: 1; transform: scale(0.92); box-shadow: 0 6px 22px color-mix(in srgb, var(--accent) 65%, transparent); }
+.fab:focus-visible { opacity: 1; outline: 3px solid var(--accent); outline-offset: 3px; }
 
 /* =============================================
    VISITOR COUNTER

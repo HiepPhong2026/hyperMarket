@@ -6,9 +6,6 @@
 <title>HyperMarket Projects</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <style>
 /* =============================================
@@ -306,52 +303,6 @@ html, body {
 
 .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-/* ============================================================
-   SYNC BUTTON + SETUP MODAL
-   ============================================================ */
-.sync-btn {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--surface-2); border: 1px solid var(--border);
-  border-radius: var(--r-md); padding: 6px 10px;
-  cursor: pointer; color: var(--fg-muted); font-size: 12px;
-  font-family: var(--font-ui); white-space: nowrap;
-  transition: background .15s, border-color .15s;
-}
-.sync-btn:hover { background: var(--border); border-color: var(--accent); }
-.sync-dot {
-  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  transition: background .3s;
-}
-.sync-dot--off    { background: var(--fg-muted); }
-.sync-dot--connecting { background: var(--warning); animation: pulse-dot .8s infinite; }
-.sync-dot--on     { background: var(--success); }
-.sync-dot--error  { background: var(--danger); }
-@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
-.sync-label-text { display:none; }
-@media (min-width: 600px) { .sync-label-text { display:inline; } }
-
-/* Setup modal */
-.sync-setup-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.55);
-  z-index: 9000; display: flex; align-items: center; justify-content: center;
-  padding: 16px;
-}
-.sync-setup-overlay[hidden] { display: none !important; }
-.sync-setup-modal {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-lg); width: 100%; max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.25);
-}
-.sync-setup-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 20px 0;
-}
-.sync-setup-title { font-size: 16px; font-weight: 700; color: var(--fg); }
-.sync-setup-close {
-  background: none; border: none; cursor: pointer;
-  color: var(--fg-muted); font-size: 18px; padding: 4px 8px;
-}
-.sync-setup-body { padding: 16px 20px 20px; }
 
 .search-box {
   display: flex; align-items: center; gap: 8px;
@@ -1136,38 +1087,8 @@ textarea { resize: vertical; min-height: 68px; }
         <input type="text" placeholder="Tìm dự án..." id="search-input" autocomplete="off">
       </div>
       <button class="btn btn-primary topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
-      <button class="sync-btn" onclick="openSyncSetup()" title="Cài đặt đồng bộ">
-        <span id="sync-dot" class="sync-dot sync-dot--off"></span>
-        <span id="sync-label" class="sync-label-text">Offline</span>
-      </button>
     </div>
   </header>
-
-  <!-- FIREBASE SETUP MODAL -->
-  <div id="sync-setup-overlay" class="sync-setup-overlay" hidden>
-    <div class="sync-setup-modal" onclick="event.stopPropagation()">
-      <div class="sync-setup-header">
-        <div class="sync-setup-title">☁️ Cài đặt Đồng bộ Đám mây</div>
-        <button class="sync-setup-close" onclick="closeSyncSetup()">✕</button>
-      </div>
-      <div class="sync-setup-body">
-        <p style="color:var(--fg-muted);font-size:13px;margin:0 0 16px">
-          Dán <b>Database URL</b> từ Firebase Realtime Database để đồng bộ dữ liệu trên tất cả thiết bị.<br><br>
-          📋 Cách lấy URL: <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a> → Tạo project → Realtime Database → Tạo database (chế độ test) → Sao chép URL (dạng <code>https://xxx-default-rtdb.firebaseio.com</code>)
-        </p>
-        <div class="form-group">
-          <label>Firebase Database URL</label>
-          <input type="text" id="firebase-url-input" placeholder="https://your-project-default-rtdb.firebaseio.com"
-                 style="font-family:var(--font-mono);font-size:12px">
-        </div>
-        <div id="sync-setup-status" style="font-size:13px;margin-top:8px;min-height:20px"></div>
-        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
-          <button class="btn btn-secondary" onclick="disconnectFirebase()">Ngắt kết nối</button>
-          <button class="btn btn-primary" onclick="connectFirebase()">Kết nối</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- MAIN -->
   <main class="main">
@@ -1474,175 +1395,7 @@ const DEFAULTS = [
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
 
-/* ============================================================
-   FIREBASE SYNC
-   ============================================================ */
-let _db = null;       // Firebase database instance
-let _syncing = false; // Guard against echo-back loops
-
-function setSyncStatus(state, text) {
-  const dot = document.getElementById('sync-dot');
-  const lbl = document.getElementById('sync-label');
-  if (!dot || !lbl) return;
-  dot.className = 'sync-dot sync-dot--' + state;
-  lbl.textContent = text;
-}
-
-function openSyncSetup() {
-  const url = localStorage.getItem('hm_firebase_url') || '';
-  document.getElementById('firebase-url-input').value = url;
-  document.getElementById('sync-setup-status').textContent = '';
-  document.getElementById('sync-setup-overlay').hidden = false;
-}
-function closeSyncSetup() {
-  document.getElementById('sync-setup-overlay').hidden = true;
-}
-
-function connectFirebase() {
-  const url = document.getElementById('firebase-url-input').value.trim();
-  const statusEl = document.getElementById('sync-setup-status');
-  if (!url) { statusEl.innerHTML = '<span style="color:var(--danger)">Vui lòng nhập URL</span>'; return; }
-  if (!url.startsWith('https://') || !url.includes('firebaseio.com')) {
-    statusEl.innerHTML = '<span style="color:var(--danger)">URL không hợp lệ. Phải có dạng https://...firebaseio.com</span>'; return;
-  }
-  statusEl.innerHTML = '<span style="color:var(--warning)">⏳ Đang kết nối...</span>';
-  localStorage.setItem('hm_firebase_url', url);
-  initFirebase(url, (ok, err) => {
-    if (ok) {
-      statusEl.innerHTML = '<span style="color:var(--success)">✅ Kết nối thành công! Đang đồng bộ...</span>';
-      setTimeout(closeSyncSetup, 1200);
-    } else {
-      statusEl.innerHTML = '<span style="color:var(--danger)">❌ Lỗi: ' + (err||'Không kết nối được') + '</span>';
-    }
-  });
-}
-
-function disconnectFirebase() {
-  localStorage.removeItem('hm_firebase_url');
-  if (_db) {
-    try { firebase.database().goOffline(); } catch(e){}
-    _db = null;
-  }
-  setSyncStatus('off', 'Offline');
-  document.getElementById('sync-setup-status').innerHTML = '<span style="color:var(--fg-muted)">Đã ngắt kết nối.</span>';
-}
-
-function initFirebase(dbUrl, cb) {
-  try {
-    setSyncStatus('connecting', 'Đang kết nối...');
-    // Delete existing app if any
-    try {
-      const existing = firebase.app();
-      existing.delete().catch(()=>{});
-    } catch(e) {}
-
-    const config = {
-      apiKey: 'AIzaSyDummyKeyNotNeededForRTDB',
-      databaseURL: dbUrl,
-    };
-    const app = firebase.initializeApp(config);
-    _db = firebase.database(app);
-
-    // Test connection with a small write
-    const connRef = _db.ref('.info/connected');
-    let cbFired = false;
-    const unsub = connRef.on('value', snap => {
-      if (cbFired) {
-        // Subsequent connection changes
-        if (snap.val() === true) setSyncStatus('on', 'Đã đồng bộ');
-        else setSyncStatus('connecting', 'Đang kết nối lại...');
-        return;
-      }
-      cbFired = true;
-      if (snap.val() === true) {
-        setSyncStatus('on', 'Đã đồng bộ');
-        setupFirebaseListeners();
-        if (cb) cb(true);
-      } else {
-        // Not connected within 5s → error
-        setTimeout(() => {
-          if (_db) {
-            setSyncStatus('error', 'Lỗi kết nối');
-            if (cb) cb(false, 'Không thể kết nối tới database');
-            cb = null;
-          }
-        }, 5000);
-      }
-    }, err => {
-      setSyncStatus('error', 'Lỗi');
-      if (cb) cb(false, err.message);
-      cb = null;
-    });
-  } catch(e) {
-    setSyncStatus('error', 'Lỗi');
-    if (cb) cb(false, e.message);
-  }
-}
-
-function setupFirebaseListeners() {
-  if (!_db) return;
-
-  // Listen to projects
-  _db.ref('projects').on('value', snap => {
-    if (_syncing) return;
-    const val = snap.val();
-    if (val) {
-      const arr = Object.values(val);
-      projects = arr.sort((a,b)=>b.created-a.created);
-      try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
-      renderAll();
-    }
-  });
-
-  // Listen to notifs
-  _db.ref('notifs').on('value', snap => {
-    if (_syncing) return;
-    const val = snap.val();
-    notifs = val ? Object.values(val).sort((a,b)=>a.ts-b.ts) : [];
-    try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
-    renderNotifs();
-  });
-
-  // Push local data to Firebase on first connect (if local has data)
-  _db.ref('projects').once('value', snap => {
-    if (!snap.val() && projects.length > 0) {
-      pushProjectsToFirebase();
-    }
-  });
-  _db.ref('notifs').once('value', snap => {
-    if (!snap.val() && notifs.length > 0) {
-      pushNotifsToFirebase();
-    }
-  });
-}
-
-function pushProjectsToFirebase() {
-  if (!_db) return;
-  _syncing = true;
-  const obj = {};
-  projects.forEach(p => { obj[p.id] = p; });
-  _db.ref('projects').set(obj)
-    .then(() => setSyncStatus('on', 'Đã đồng bộ'))
-    .catch(e => setSyncStatus('error', 'Lỗi lưu'))
-    .finally(() => { _syncing = false; });
-}
-
-function pushNotifsToFirebase() {
-  if (!_db) return;
-  _syncing = true;
-  const obj = {};
-  notifs.forEach((n, i) => { obj[n.ts || i] = n; });
-  _db.ref('notifs').set(obj)
-    .catch(e => {})
-    .finally(() => { _syncing = false; });
-}
-
-function saveProjects(){
-  // Always save to localStorage
-  try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{}
-  // Push to Firebase if connected
-  if (_db) pushProjectsToFirebase();
-}
+function saveProjects(){ try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{} }
 
 /* ============================================================
    STATUS
@@ -2313,7 +2066,6 @@ let notifs = (() => {
 
 function saveNotifs() {
   try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
-  if (_db) pushNotifsToFirebase();
 }
 
 function getYouTubeId(url) {
@@ -2394,27 +2146,10 @@ function deleteNotif(i) {
 
 // Đóng modal notif bằng Escape
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.getElementById('notif-modal-overlay').classList.remove('open');
-    document.getElementById('sync-setup-overlay').hidden = true;
-  }
+  if (e.key === 'Escape') document.getElementById('notif-modal-overlay').classList.remove('open');
 });
 
 renderNotifs();
 
-/* ============================================================
-   AUTO-CONNECT FIREBASE ON STARTUP
-   ============================================================ */
-(function autoConnectFirebase() {
-  const savedUrl = localStorage.getItem('hm_firebase_url');
-  if (savedUrl) {
-    initFirebase(savedUrl, (ok, err) => {
-      if (!ok) {
-        setSyncStatus('error', 'Lỗi sync');
-        console.warn('[HyperMarket] Firebase connect error:', err);
-      }
-    });
-  }
-})();
 </script>
 </body></html>

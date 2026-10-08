@@ -954,6 +954,56 @@ textarea { resize: vertical; min-height: 68px; }
 .fab:active { transform: scale(0.92); }
 
 /* =============================================
+   VISITOR COUNTER
+   ============================================= */
+.visitor-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  margin: 24px 0 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--text-muted);
+  user-select: none;
+  transition: background 0.3s;
+}
+.visitor-counter .vc-icon {
+  font-size: 18px;
+  opacity: 0.85;
+}
+.visitor-counter .vc-num {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  transition: color 0.3s;
+}
+.visitor-counter .vc-sep {
+  width: 1px; height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+.visitor-counter .vc-label { line-height: 1.3; }
+.visitor-counter .vc-sub {
+  display: block;
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 1px;
+}
+@keyframes vc-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  70%  { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+.vc-num.pop { animation: vc-pop 0.45s ease; }
+
+/* =============================================
    ANIMATIONS
    ============================================= */
 @keyframes fadeInUp {
@@ -1566,6 +1616,17 @@ textarea { resize: vertical; min-height: 68px; }
       </div>
       <div id="inside-content"></div>
     </div>
+
+    <!-- VISITOR COUNTER -->
+    <div class="visitor-counter" id="visitor-counter">
+      <span class="vc-icon">👁️</span>
+      <span class="vc-num" id="vc-total">—</span>
+      <div class="vc-sep"></div>
+      <span class="vc-label">
+        Lượt truy cập
+        <span class="vc-sub" id="vc-session-line">Phiên này: <strong id="vc-session">—</strong></span>
+      </span>
+    </div>
   </main>
 </div>
 
@@ -2030,6 +2091,39 @@ function toggleTheme() {
     const t = localStorage.getItem('hm_theme') || 'light';
     setTheme(t);
   } catch { setTheme('light'); }
+})();
+
+/* ============================================================
+   VISITOR COUNTER
+   ============================================================ */
+(()=>{
+  try {
+    // Total visit count (persists across sessions in this browser)
+    let total = parseInt(localStorage.getItem('hm_visits') || '0', 10);
+    total++;
+    localStorage.setItem('hm_visits', String(total));
+
+    // Session visit count (resets when tab is closed)
+    let session = parseInt(sessionStorage.getItem('hm_session_visits') || '0', 10);
+    session++;
+    sessionStorage.setItem('hm_session_visits', String(session));
+
+    // Display
+    const vcTotal   = document.getElementById('vc-total');
+    const vcSession = document.getElementById('vc-session');
+    if (vcTotal)   vcTotal.textContent   = total.toLocaleString('vi-VN');
+    if (vcSession) vcSession.textContent = session.toLocaleString('vi-VN');
+
+    // Pop animation on the number
+    if (vcTotal) {
+      vcTotal.classList.add('pop');
+      vcTotal.addEventListener('animationend', () => vcTotal.classList.remove('pop'), { once: true });
+    }
+  } catch(e) {
+    // localStorage blocked — hide gracefully
+    const el = document.getElementById('visitor-counter');
+    if (el) el.style.display = 'none';
+  }
 })();
 
 /* ============================================================

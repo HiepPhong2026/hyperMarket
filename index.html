@@ -532,9 +532,11 @@ html, body {
 
 .sidebar-footer {
   margin-top: auto;
-  padding: 16px 20px 0;
+  padding: 16px 20px 20px;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
+  /* Ensure footer is always scrollable into view on short screens */
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
 }
 
 .theme-toggle {
@@ -996,10 +998,17 @@ textarea { resize: vertical; min-height: 68px; }
     transition: transform 0.28s cubic-bezier(0.4,0,0.2,1),
                 box-shadow 0.28s;
     height: 100dvh;
+    /* Overflow must scroll so footer is reachable */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .sidebar.open {
     transform: translateX(0);
     box-shadow: 4px 0 24px color-mix(in srgb, #000 25%, transparent);
+  }
+  /* Extra bottom padding so theme picker scrolls above the bottom nav bar */
+  .sidebar-footer {
+    padding-bottom: 28px;
   }
 
   /* Main fills full width */

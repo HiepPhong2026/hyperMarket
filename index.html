@@ -1283,7 +1283,8 @@ textarea { resize: vertical; min-height: 68px; }
       </div>
       <div class="form-group">
         <label for="f-price">Giá trị (VNĐ)</label>
-        <input type="number" id="f-price" placeholder="0" min="0" inputmode="numeric">
+        <input type="text" id="f-price" placeholder="0" inputmode="numeric" autocomplete="off"
+               oninput="formatPriceInput(this)" onblur="formatPriceInput(this)">
       </div>
       <div class="form-group">
         <label for="f-status">Trạng thái</label>
@@ -1540,7 +1541,7 @@ function openModal(id=null){
     document.getElementById('f-name').value=p.name;
     document.getElementById('f-client').value=p.client||'';
     document.getElementById('f-desc').value=p.desc||'';
-    document.getElementById('f-price').value=p.price||0;
+    document.getElementById('f-price').value=formatPriceDisplay(p.price||0);
     document.getElementById('f-status').value=p.status;
     document.getElementById('f-deadline').value=p.deadline||'';
     document.getElementById('f-members').value=p.members||1;
@@ -1583,7 +1584,7 @@ function saveProject(){
     name,
     client:   document.getElementById('f-client').value.trim(),
     desc:     document.getElementById('f-desc').value.trim(),
-    price:    Number(document.getElementById('f-price').value)||0,
+    price:    parsePriceInput(document.getElementById('f-price').value),
     status:   document.getElementById('f-status').value,
     deadline: document.getElementById('f-deadline').value,
     members:  Number(document.getElementById('f-members').value)||1,
@@ -1894,6 +1895,26 @@ function renderReportFinance() {
       <th></th>
     </tr></tfoot>
   `;
+}
+
+/* ============================================================
+   PRICE INPUT — dấu phân cách hàng nghìn
+   ============================================================ */
+function parsePriceInput(val) {
+  // Xoá tất cả ký tự không phải số
+  return Number(String(val).replace(/[^\d]/g, '')) || 0;
+}
+
+function formatPriceDisplay(n) {
+  // Format: 1.500.000 (dấu chấm phân cách hàng nghìn kiểu VN)
+  if (!n) return '';
+  return Number(n).toLocaleString('vi-VN');
+}
+
+function formatPriceInput(input) {
+  const raw = parsePriceInput(input.value);
+  // Giữ con trỏ ở cuối sau khi format
+  input.value = raw ? raw.toLocaleString('vi-VN') : '';
 }
 
 /* ============================================================

@@ -2309,7 +2309,7 @@ function renderCardViewer(p, delay) {
       </div>
       <div class="sc-stat">
         <span class="sc-stat-key">Nhân sự</span>
-        <span class="sc-stat-val">👥 ${p.members||0} người</span>
+        <span class="sc-stat-val">👥 ${Number(p.members||0).toLocaleString('vi-VN')} người</span>
       </div>
       ${p.deadline ? `<div class="sc-stat">
         <span class="sc-stat-key">Hạn chót</span>

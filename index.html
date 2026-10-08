@@ -303,6 +303,73 @@ html, body {
 
 .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
+/* =============================================
+   SYNC BUTTON & MODAL
+   ============================================= */
+.sync-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 6px 10px;
+  cursor: pointer; font-size: 12px; font-family: var(--font-ui);
+  color: var(--fg-muted); white-space: nowrap; transition: all .15s;
+}
+.sync-btn:hover { border-color: var(--accent); color: var(--fg); }
+.sync-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; transition: background .3s;
+}
+.sync-dot--idle    { background: var(--fg-muted); }
+.sync-dot--syncing { background: var(--warning); animation: blink .7s infinite; }
+.sync-dot--ok      { background: var(--success); }
+.sync-dot--error   { background: var(--danger); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.sync-btn-label { display: none; }
+@media (min-width: 560px) { .sync-btn-label { display: inline; } }
+
+.sync-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.sync-overlay[hidden] { display: none !important; }
+.sync-modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
+  width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.sync-modal-head {
+  display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 0;
+}
+.sync-modal-title { font-size: 15px; font-weight: 700; color: var(--fg); }
+.sync-modal-close {
+  background: none; border: none; cursor: pointer; color: var(--fg-muted);
+  font-size: 18px; padding: 2px 6px; border-radius: 4px;
+}
+.sync-modal-close:hover { background: var(--surface-2); }
+.sync-modal-body { padding: 14px 18px 18px; }
+.sync-code-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 10px 12px; margin: 10px 0;
+}
+.sync-code-val {
+  flex: 1; font-family: var(--font-mono); font-size: 11px;
+  color: var(--accent); word-break: break-all; user-select: all;
+}
+.sync-copy-btn {
+  background: var(--accent); color: #fff; border: none; border-radius: var(--r-sm);
+  padding: 5px 10px; font-size: 12px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+.sync-copy-btn:hover { opacity: .85; }
+.sync-divider {
+  display: flex; align-items: center; gap: 10px; margin: 14px 0;
+  color: var(--fg-muted); font-size: 12px;
+}
+.sync-divider::before,.sync-divider::after {
+  content:''; flex:1; height:1px; background:var(--border);
+}
+.sync-msg { font-size: 12px; min-height: 18px; margin-top: 6px; }
+.sync-msg--ok    { color: var(--success); }
+.sync-msg--err   { color: var(--danger); }
+.sync-msg--info  { color: var(--fg-muted); }
+
 
 .search-box {
   display: flex; align-items: center; gap: 8px;
@@ -1087,8 +1154,55 @@ textarea { resize: vertical; min-height: 68px; }
         <input type="text" placeholder="Tìm dự án..." id="search-input" autocomplete="off">
       </div>
       <button class="btn btn-primary topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
+      <button class="sync-btn" onclick="openSyncModal()" title="Đồng bộ dữ liệu">
+        <span id="sync-dot" class="sync-dot sync-dot--idle"></span>
+        <span class="sync-btn-label" id="sync-btn-label">Đồng bộ</span>
+      </button>
     </div>
   </header>
+
+  <!-- SYNC MODAL -->
+  <div id="sync-overlay" class="sync-overlay" hidden onclick="if(event.target===this)closeSyncModal()">
+    <div class="sync-modal">
+      <div class="sync-modal-head">
+        <div class="sync-modal-title">☁️ Đồng bộ dữ liệu</div>
+        <button class="sync-modal-close" onclick="closeSyncModal()">✕</button>
+      </div>
+      <div class="sync-modal-body">
+
+        <!-- Trạng thái hiện tại -->
+        <div id="sync-current-section">
+          <p style="font-size:13px;color:var(--fg-muted);margin:0 0 8px">
+            Mã đồng bộ của thiết bị này:
+          </p>
+          <div class="sync-code-box">
+            <span class="sync-code-val" id="sync-code-display">—</span>
+            <button class="sync-copy-btn" onclick="copySyncCode()">Sao chép</button>
+          </div>
+          <p style="font-size:12px;color:var(--fg-muted);margin:4px 0 0">
+            📱 Nhập mã này trên thiết bị khác để dùng chung dữ liệu.
+          </p>
+        </div>
+
+        <div class="sync-divider">hoặc nhập mã từ thiết bị khác</div>
+
+        <!-- Nhập mã từ thiết bị khác -->
+        <div class="form-group" style="margin-bottom:8px">
+          <input type="text" id="sync-code-input"
+                 placeholder="Dán mã đồng bộ vào đây..."
+                 style="font-family:var(--font-mono);font-size:12px;letter-spacing:.5px">
+        </div>
+        <div id="sync-msg" class="sync-msg"></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-secondary" style="flex:1" onclick="syncPull()">⬇ Tải dữ liệu về</button>
+          <button class="btn btn-primary" style="flex:1" onclick="syncPush()">⬆ Đẩy dữ liệu lên</button>
+        </div>
+        <p style="font-size:11px;color:var(--fg-muted);margin:10px 0 0;text-align:center">
+          Dữ liệu lưu miễn phí · Không cần tài khoản
+        </p>
+      </div>
+    </div>
+  </div>
 
   <!-- MAIN -->
   <main class="main">
@@ -2146,10 +2260,181 @@ function deleteNotif(i) {
 
 // Đóng modal notif bằng Escape
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('notif-modal-overlay').classList.remove('open');
+  if (e.key === 'Escape') {
+    document.getElementById('notif-modal-overlay').classList.remove('open');
+    document.getElementById('sync-overlay').hidden = true;
+  }
 });
 
 renderNotifs();
+
+/* ============================================================
+   SYNC — JSONBlob (không cần tài khoản, miễn phí)
+   ============================================================ */
+const JBLOB = 'https://jsonblob.com/api/jsonBlob';
+
+// Lấy hoặc tạo sync ID cho thiết bị này
+let syncId = (() => { try { return localStorage.getItem('hm_sync_id') || ''; } catch { return ''; } })();
+
+function setSyncDot(state) { // 'idle' | 'syncing' | 'ok' | 'error'
+  const d = document.getElementById('sync-dot');
+  if (d) d.className = 'sync-dot sync-dot--' + state;
+}
+function setSyncBtnLabel(t) {
+  const el = document.getElementById('sync-btn-label');
+  if (el) el.textContent = t;
+}
+function setSyncMsg(text, cls) {
+  const el = document.getElementById('sync-msg');
+  if (el) { el.textContent = text; el.className = 'sync-msg sync-msg--' + (cls||'info'); }
+}
+
+function openSyncModal() {
+  // Hiện mã hiện tại
+  const codeEl = document.getElementById('sync-code-display');
+  if (codeEl) codeEl.textContent = syncId || '(Chưa có — hãy đẩy dữ liệu lần đầu)';
+  document.getElementById('sync-code-input').value = '';
+  setSyncMsg('');
+  document.getElementById('sync-overlay').hidden = false;
+}
+function closeSyncModal() {
+  document.getElementById('sync-overlay').hidden = true;
+}
+
+function copySyncCode() {
+  if (!syncId) { setSyncMsg('Chưa có mã. Hãy nhấn "Đẩy dữ liệu lên" trước.', 'err'); return; }
+  navigator.clipboard.writeText(syncId).then(() => {
+    setSyncMsg('✅ Đã sao chép mã! Dán vào thiết bị khác để đồng bộ.', 'ok');
+  }).catch(() => {
+    // Fallback
+    const inp = document.getElementById('sync-code-input');
+    inp.value = syncId; inp.select();
+    setSyncMsg('Hãy sao chép mã ở ô trên.', 'info');
+  });
+}
+
+function getPayload() {
+  return { projects, notifs, ts: Date.now() };
+}
+
+// Đẩy dữ liệu lên (tạo mới hoặc cập nhật)
+async function syncPush() {
+  setSyncMsg('⏳ Đang đẩy dữ liệu lên...', 'info');
+  setSyncDot('syncing');
+  try {
+    const body = JSON.stringify(getPayload());
+    if (syncId) {
+      // Cập nhật blob hiện có
+      const r = await fetch(JBLOB + '/' + syncId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body
+      });
+      if (r.ok) {
+        setSyncMsg('✅ Đã đồng bộ thành công!', 'ok');
+        setSyncDot('ok'); setSyncBtnLabel('Đã đồng bộ');
+        updateSyncCodeDisplay();
+        return;
+      }
+      // Nếu blob đã hết hạn → tạo mới
+    }
+    // Tạo blob mới
+    const r2 = await fetch(JBLOB, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body
+    });
+    if (!r2.ok) throw new Error('HTTP ' + r2.status);
+    // Lấy ID từ header Location: .../jsonBlob/{id}
+    const loc = r2.headers.get('Location') || '';
+    const newId = loc.split('/').pop();
+    if (!newId) throw new Error('Không lấy được mã');
+    syncId = newId;
+    try { localStorage.setItem('hm_sync_id', syncId); } catch {}
+    updateSyncCodeDisplay();
+    setSyncMsg('✅ Đã tạo mã đồng bộ mới! Sao chép để dùng trên thiết bị khác.', 'ok');
+    setSyncDot('ok'); setSyncBtnLabel('Đã đồng bộ');
+  } catch(e) {
+    setSyncMsg('❌ Lỗi: ' + e.message, 'err');
+    setSyncDot('error');
+  }
+}
+
+// Tải dữ liệu về từ mã nhập vào
+async function syncPull() {
+  const inputCode = document.getElementById('sync-code-input').value.trim();
+  const useId = inputCode || syncId;
+  if (!useId) {
+    setSyncMsg('Nhập mã đồng bộ từ thiết bị khác vào ô trên.', 'err'); return;
+  }
+  setSyncMsg('⏳ Đang tải dữ liệu...', 'info');
+  setSyncDot('syncing');
+  try {
+    const r = await fetch(JBLOB + '/' + useId, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!r.ok) throw new Error('Mã không tồn tại hoặc đã hết hạn');
+    const data = await r.json();
+    if (!data.projects) throw new Error('Dữ liệu không hợp lệ');
+
+    // Áp dụng dữ liệu
+    projects = data.projects;
+    notifs   = data.notifs || [];
+    try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+    try { localStorage.setItem('hm_notifs_v1',  JSON.stringify(notifs));  } catch {}
+
+    // Lưu ID nếu vừa nhập
+    if (inputCode) {
+      syncId = inputCode;
+      try { localStorage.setItem('hm_sync_id', syncId); } catch {}
+      updateSyncCodeDisplay();
+    }
+
+    renderAll();
+    renderNotifs();
+    setSyncMsg('✅ Đã tải ' + projects.length + ' dự án thành công!', 'ok');
+    setSyncDot('ok'); setSyncBtnLabel('Đã đồng bộ');
+  } catch(e) {
+    setSyncMsg('❌ ' + e.message, 'err');
+    setSyncDot('error');
+  }
+}
+
+function updateSyncCodeDisplay() {
+  const el = document.getElementById('sync-code-display');
+  if (el) el.textContent = syncId || '(Chưa có)';
+}
+
+// Auto-sync khi lưu dữ liệu (nếu đã có syncId)
+const _origSaveProjects = saveProjects;
+saveProjects = function() {
+  _origSaveProjects();
+  if (syncId) {
+    setSyncDot('syncing');
+    fetch(JBLOB + '/' + syncId, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(getPayload())
+    }).then(r => {
+      setSyncDot(r.ok ? 'ok' : 'error');
+    }).catch(() => setSyncDot('error'));
+  }
+};
+
+const _origSaveNotifs = saveNotifs;
+saveNotifs = function() {
+  _origSaveNotifs();
+  if (syncId) {
+    fetch(JBLOB + '/' + syncId, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(getPayload())
+    }).then(r => setSyncDot(r.ok ? 'ok' : 'error')).catch(() => setSyncDot('error'));
+  }
+};
+
+// Hiện mã ngay khi tải trang nếu đã có
+if (syncId) { setSyncDot('ok'); setSyncBtnLabel('Đã đồng bộ'); }
 
 </script>
 </body></html>

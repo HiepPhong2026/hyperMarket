@@ -2623,18 +2623,18 @@ renderNotifs();
    thật từ Firebase Console của bạn.
    ============================================================ */
 const _HM_FB_CONFIG = {
-  apiKey:            "PASTE_YOUR_apiKey_HERE",
-  authDomain:        "PASTE_YOUR_authDomain_HERE",
+  apiKey:            "AIzaSyA27SO7Ss4Wo6HbAqdr4_qnfCo-uC1NH48",
+  authDomain:        "hypermarket-44c63.firebaseapp.com",
   databaseURL:       "PASTE_YOUR_databaseURL_HERE",
-  projectId:         "PASTE_YOUR_projectId_HERE",
-  storageBucket:     "PASTE_YOUR_storageBucket_HERE",
-  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
-  appId:             "PASTE_YOUR_appId_HERE"
+  projectId:         "hypermarket-44c63",
+  storageBucket:     "hypermarket-44c63.firebasestorage.app",
+  messagingSenderId: "861221282395",
+  appId:             "1:861221282395:web:d02b5363011c56c6cb957e"
 };
 
 (function initFirebase() {
-  // Bỏ qua nếu chưa điền config thật
-  if (_HM_FB_CONFIG.apiKey.startsWith('PASTE_')) return;
+  // Bỏ qua nếu chưa điền databaseURL thật
+  if (_HM_FB_CONFIG.databaseURL.startsWith('PASTE_')) return;
   try {
     firebase.initializeApp(_HM_FB_CONFIG);
     window._hmDb = firebase.database();

@@ -618,6 +618,68 @@ html, body {
 #sync-dot.online  { background: var(--success, #16a34a); box-shadow: 0 0 0 2px rgba(22,163,74,.18); }
 #sync-dot.offline { background: var(--warning, #d97706); }
 
+/* Admin lock button */
+.admin-lock-btn {
+  width: 34px; height: 34px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; line-height: 1;
+  transition: background 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.admin-lock-btn:hover { background: var(--border); }
+.admin-lock-btn.is-admin {
+  background: rgba(217,119,6,.14);
+  border-color: var(--warning);
+}
+
+/* PIN modal */
+.pin-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.pin-overlay.open { opacity: 1; pointer-events: auto; }
+.pin-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 28px 24px;
+  width: min(320px, 90vw);
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+.pin-box h3 { font-size: 1rem; font-weight: 700; }
+.pin-box p  { font-size: 0.85rem; color: var(--fg-muted); margin-top: -8px; }
+.pin-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+  text-align: center;
+  color: var(--fg);
+  font-family: var(--font-mono);
+}
+.pin-input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.pin-error { color: var(--danger); font-size: 0.82rem; text-align: center; min-height: 18px; }
+.pin-actions { display: flex; gap: 8px; }
+.pin-actions .btn { flex: 1; }
+.admin-badge {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
+  background: rgba(217,119,6,.15); color: var(--warning);
+  padding: 2px 7px; border-radius: 99px;
+  display: none;
+}
+.admin-badge.show { display: inline; }
+
 .search-box {
   display: flex; align-items: center; gap: 8px;
   background: var(--surface-2); border: 1px solid var(--border);
@@ -1465,7 +1527,9 @@ textarea { resize: vertical; min-height: 68px; }
         <span class="search-icon">🔍</span>
         <input type="text" placeholder="Tìm dự án..." id="search-input" autocomplete="off">
       </div>
-      <button class="btn btn-primary topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
+      <button class="btn btn-primary topbar-add-btn" id="topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
+      <span class="admin-badge" id="admin-badge">ADMIN</span>
+      <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
       <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
         <span id="sync-dot"></span>
       </div>
@@ -1502,7 +1566,7 @@ textarea { resize: vertical; min-height: 68px; }
     <div class="notif-panel" id="notif-panel">
       <div class="notif-header">
         <div class="notif-title"><span>🔔</span> Thông báo</div>
-        <button class="notif-add-btn" onclick="openNotifModal()">＋ Thêm</button>
+        <button class="notif-add-btn" id="notif-add-btn" onclick="openNotifModal()">＋ Thêm</button>
       </div>
       <div class="notif-list" id="notif-list">
         <div class="notif-empty">Chưa có thông báo nào</div>
@@ -1661,7 +1725,7 @@ textarea { resize: vertical; min-height: 68px; }
 </nav>
 
 <!-- FAB -->
-<button class="fab" onclick="openModal()" aria-label="Thêm dự án">＋</button>
+<button class="fab" id="fab-btn" onclick="openModal()" aria-label="Thêm dự án">＋</button>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay" hidden>
@@ -1754,6 +1818,22 @@ textarea { resize: vertical; min-height: 68px; }
   </div>
 </div>
 
+<!-- PIN ADMIN MODAL -->
+<div class="pin-overlay" id="pin-overlay" onclick="if(event.target===this)closePinModal()">
+  <div class="pin-box">
+    <h3>🔐 Đăng nhập Admin</h3>
+    <p>Nhập mã PIN để mở khóa chức năng thêm / sửa / xoá</p>
+    <input class="pin-input" id="pin-input" type="password" inputmode="numeric"
+      maxlength="10" placeholder="••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')submitPin()">
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-actions">
+      <button class="btn btn-ghost" onclick="closePinModal()">Huỷ</button>
+      <button class="btn btn-primary" onclick="submitPin()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
 <!-- MEDIA VIEWER POPUP -->
 <div class="media-viewer-overlay" id="media-viewer-overlay" onclick="closeMediaViewer()">
   <div class="media-viewer-box" onclick="event.stopPropagation()">
@@ -1800,6 +1880,76 @@ const DEFAULTS = [
 
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
+
+/* ============================================================
+   ADMIN MODE — Phân quyền xem / chỉnh sửa
+   Đổi ADMIN_PIN thành mã PIN bạn muốn dùng
+   ============================================================ */
+const ADMIN_PIN = '1234'; // ← ĐỔI THÀNH MÃ PIN CỦA BẠN
+
+let isAdmin = (() => { try { return sessionStorage.getItem('hm_admin')==='1'; } catch { return false; } })();
+
+function updateAdminUI() {
+  const on = isAdmin;
+  // Nút lock
+  const lb = document.getElementById('admin-lock-btn');
+  if (lb) { lb.textContent = on ? '🔓' : '🔒'; lb.classList.toggle('is-admin', on); lb.title = on ? 'Đăng xuất Admin' : 'Đăng nhập Admin'; }
+  // Badge
+  const badge = document.getElementById('admin-badge');
+  if (badge) badge.classList.toggle('show', on);
+  // Nút Thêm Dự án
+  const taBtn = document.getElementById('topbar-add-btn');
+  if (taBtn) taBtn.hidden = !on;
+  // FAB
+  const fab = document.getElementById('fab-btn');
+  if (fab) fab.hidden = !on;
+  // Notif add
+  const na = document.getElementById('notif-add-btn');
+  if (na) na.hidden = !on;
+  // Re-render để ẩn/hiện nút xóa thông báo
+  renderNotifs();
+  renderAll();
+}
+
+function toggleAdminModal() {
+  if (isAdmin) {
+    // Đăng xuất
+    isAdmin = false;
+    try { sessionStorage.removeItem('hm_admin'); } catch {}
+    updateAdminUI();
+  } else {
+    openPinModal();
+  }
+}
+
+function openPinModal() {
+  const overlay = document.getElementById('pin-overlay');
+  const input = document.getElementById('pin-input');
+  const err = document.getElementById('pin-error');
+  if (overlay) { overlay.classList.add('open'); }
+  if (input)  { input.value = ''; input.focus(); }
+  if (err)    { err.textContent = ''; }
+}
+
+function closePinModal() {
+  const overlay = document.getElementById('pin-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function submitPin() {
+  const val = (document.getElementById('pin-input')?.value || '').trim();
+  const err = document.getElementById('pin-error');
+  if (val === ADMIN_PIN) {
+    isAdmin = true;
+    try { sessionStorage.setItem('hm_admin', '1'); } catch {}
+    closePinModal();
+    updateAdminUI();
+  } else {
+    if (err) { err.textContent = 'Mã PIN không đúng, thử lại'; }
+    const inp = document.getElementById('pin-input');
+    if (inp) { inp.value = ''; inp.focus(); }
+  }
+}
 
 function saveProjects(){
   try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{}
@@ -1884,9 +2034,11 @@ function renderCard(p,delay){
   const dl=daysLeft(p.deadline);
   const dlClass=dl!==null&&dl<0?'deadline-overdue':'';
   const dlText=dl===null?'':dl<0?`Quá hạn ${Math.abs(dl)} ngày`:dl===0?'Hôm nay!':`Còn ${dl} ngày`;
-  return `<div class="project-card" style="animation-delay:${delay}ms;--card-accent:${p.color};--card-bg:${p.color}22"
-      onclick="editProject(${p.id})" role="button" tabindex="0"
-      onkeydown="if(event.key==='Enter'||event.key===' ')editProject(${p.id})">
+  const editAttrs = isAdmin
+    ? `onclick="editProject(${p.id})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')editProject(${p.id})"`
+    : '';
+  return `<div class="project-card" style="animation-delay:${delay}ms;--card-accent:${p.color};--card-bg:${p.color}22${isAdmin?'':';cursor:default'}"
+      ${editAttrs}>
     <div class="card-top">
       <div class="card-title-area">
         <div class="project-avatar" style="background:${p.color}22">${p.icon||'📁'}</div>
@@ -1941,6 +2093,7 @@ function buildColorGrid(){
 function selectColor(c){ selectedColor=c; buildColorGrid(); }
 
 function openModal(id=null){
+  if(!isAdmin) return; // chỉ admin mới được thêm/sửa
   editingId=id;
   const overlay=document.getElementById('modal-overlay');
   const titleEl=document.getElementById('modal-title-el');
@@ -2013,7 +2166,7 @@ function saveProject(){
 }
 
 function deleteProject(){
-  if(!editingId) return;
+  if(!isAdmin || !editingId) return;
   projects=projects.filter(p=>p.id!==editingId);
   saveProjects(); renderAll(); closeModal();
 }
@@ -2573,7 +2726,7 @@ function renderNotifs() {
         <div class="notif-item-body">
           <div class="notif-item-top">
             <div class="notif-text">${n.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>
-            <button class="notif-delete-btn" onclick="deleteNotif(${i})" title="Xoá">✕</button>
+            ${isAdmin ? `<button class="notif-delete-btn" onclick="deleteNotif(${i})" title="Xoá">✕</button>` : ''}
           </div>
           <div class="notif-time">${formatNotifTime(n.ts)}</div>
           ${videoHtml}
@@ -2595,6 +2748,7 @@ function closeNotifModal(e) {
 }
 
 function addNotif() {
+  if (!isAdmin) return;
   const text = document.getElementById('notif-text-input').value.trim();
   if (!text) { document.getElementById('notif-text-input').focus(); return; }
   const ytUrl = document.getElementById('notif-yt-input').value.trim();
@@ -2605,6 +2759,7 @@ function addNotif() {
 }
 
 function deleteNotif(i) {
+  if (!isAdmin) return;
   notifs.splice(i, 1);
   saveNotifs();
   renderNotifs();
@@ -2612,10 +2767,11 @@ function deleteNotif(i) {
 
 // Đóng modal notif bằng Escape
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('notif-modal-overlay').classList.remove('open');
+  if (e.key === 'Escape') { document.getElementById('notif-modal-overlay').classList.remove('open'); closePinModal(); }
 });
 
 renderNotifs();
+updateAdminUI(); // áp dụng trạng thái admin ngay khi load
 
 /* ============================================================
    FIREBASE REALTIME DATABASE — Đồng bộ đa thiết bị

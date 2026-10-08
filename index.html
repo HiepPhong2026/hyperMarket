@@ -607,7 +607,16 @@ html, body {
 
 .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-
+/* Sync status dot */
+.sync-dot-wrap { display:flex; align-items:center; gap:5px; }
+#sync-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--fg-muted);
+  transition: background 0.4s;
+  flex-shrink: 0;
+}
+#sync-dot.online  { background: var(--success, #16a34a); box-shadow: 0 0 0 2px rgba(22,163,74,.18); }
+#sync-dot.offline { background: var(--warning, #d97706); }
 
 .search-box {
   display: flex; align-items: center; gap: 8px;
@@ -1457,6 +1466,9 @@ textarea { resize: vertical; min-height: 68px; }
         <input type="text" placeholder="Tìm dự án..." id="search-input" autocomplete="off">
       </div>
       <button class="btn btn-primary topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
+      <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
+        <span id="sync-dot"></span>
+      </div>
     </div>
   </header>
 
@@ -1750,6 +1762,10 @@ textarea { resize: vertical; min-height: 68px; }
   </div>
 </div>
 
+<!-- Firebase SDK (compat v10) — phải load TRƯỚC script chính -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-database-compat.min.js"></script>
+
 <script>
 /* ============================================================
    DATA
@@ -1785,7 +1801,10 @@ const DEFAULTS = [
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
 
-function saveProjects(){ try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{} }
+function saveProjects(){
+  try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{}
+  if(window._hmDb) window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+}
 
 /* ============================================================
    STATUS
@@ -2512,6 +2531,7 @@ let notifs = (() => {
 
 function saveNotifs() {
   try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
+  if(window._hmDb) window._hmDb.ref('hm/notifs').set(notifs).catch(()=>{});
 }
 
 function getYouTubeId(url) {
@@ -2596,6 +2616,65 @@ document.addEventListener('keydown', e => {
 });
 
 renderNotifs();
+
+/* ============================================================
+   FIREBASE REALTIME DATABASE — Đồng bộ đa thiết bị
+   Thay các giá trị PLACEHOLDER bên dưới bằng firebaseConfig
+   thật từ Firebase Console của bạn.
+   ============================================================ */
+const _HM_FB_CONFIG = {
+  apiKey:            "PASTE_YOUR_apiKey_HERE",
+  authDomain:        "PASTE_YOUR_authDomain_HERE",
+  databaseURL:       "PASTE_YOUR_databaseURL_HERE",
+  projectId:         "PASTE_YOUR_projectId_HERE",
+  storageBucket:     "PASTE_YOUR_storageBucket_HERE",
+  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
+  appId:             "PASTE_YOUR_appId_HERE"
+};
+
+(function initFirebase() {
+  // Bỏ qua nếu chưa điền config thật
+  if (_HM_FB_CONFIG.apiKey.startsWith('PASTE_')) return;
+  try {
+    firebase.initializeApp(_HM_FB_CONFIG);
+    window._hmDb = firebase.database();
+
+    // Lắng nghe trạng thái kết nối — cập nhật dot màu
+    const dot = document.getElementById('sync-dot');
+    window._hmDb.ref('.info/connected').on('value', snap => {
+      if (dot) {
+        dot.classList.toggle('online',  !!snap.val());
+        dot.classList.toggle('offline', !snap.val());
+      }
+    });
+
+    // Đồng bộ Dự án
+    window._hmDb.ref('hm/projects').on('value', snap => {
+      const data = snap.val();
+      if (data !== null) {
+        projects = Array.isArray(data) ? data : Object.values(data);
+        try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+        renderAll();
+      } else if (projects.length > 0) {
+        // Database trống lần đầu → seed dữ liệu hiện tại lên
+        window._hmDb.ref('hm/projects').set(projects).catch(() => {});
+      }
+    });
+
+    // Đồng bộ Thông báo
+    window._hmDb.ref('hm/notifs').on('value', snap => {
+      const data = snap.val();
+      if (data !== null) {
+        notifs = Array.isArray(data) ? data : Object.values(data);
+        try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
+        renderNotifs();
+      }
+    });
+
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+  }
+})();
 
 /* ============================================================
    INSIDE VIEW — Code Analytics

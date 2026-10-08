@@ -1048,6 +1048,8 @@ textarea { resize: vertical; min-height: 68px; }
     transition: transform 0.28s cubic-bezier(0.4,0,0.2,1),
                 box-shadow 0.28s;
     height: 100dvh;
+    /* Must be above drawer-overlay (z-index: 50) so buttons inside are tappable */
+    z-index: 60;
     /* Overflow must scroll so footer is reachable */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;

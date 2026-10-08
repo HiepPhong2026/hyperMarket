@@ -723,72 +723,105 @@ textarea { resize: vertical; min-height: 68px; }
 
 /* =============================================
    RESPONSIVE — PHONE  ≤ 480px
+   Ultra-compact list layout
    ============================================= */
 @media (max-width: 480px) {
-  /* Stats: 2x2 compact */
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .stat-card  { padding: 10px 12px; gap: 3px; }
-  .stat-value { font-size: 18px; }
-  .stat-label { font-size: 10px; }
-  .stat-sub   { font-size: 10px; }
-  .stat-icon  { font-size: 16px; }
-
-  /* Topbar: slim */
-  .topbar { padding: 10px 12px; gap: 8px; }
+  /* ── Topbar: slim single-line ── */
+  .topbar { padding: 8px 12px; gap: 8px; }
   .topbar-title h1 { font-size: 14px; }
   .topbar-title p  { display: none; }
-  .search-box { min-width: 0; max-width: 140px; }
+  .search-box { max-width: 130px; padding: 5px 8px; }
   .search-box input { font-size: 12px; }
+  .search-icon { font-size: 13px; }
 
-  /* Filter: hide label + scroll horizontally */
-  .filter-bar { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
-                gap: 6px; padding-bottom: 4px; scrollbar-width: none; }
+  /* ── Stats: 4 inline pills in one row ── */
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .stat-card {
+    padding: 8px 6px; gap: 2px;
+    border-radius: var(--r-sm);
+    align-items: center; text-align: center;
+  }
+  .stat-header { flex-direction: column-reverse; gap: 2px; justify-content: center; align-items: center; }
+  .stat-icon   { font-size: 14px; }
+  .stat-label  { font-size: 9px; text-align: center; }
+  .stat-value  { font-size: 16px; }
+  .stat-sub    { display: none; }
+  .stat-delta  { display: none; }
+
+  /* ── Filter: slim horizontal scroll ── */
+  .filter-bar {
+    flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    gap: 5px; padding-bottom: 2px; scrollbar-width: none; margin-bottom: 10px;
+  }
   .filter-bar::-webkit-scrollbar { display: none; }
   .filter-label { display: none; }
-  .filter-chips { flex-wrap: nowrap; gap: 5px; }
-  .filter-chip  { padding: 4px 10px; font-size: 11px; white-space: nowrap; min-height: 28px; }
+  .filter-chips { flex-wrap: nowrap; gap: 4px; }
+  .filter-chip  { padding: 3px 9px; font-size: 10.5px; white-space: nowrap; min-height: 26px; border-radius: 99px; }
   .filter-right { flex-shrink: 0; }
-  .sort-select  { font-size: 11px; padding: 4px 6px; }
+  .sort-select  { font-size: 11px; padding: 3px 6px; height: 26px; }
 
-  /* Cards: list style — tighter, no desc */
-  .projects-grid { grid-template-columns: 1fr; gap: 8px; }
-  .project-card  { padding: 12px 14px; gap: 8px; }
-  .project-card::before { height: 2px; }
+  /* ── Cards → ultra-compact list rows ── */
+  .projects-grid {
+    grid-template-columns: 1fr; gap: 0;
+    border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden;
+  }
 
-  /* Card top: smaller avatar */
-  .project-avatar { width: 32px; height: 32px; font-size: 14px; }
-  .card-title     { font-size: 13px; }
-  .card-client    { font-size: 11px; }
-  .status-badge   { font-size: 10px; padding: 2px 7px; }
+  .project-card {
+    padding: 10px 12px 10px 14px;
+    gap: 4px;
+    flex-direction: column;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    border-left: 3px solid var(--card-accent, var(--accent)) !important;
+  }
+  .project-card:last-child { border-bottom: none; }
+  .project-card::before { display: none; }
 
-  /* Hide description on phone */
-  .card-desc { display: none; }
+  /* Top row: avatar + title + badge */
+  .card-top { gap: 8px; align-items: center; }
+  .card-title-area { gap: 8px; align-items: center; }
+  .project-avatar { width: 26px; height: 26px; font-size: 12px; border-radius: 5px; }
+  .card-title  { font-size: 12.5px; font-weight: 600; }
+  .card-client { font-size: 10.5px; }
+  .status-badge { font-size: 9.5px; padding: 2px 6px; }
 
-  /* Progress: compact */
-  .progress-section { gap: 4px; }
-  .progress-label, .progress-pct { font-size: 11px; }
-  .progress-bar-track { height: 5px; }
+  /* Progress row: bar + % inline, no label */
+  .progress-section { flex-direction: row; align-items: center; gap: 8px; }
+  .progress-header  { display: contents; }
+  .progress-label   { display: none; }
+  .progress-pct     { font-size: 10.5px; font-weight: 700; color: var(--fg-muted); white-space: nowrap; order: 2; }
+  .progress-bar-track { flex: 1; height: 4px; order: 1; }
 
-  /* Meta: 2 cols inline */
-  .card-meta    { gap: 6px; }
-  .meta-key     { font-size: 9px; }
-  .meta-val     { font-size: 12px; }
+  /* Meta row: price + deadline inline */
+  .card-meta { grid-template-columns: 1fr 1fr; gap: 0 12px; }
+  .meta-key  { font-size: 9px; }
+  .meta-val  { font-size: 11px; }
 
-  /* Footer: smaller */
-  .card-footer      { padding-top: 8px; }
-  .member-avatar    { width: 22px; height: 22px; font-size: 9px; }
-  .card-deadline    { font-size: 10.5px; }
+  /* Hide desc + footer on phone */
+  .card-desc   { display: none; }
+  .card-footer { display: none; }
+  .mobile-price-chip { display: none !important; }
 
-  /* Main padding */
-  .main { padding: 10px 10px 88px; }
+  /* Main */
+  .main { padding: 8px 10px 86px; }
 
-  /* Report cards compact */
-  .report-card { padding: 14px; }
-  .barchart-label { width: 120px; font-size: 11px; }
-  .barchart-pct   { font-size: 11px; }
-  .fin-table th, .fin-table td { padding: 7px 8px; font-size: 11px; }
-  .deadline-row   { gap: 8px; }
+  /* ── Reports compact ── */
+  .report-header { margin-bottom: 12px; }
+  .report-title  { font-size: 16px; }
+  .report-card   { padding: 12px; }
+  .report-card-title { font-size: 13px; margin-bottom: 10px; }
+  .barchart-label { width: 100px; font-size: 10.5px; }
+  .barchart-pct   { font-size: 10.5px; }
+  .barchart-row   { gap: 6px; }
+  .donut-wrap svg { width: 120px; height: 120px; }
+  .legend-item    { font-size: 11px; }
+  .deadline-row   { gap: 8px; padding: 8px 0; }
   .deadline-badge { font-size: 10px; padding: 2px 6px; }
+  .fin-table th, .fin-table td { padding: 6px 8px; font-size: 11px; }
 }
 
 /* =============================================
@@ -1243,6 +1276,8 @@ function renderCard(p,delay){
       <div class="members">${memberAvatars(p.members,p.color)}</div>
       ${dlText?`<span class="card-deadline ${dlClass}">📅 ${dlText}</span>`:''}
     </div>
+    <!-- Mobile price chip: shown via CSS only on phone -->
+    <div class="mobile-price-chip" style="display:none">${fmtPrice(p.price)}</div>
   </div>`;
 }
 

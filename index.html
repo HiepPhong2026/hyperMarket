@@ -64,6 +64,57 @@
   color-scheme: dark;
 }
 
+/* === OCEAN (xanh biển sâu) === */
+:root[data-theme="ocean"] {
+  --bg:        #0A1628;
+  --surface:   #0F2040;
+  --surface-2: #162C54;
+  --border:    #1E3A6E;
+  --fg:        #E0F2FE;
+  --fg-muted:  #7DB3D8;
+  --accent:    #38BDF8;
+  --accent-2:  #818CF8;
+  --success:   #34D399;
+  --warning:   #FBBF24;
+  --danger:    #F87171;
+  --info:      #38BDF8;
+  color-scheme: dark;
+}
+
+/* === FOREST (xanh rừng) === */
+:root[data-theme="forest"] {
+  --bg:        #0C1A0E;
+  --surface:   #142418;
+  --surface-2: #1C3020;
+  --border:    #254228;
+  --fg:        #DCFCE7;
+  --fg-muted:  #6EAB7A;
+  --accent:    #4ADE80;
+  --accent-2:  #A3E635;
+  --success:   #4ADE80;
+  --warning:   #FACC15;
+  --danger:    #F87171;
+  --info:      #34D399;
+  color-scheme: dark;
+}
+
+/* === SUNSET (hoàng hôn ấm) === */
+:root[data-theme="sunset"] {
+  --bg:        #1A0E08;
+  --surface:   #2D1810;
+  --surface-2: #3D2218;
+  --border:    #5C3020;
+  --fg:        #FEF3C7;
+  --fg-muted:  #C4936A;
+  --accent:    #FB923C;
+  --accent-2:  #F472B6;
+  --success:   #4ADE80;
+  --warning:   #FCD34D;
+  --danger:    #F87171;
+  --info:      #FB923C;
+  color-scheme: dark;
+}
+
 /* =============================================
    REPORT STYLES
    ============================================= */
@@ -297,8 +348,14 @@
   :root:not([data-theme="light"]) .tech-badge.built-in { background: #14532d; color: #86efac; }
   :root:not([data-theme="light"]) .tech-badge.external { background: #1e3a5f; color: #93c5fd; }
 }
-[data-theme="dark"] .tech-badge.built-in { background: #14532d; color: #86efac; }
-[data-theme="dark"] .tech-badge.external { background: #1e3a5f; color: #93c5fd; }
+[data-theme="dark"] .tech-badge.built-in,
+[data-theme="ocean"] .tech-badge.built-in,
+[data-theme="forest"] .tech-badge.built-in,
+[data-theme="sunset"] .tech-badge.built-in { background: #14532d; color: #86efac; }
+[data-theme="dark"] .tech-badge.external,
+[data-theme="ocean"] .tech-badge.external,
+[data-theme="forest"] .tech-badge.external,
+[data-theme="sunset"] .tech-badge.external { background: #1e3a5f; color: #93c5fd; }
 
 /* Donut */
 .donut-wrap {
@@ -349,9 +406,18 @@
 .badge-success { background: #dcfce7; color: #16a34a; }
 .badge-warning { background: #fef3c7; color: #d97706; }
 .badge-danger  { background: #fee2e2; color: #dc2626; }
-[data-theme="dark"] .badge-success { background: #14532d40; color: #4ade80; }
-[data-theme="dark"] .badge-warning { background: #78350f40; color: #fbbf24; }
-[data-theme="dark"] .badge-danger  { background: #7f1d1d40; color: #f87171; }
+[data-theme="dark"] .badge-success,
+[data-theme="ocean"] .badge-success,
+[data-theme="forest"] .badge-success,
+[data-theme="sunset"] .badge-success { background: #14532d40; color: #4ade80; }
+[data-theme="dark"] .badge-warning,
+[data-theme="ocean"] .badge-warning,
+[data-theme="forest"] .badge-warning,
+[data-theme="sunset"] .badge-warning { background: #78350f40; color: #fbbf24; }
+[data-theme="dark"] .badge-danger,
+[data-theme="ocean"] .badge-danger,
+[data-theme="forest"] .badge-danger,
+[data-theme="sunset"] .badge-danger  { background: #7f1d1d40; color: #f87171; }
 
 /* Finance table */
 .fin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -479,6 +545,34 @@ html, body {
   min-height: 44px; width: 100%;
 }
 .theme-toggle:hover { color: var(--fg); }
+
+/* Theme picker */
+.theme-picker-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .6px;
+  text-transform: uppercase; color: var(--fg-muted);
+  margin-bottom: 8px;
+}
+.theme-picker {
+  display: flex; gap: 6px; margin-bottom: 8px;
+}
+.theme-swatch {
+  width: 36px; height: 36px; border-radius: 10px;
+  font-size: 16px; line-height: 1;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: var(--surface-2);
+  transition: transform .15s, border-color .15s, box-shadow .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.theme-swatch:hover { transform: scale(1.15); box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.theme-swatch.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-2);
+  transform: scale(1.1);
+}
+.theme-current-label {
+  font-size: 11px; color: var(--fg-muted); font-weight: 500;
+}
 
 /* =============================================
    TOP BAR
@@ -1275,10 +1369,15 @@ textarea { resize: vertical; min-height: 68px; }
     </div>
 
     <div class="sidebar-footer">
-      <button class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span>
-        <span id="theme-label">Chế độ tối</span>
-      </button>
+      <div class="theme-picker-label">Giao diện</div>
+      <div class="theme-picker">
+        <button class="theme-swatch" data-theme-val="light"  onclick="setTheme('light')"  title="Sáng">☀️</button>
+        <button class="theme-swatch" data-theme-val="dark"   onclick="setTheme('dark')"   title="Tối">🌙</button>
+        <button class="theme-swatch" data-theme-val="ocean"  onclick="setTheme('ocean')"  title="Ocean">🌊</button>
+        <button class="theme-swatch" data-theme-val="forest" onclick="setTheme('forest')" title="Forest">🌿</button>
+        <button class="theme-swatch" data-theme-val="sunset" onclick="setTheme('sunset')" title="Sunset">🌅</button>
+      </div>
+      <div class="theme-current-label" id="theme-current-label">☀️ Chế độ sáng</div>
     </div>
   </aside>
 
@@ -1886,30 +1985,42 @@ function closeSidebar(){
 }
 
 /* ============================================================
-   THEME
+   THEME — multi-theme system
    ============================================================ */
-function toggleTheme(){
-  const root=document.documentElement;
-  const isDark=root.getAttribute('data-theme')==='dark';
-  const next=isDark?'light':'dark';
-  root.setAttribute('data-theme',next);
-  document.getElementById('theme-icon').textContent=next==='dark'?'☀️':'🌙';
-  document.getElementById('theme-label').textContent=next==='dark'?'Chế độ sáng':'Chế độ tối';
-  try{ localStorage.setItem('hm_theme',next); }catch{}
+const THEMES = {
+  light:  { icon: '☀️',  label: 'Chế độ sáng' },
+  dark:   { icon: '🌙',  label: 'Chế độ tối'  },
+  ocean:  { icon: '🌊',  label: 'Ocean'        },
+  forest: { icon: '🌿',  label: 'Forest'       },
+  sunset: { icon: '🌅',  label: 'Sunset'       },
+};
+
+function setTheme(t) {
+  const root = document.documentElement;
+  root.setAttribute('data-theme', t);
+  try { localStorage.setItem('hm_theme', t); } catch {}
+  // update picker active state
+  document.querySelectorAll('.theme-swatch').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.themeVal === t);
+  });
+  // update label
+  const meta = THEMES[t] || THEMES.light;
+  const lbl = document.getElementById('theme-current-label');
+  if (lbl) lbl.textContent = meta.icon + ' ' + meta.label;
 }
 
-// Load saved theme
+// Keep backward compat
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  setTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+// Load saved theme on init
 (()=>{
-  try{
-    const t=localStorage.getItem('hm_theme');
-    if(t){
-      document.documentElement.setAttribute('data-theme',t);
-      if(t==='dark'){
-        document.getElementById('theme-icon').textContent='☀️';
-        document.getElementById('theme-label').textContent='Chế độ sáng';
-      }
-    }
-  }catch{}
+  try {
+    const t = localStorage.getItem('hm_theme') || 'light';
+    setTheme(t);
+  } catch { setTheme('light'); }
 })();
 
 /* ============================================================

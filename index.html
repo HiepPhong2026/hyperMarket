@@ -2294,6 +2294,7 @@ function renderCard(p,delay){
     <div class="card-meta">
       <div class="meta-item"><span class="meta-key">Giá trị</span><span class="meta-val price">${fmtPrice(p.price)}</span></div>
       <div class="meta-item"><span class="meta-key">Deadline</span><span class="meta-val ${dlClass}" style="font-size:12px">${fmtDate(p.deadline)}</span></div>
+      <div class="meta-item"><span class="meta-key">Share</span><span class="meta-val price" title="Giá trị / Nhân sự">💰 ${(p.price && p.members) ? Math.round((p.price||0)/Math.max(Number(p.members)||1,1)).toLocaleString('vi-VN')+'đ' : '—'}</span></div>
     </div>
     <div class="card-footer">
       <div class="members">${memberAvatars(p.members,p.color)}</div>
@@ -2392,6 +2393,10 @@ function renderCardViewer(p, delay) {
       <div class="sc-stat">
         <span class="sc-stat-key">Nhân sự</span>
         <span class="sc-stat-val">👥 ${Number(p.members||0).toLocaleString('vi-VN')} người</span>
+      </div>
+      <div class="sc-stat">
+        <span class="sc-stat-key">Share</span>
+        <span class="sc-stat-val price">💰 ${(p.price && p.members) ? Math.round((p.price||0)/Math.max(Number(p.members)||1,1)).toLocaleString('vi-VN')+'đ' : '—'}</span>
       </div>
       ${p.deadline ? `<div class="sc-stat">
         <span class="sc-stat-key">Hạn chót</span>

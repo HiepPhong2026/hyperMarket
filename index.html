@@ -1999,7 +1999,8 @@ textarea { resize: vertical; min-height: 68px; }
       </div>
       <div class="form-group">
         <label for="f-members">Số thành viên</label>
-        <input type="number" id="f-members" placeholder="1" min="1" max="50" value="1" inputmode="numeric">
+        <input type="text" id="f-members" placeholder="1" inputmode="numeric" autocomplete="off"
+               oninput="formatMembersInput(this)" onblur="formatMembersInput(this)">
       </div>
       <div class="form-group full">
         <label>Tiến độ: <span id="range-display" style="color:var(--accent);font-weight:700">0%</span></label>
@@ -2448,7 +2449,7 @@ function openModal(id=null){
     document.getElementById('f-price').value=formatPriceDisplay(p.price||0);
     document.getElementById('f-status').value=p.status;
     document.getElementById('f-deadline').value=p.deadline||'';
-    document.getElementById('f-members').value=p.members||1;
+    document.getElementById('f-members').value=(p.members||1).toLocaleString('vi-VN');
     document.getElementById('f-progress').value=p.progress;
     document.getElementById('f-icon').value=p.icon||'📁';
     document.getElementById('range-display').textContent=p.progress+'%';
@@ -2460,7 +2461,7 @@ function openModal(id=null){
     document.getElementById('f-price').value='';
     document.getElementById('f-status').value='active';
     document.getElementById('f-deadline').value='';
-    document.getElementById('f-members').value=1;
+    document.getElementById('f-members').value='1';
     document.getElementById('f-progress').value=0;
     document.getElementById('f-icon').value='🛒';
     document.getElementById('range-display').textContent='0%';
@@ -2491,7 +2492,7 @@ function saveProject(){
     price:    parsePriceInput(document.getElementById('f-price').value),
     status:   document.getElementById('f-status').value,
     deadline: document.getElementById('f-deadline').value,
-    members:  Number(document.getElementById('f-members').value)||1,
+    members:  parseMembersInput(document.getElementById('f-members').value),
     progress: Number(document.getElementById('f-progress').value)||0,
     icon:     document.getElementById('f-icon').value,
     color:    selectedColor,
@@ -2875,6 +2876,18 @@ function formatPriceInput(input) {
   const raw = parsePriceInput(input.value);
   // Giữ con trỏ ở cuối sau khi format
   input.value = raw ? raw.toLocaleString('vi-VN') : '';
+}
+
+/* ============================================================
+   MEMBERS INPUT — dấu phân cách hàng nghìn
+   ============================================================ */
+function parseMembersInput(val) {
+  return Math.max(1, Number(String(val).replace(/[^\d]/g, '')) || 1);
+}
+
+function formatMembersInput(input) {
+  const raw = parseMembersInput(input.value);
+  input.value = raw.toLocaleString('vi-VN');
 }
 
 /* ============================================================

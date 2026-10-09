@@ -2346,14 +2346,14 @@ function renderCardViewer(p, delay) {
       const mt = detectMediaType(url);
       if (mt === 'youtube') {
         const tid = getYtId(url);
-        return `<div class="sc-media-thumb" onclick="openMediaViewer('${esc(url)}')">
+        return `<div class="sc-media-thumb" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')">
           <img src="https://img.youtube.com/vi/${esc(tid)}/mqdefault.jpg" alt="" loading="lazy">
           <div class="sc-media-play">▶️</div></div>`;
       } else if (mt === 'tiktok') {
-        return `<div class="sc-media-thumb" onclick="window.open('${esc(url)}','_blank')" title="Xem TikTok">
+        return `<div class="sc-media-thumb" onclick="event.stopPropagation();window.open('${esc(url)}','_blank')" title="Xem TikTok">
           <div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:22px;">🎵</div></div>`;
       } else {
-        return `<div class="sc-media-thumb" onclick="openMediaViewer('${esc(url)}')">
+        return `<div class="sc-media-thumb" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')">
           <img src="${esc(url)}" alt="" loading="lazy"></div>`;
       }
     }).join('');
@@ -2363,7 +2363,7 @@ function renderCardViewer(p, delay) {
   const pct = Math.min(100, Math.max(0, p.progress || 0));
   const animDelay = `${delay}ms`;
 
-  return `<div class="showcase-card" style="--sc-accent:${esc(p.color||'var(--accent)')};animation-delay:${animDelay}">
+  return `<div class="showcase-card" onclick="viewProject(${p.id})" style="--sc-accent:${esc(p.color||'var(--accent)')};animation-delay:${animDelay};cursor:pointer">
   <div class="sc-hero" style="background:${esc(p.color||'var(--accent)')}">
     ${heroImgHtml}
     <div class="sc-hero-icon">${esc(p.icon||'📁')}</div>
@@ -2439,15 +2439,32 @@ function buildColorGrid(){
 }
 function selectColor(c){ selectedColor=c; buildColorGrid(); }
 
-function openModal(id=null){
-  if(!isAdmin) return; // chỉ admin mới được thêm/sửa
-  editingId=id;
+const MODAL_FIELDS = ['f-name','f-client','f-desc','f-price','f-status','f-deadline','f-members','f-progress','f-icon','f-media-url'];
+
+function openModal(id=null, viewOnly=false){
+  if(!isAdmin && !viewOnly) return; // chỉ admin mới được thêm/sửa
+  editingId = viewOnly ? null : id; // viewer không cần editingId
   const overlay=document.getElementById('modal-overlay');
   const titleEl=document.getElementById('modal-title-el');
   const deleteBtn=document.getElementById('delete-btn');
+  const saveBtn=document.querySelector('.modal-actions .btn-primary');
+  const cancelBtn=document.querySelector('.modal-actions .btn-ghost');
+  const mediaAddRow=document.querySelector('.media-add-row');
+
   if(id){
     const p=projects.find(x=>x.id===id); if(!p) return;
-    titleEl.textContent='Chỉnh sửa Dự án'; deleteBtn.hidden=false;
+    if(viewOnly){
+      titleEl.textContent='Chi tiết Dự án 👁';
+      deleteBtn.hidden=true;
+      if(saveBtn) saveBtn.hidden=true;
+      if(cancelBtn) cancelBtn.textContent='Đóng';
+      if(mediaAddRow) mediaAddRow.style.display='none';
+    } else {
+      titleEl.textContent='Chỉnh sửa Dự án'; deleteBtn.hidden=false;
+      if(saveBtn) saveBtn.hidden=false;
+      if(cancelBtn) cancelBtn.textContent='Huỷ';
+      if(mediaAddRow) mediaAddRow.style.display='';
+    }
     document.getElementById('f-name').value=p.name;
     document.getElementById('f-client').value=p.client||'';
     document.getElementById('f-desc').value=p.desc||'';
@@ -2462,6 +2479,9 @@ function openModal(id=null){
     editingMedia=[...(p.media||[])];
   } else {
     titleEl.textContent='Thêm Dự án mới'; deleteBtn.hidden=true;
+    if(saveBtn) saveBtn.hidden=false;
+    if(cancelBtn) cancelBtn.textContent='Huỷ';
+    if(mediaAddRow) mediaAddRow.style.display='';
     ['f-name','f-client','f-desc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('f-price').value='';
     document.getElementById('f-status').value='active';
@@ -2473,19 +2493,47 @@ function openModal(id=null){
     selectedColor=COLORS[0];
     editingMedia=[];
   }
+  // enable/disable fields based on viewOnly
+  MODAL_FIELDS.forEach(fid=>{
+    const el=document.getElementById(fid);
+    if(el) el.disabled=viewOnly;
+  });
+  // also disable color grid interaction and progress range
+  const colorGrid=document.getElementById('color-grid');
+  if(colorGrid) colorGrid.style.pointerEvents=viewOnly?'none':'';
+  const progressRange=document.getElementById('f-progress');
+  if(progressRange) progressRange.style.pointerEvents=viewOnly?'none':'';
+  // hide/show delete buttons on media items
+  overlay.dataset.viewOnly=viewOnly?'1':'';
+
   renderModalMediaList();
   buildColorGrid();
   overlay.hidden=false;
-  // slight delay so mobile keyboard doesn't jump layout
-  setTimeout(()=>document.getElementById('f-name').focus(),100);
+  if(!viewOnly) setTimeout(()=>document.getElementById('f-name').focus(),100);
 }
 
 function closeModal(){
-  document.getElementById('modal-overlay').hidden=true;
+  // re-enable all fields when closing
+  MODAL_FIELDS.forEach(fid=>{
+    const el=document.getElementById(fid);
+    if(el) el.disabled=false;
+  });
+  const colorGrid=document.getElementById('color-grid');
+  if(colorGrid) colorGrid.style.pointerEvents='';
+  const mediaAddRow=document.querySelector('.media-add-row');
+  if(mediaAddRow) mediaAddRow.style.display='';
+  const saveBtn=document.querySelector('.modal-actions .btn-primary');
+  if(saveBtn) saveBtn.hidden=false;
+  const cancelBtn=document.querySelector('.modal-actions .btn-ghost');
+  if(cancelBtn) cancelBtn.textContent='Huỷ';
+  const overlay=document.getElementById('modal-overlay');
+  overlay.hidden=true;
+  overlay.dataset.viewOnly='';
   editingId=null;
 }
 
 function editProject(id){ openModal(id); }
+function viewProject(id){ openModal(id, true); }
 
 function saveProject(){
   const name=document.getElementById('f-name').value.trim();
@@ -2934,6 +2982,7 @@ function renderModalMediaList() {
   const el = document.getElementById('f-media-list');
   if (!el) return;
   if (editingMedia.length === 0) { el.innerHTML = ''; return; }
+  const viewOnly = document.getElementById('modal-overlay').dataset.viewOnly === '1';
   el.innerHTML = editingMedia.map((m, i) => {
     const type = detectMediaType(m);
     let thumbHtml;
@@ -2951,7 +3000,7 @@ function renderModalMediaList() {
     return `<div class="media-item-row">
       ${thumbHtml}
       <span class="media-item-label">${esc(label)}</span>
-      <button class="media-item-del" onclick="removeMediaItem(${i})" title="Xoá">✕</button>
+      ${viewOnly ? '' : `<button class="media-item-del" onclick="removeMediaItem(${i})" title="Xoá">✕</button>`}
     </div>`;
   }).join('');
 }

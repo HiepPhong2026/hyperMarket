@@ -974,18 +974,6 @@ select.sort-select {
   font-size: 10px; font-weight: 600; color: rgba(255,255,255,.85);
   display: flex; align-items: center; gap: 4px;
 }
-.sc-hero-play-btn {
-  position: absolute; inset: 0; z-index: 2;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; transition: opacity 0.2s;
-  background: rgba(0,0,0,.28);
-  font-size: 34px; color: #fff;
-  pointer-events: none;
-}
-.sc-hero:hover .sc-hero-play-btn { opacity: 1; }
-@media (hover: none) {
-  .sc-hero-play-btn { opacity: 0 !important; }
-}
 
 .sc-body {
   padding: 16px; display: flex; flex-direction: column; gap: 10px;
@@ -2334,14 +2322,8 @@ function renderCardViewer(p, delay) {
   const firstMedia = (p.media||[]).find(u=>u && u.trim());
   if (firstMedia) {
     const mt = detectMediaType(firstMedia);
-    if (mt === 'youtube') {
-      const tid = getYtId(firstMedia);
-      heroImgHtml = tid ? `<img class="sc-hero-img" src="https://img.youtube.com/vi/${tid}/mqdefault.jpg" alt="" loading="lazy">` : '';
-    } else if (mt === 'tiktok') {
-      heroImgHtml = `<div style="position:absolute;inset:0;background:linear-gradient(135deg,#010101,#2d2d2d);display:flex;align-items:center;justify-content:center;font-size:48px;opacity:0.6;">🎵</div>`;
-    } else {
-      heroImgHtml = `<img class="sc-hero-img" src="${esc(firstMedia)}" alt="" loading="lazy">`;
-    }
+    const thumbUrl = mt==='youtube' ? `https://img.youtube.com/vi/${getYtId(firstMedia)}/mqdefault.jpg` : firstMedia;
+    if (mt !== 'tiktok') heroImgHtml = `<img class="sc-hero-img" src="${esc(thumbUrl)}" alt="" loading="lazy">`;
   }
 
   // days left label
@@ -2368,9 +2350,8 @@ function renderCardViewer(p, delay) {
           <img src="https://img.youtube.com/vi/${esc(tid)}/mqdefault.jpg" alt="" loading="lazy">
           <div class="sc-media-play">▶️</div></div>`;
       } else if (mt === 'tiktok') {
-        return `<div class="sc-media-thumb" onclick="openMediaViewer('${esc(url)}')" title="Xem TikTok">
-          <div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:22px;">🎵</div>
-          <div class="sc-media-play">▶️</div></div>`;
+        return `<div class="sc-media-thumb" onclick="window.open('${esc(url)}','_blank')" title="Xem TikTok">
+          <div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:22px;">🎵</div></div>`;
       } else {
         return `<div class="sc-media-thumb" onclick="openMediaViewer('${esc(url)}')">
           <img src="${esc(url)}" alt="" loading="lazy"></div>`;
@@ -2382,15 +2363,12 @@ function renderCardViewer(p, delay) {
   const pct = Math.min(100, Math.max(0, p.progress || 0));
   const animDelay = `${delay}ms`;
 
-  const heroClick = firstMedia ? `onclick="openMediaViewer('${esc(firstMedia)}')" title="Nhấn để xem media" style="background:${esc(p.color||'var(--accent)')};cursor:pointer"` : `style="background:${esc(p.color||'var(--accent)')}"`;
-  const heroPlayBtn = firstMedia ? `<div class="sc-hero-play-btn">▶</div>` : '';
   return `<div class="showcase-card" style="--sc-accent:${esc(p.color||'var(--accent)')};animation-delay:${animDelay}">
-  <div class="sc-hero" ${heroClick}>
+  <div class="sc-hero" style="background:${esc(p.color||'var(--accent)')}">
     ${heroImgHtml}
     <div class="sc-hero-icon">${esc(p.icon||'📁')}</div>
     <span class="sc-status-badge">${esc(statusLabel)}</span>
     ${daysHtml}
-    ${heroPlayBtn}
   </div>
   <div class="sc-body" style="animation-delay:${animDelay}">
     <div>

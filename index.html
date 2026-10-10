@@ -358,41 +358,26 @@
 .nav-user-info { font-size:12px; font-weight:700; color:var(--accent); }
 .nav-user-sub  { font-size:11px; color:var(--fg-muted); margin-top:3px; }
 
-/* OAuth login modal */
-.auth-box--oauth {
-  width: min(380px, calc(100vw - 24px));
-  padding: 36px 32px 28px;
-  text-align: center;
+/* Quên mật khẩu link */
+.auth-forgot { text-align: right; margin-top: -6px; margin-bottom: 10px; }
+.auth-forgot a { font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer; }
+.auth-forgot a:hover { text-decoration: underline; }
+
+/* Email verify warning in user dropdown */
+.dd-verify-warn {
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+  border-radius: 8px; padding: 9px 12px; margin-bottom: 6px;
 }
-.oauth-btn-wrap {
-  display: flex; flex-direction: column; gap: 12px;
-  margin: 24px 0 20px;
+.dd-verify-warn-text { font-size: 12px; color: var(--warning); line-height: 1.5; }
+.dd-resend-btn {
+  width: 100%; padding: 7px 12px; background: none;
+  border: 1.5px solid var(--warning); border-radius: 6px;
+  color: var(--warning); font-size: 12px; font-family: var(--font-ui);
+  cursor: pointer; margin-top: 6px; font-weight: 600;
+  transition: background .12s;
 }
-.oauth-btn {
-  display: flex; align-items: center; justify-content: center; gap: 12px;
-  width: 100%; padding: 13px 20px;
-  border-radius: 10px; font-size: 15px; font-weight: 600;
-  font-family: var(--font-ui); cursor: pointer;
-  transition: transform .12s, box-shadow .12s, background .15s;
-  border: 1.5px solid var(--border);
-}
-.oauth-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.15); }
-.oauth-btn:active { transform: scale(.97); }
-.oauth-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; }
-.oauth-btn--google {
-  background: #fff; color: #3c4043;
-  border-color: #dadce0;
-}
-.oauth-btn--google:hover { background: #f8f8f8; }
-.oauth-err-msg {
-  font-size: 13px; color: var(--danger); text-align: center;
-  margin-bottom: 8px; display: none;
-}
-.oauth-err-msg.show { display: block; }
-.oauth-note {
-  font-size: 11px; color: var(--fg-muted);
-  line-height: 1.6; margin: 0;
-}
+.dd-resend-btn:hover { background: color-mix(in srgb, var(--warning) 12%, transparent); }
 
 /* =============================================
    REPORT STYLES
@@ -2052,6 +2037,7 @@ textarea { resize: vertical; min-height: 68px; }
       <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
       <!-- AUTH BUTTONS — hiện khi chưa đăng nhập -->
       <div class="auth-topbar-btns" id="auth-topbar-btns">
+        <button class="auth-link-btn ghost" onclick="openRegisterModal()">Đăng ký</button>
         <button class="auth-link-btn solid" onclick="openLoginModal()">Đăng nhập</button>
       </div>
       <!-- USER BUTTON — hiện khi đã đăng nhập -->
@@ -2070,7 +2056,11 @@ textarea { resize: vertical; min-height: 68px; }
                 <div class="user-dd-email" id="dd-email">—</div>
               </div>
             </div>
-            </div>
+          </div>
+          <div class="dd-verify-warn" id="dd-verify-warn" style="display:none">
+            <div class="dd-verify-warn-text">⚠️ Email chưa được xác thực. Kiểm tra hộp thư của bạn.</div>
+            <button class="dd-resend-btn" onclick="resendVerification()">Gửi lại email xác nhận</button>
+          </div>
           <button class="user-dd-btn dd-danger" onclick="signOutUser()">🚪 Đăng xuất</button>
         </div>
       </div>
@@ -2419,36 +2409,168 @@ textarea { resize: vertical; min-height: 68px; }
 </div>
 
 <!-- =============================================
-     MODAL ĐĂNG NHẬP (Google / Apple OAuth)
+     MODAL ĐĂNG KÝ
      ============================================= -->
-<div class="auth-overlay" id="login-overlay" onclick="if(event.target===this)closeLoginModal()">
-  <div class="auth-box auth-box--oauth" onclick="event.stopPropagation()">
-    <button class="auth-close" onclick="closeLoginModal()" aria-label="Đóng">✕</button>
+<div class="auth-overlay" id="register-overlay" onclick="if(event.target===this)closeRegisterModal()">
+  <div class="auth-box" onclick="event.stopPropagation()">
+    <button class="auth-close" onclick="closeRegisterModal()" aria-label="Đóng">✕</button>
 
-    <div class="auth-logo">
-      <div class="auth-logo-icon">🏪</div>
-      <div>
-        <div class="auth-title">Đăng nhập</div>
-        <div class="auth-sub">Chọn phương thức đăng nhập của bạn</div>
+    <!-- Form đăng ký -->
+    <div id="register-form-screen">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">🏪</div>
+        <div>
+          <div class="auth-title">Tạo tài khoản</div>
+          <div class="auth-sub">Đăng ký để quản lý dự án của bạn</div>
+        </div>
+      </div>
+
+      <div class="auth-global-err" id="register-global-err"></div>
+
+      <div class="auth-row">
+        <div class="auth-field">
+          <label class="auth-label">Họ *</label>
+          <input class="auth-input" id="reg-last" type="text" placeholder="Nguyễn" autocomplete="family-name">
+          <div class="auth-err-msg" id="reg-last-err"></div>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Tên *</label>
+          <input class="auth-input" id="reg-first" type="text" placeholder="Văn A" autocomplete="given-name">
+          <div class="auth-err-msg" id="reg-first-err"></div>
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Số điện thoại</label>
+        <input class="auth-input" id="reg-phone" type="tel" placeholder="0901 234 567" autocomplete="tel">
+        <div class="auth-err-msg" id="reg-phone-err"></div>
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Email *</label>
+        <input class="auth-input" id="reg-email" type="email" placeholder="email@example.com" autocomplete="email">
+        <div class="auth-err-msg" id="reg-email-err"></div>
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Mật khẩu *</label>
+        <input class="auth-input" id="reg-pw" type="password" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password">
+        <div class="auth-err-msg" id="reg-pw-err"></div>
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Xác nhận mật khẩu *</label>
+        <input class="auth-input" id="reg-pw2" type="password" placeholder="Nhập lại mật khẩu" autocomplete="new-password"
+               onkeydown="if(event.key==='Enter')submitRegister()">
+        <div class="auth-err-msg" id="reg-pw2-err"></div>
+      </div>
+
+      <button class="auth-submit" id="reg-submit-btn" onclick="submitRegister()">Tạo tài khoản</button>
+
+      <div class="auth-switch">Đã có tài khoản? <a onclick="switchToLogin()">Đăng nhập</a></div>
+    </div>
+
+    <!-- Màn chờ xác thực email -->
+    <div id="register-verify-screen" style="display:none">
+      <div class="auth-success-box">
+        <span class="auth-success-icon">📧</span>
+        <div class="auth-success-title">Xác thực email</div>
+        <p class="auth-success-msg">
+          Chúng tôi đã gửi email xác thực đến<br>
+          <span class="auth-success-email" id="reg-sent-email"></span><br><br>
+          Vui lòng kiểm tra hộp thư và nhấn vào link để kích hoạt tài khoản.
+        </p>
+        <div class="auth-resend-link">
+          Không nhận được? <a onclick="resendVerificationToNew()">Gửi lại</a>
+        </div>
+      </div>
+      <div class="auth-switch" style="margin-top:20px">
+        <a onclick="switchToLogin()">Quay lại đăng nhập</a>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="oauth-err-msg" id="oauth-err"></div>
+<!-- =============================================
+     MODAL ĐĂNG NHẬP (Email / Password)
+     ============================================= -->
+<div class="auth-overlay" id="login-overlay" onclick="if(event.target===this)closeLoginModal()">
+  <div class="auth-box" onclick="event.stopPropagation()">
+    <button class="auth-close" onclick="closeLoginModal()" aria-label="Đóng">✕</button>
 
-    <div class="oauth-btn-wrap">
-      <button class="oauth-btn oauth-btn--google" id="google-btn" onclick="signInWithGoogle()">
-        <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        </svg>
-        <span>Tiếp tục với Google</span>
-      </button>
+    <!-- Bước 1: Đăng nhập -->
+    <div id="login-step1">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">🏪</div>
+        <div>
+          <div class="auth-title">Đăng nhập</div>
+          <div class="auth-sub">Chào mừng bạn quay lại!</div>
+        </div>
+      </div>
 
+      <div class="auth-global-err" id="login-global-err"></div>
+
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="login-email" type="email" placeholder="email@example.com" autocomplete="email">
+        <div class="auth-err-msg" id="login-email-err"></div>
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label">Mật khẩu</label>
+        <input class="auth-input" id="login-pw" type="password" placeholder="••••••••" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')submitLogin()">
+        <div class="auth-err-msg" id="login-pw-err"></div>
+      </div>
+
+      <div class="auth-forgot">
+        <a onclick="openForgotPassword()">Quên mật khẩu?</a>
+      </div>
+
+      <button class="auth-submit" id="login-submit-btn" onclick="submitLogin()">Đăng nhập</button>
+
+      <div class="auth-switch">Chưa có tài khoản? <a onclick="switchToRegister()">Đăng ký ngay</a></div>
     </div>
 
-    <p class="oauth-note">Bằng cách đăng nhập, bạn đồng ý với <br>điều khoản sử dụng của HugMass.</p>
+    <!-- Bước 2: Quên mật khẩu -->
+    <div id="login-step2" style="display:none">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">🔑</div>
+        <div>
+          <div class="auth-title">Quên mật khẩu</div>
+          <div class="auth-sub">Nhập email để nhận link đặt lại</div>
+        </div>
+      </div>
+
+      <div class="auth-global-err" id="forgot-global-err"></div>
+
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="forgot-email" type="email" placeholder="email@example.com" autocomplete="email"
+               onkeydown="if(event.key==='Enter')submitForgotPassword()">
+        <div class="auth-err-msg" id="forgot-email-err"></div>
+      </div>
+
+      <button class="auth-submit" id="forgot-submit-btn" onclick="submitForgotPassword()">Gửi link đặt lại</button>
+
+      <div class="auth-switch"><a onclick="backToLogin()">← Quay lại đăng nhập</a></div>
+    </div>
+
+    <!-- Bước 3: Đã gửi email đặt lại -->
+    <div id="login-step3" style="display:none">
+      <div class="auth-success-box">
+        <span class="auth-success-icon">📬</span>
+        <div class="auth-success-title">Đã gửi email!</div>
+        <p class="auth-success-msg">
+          Kiểm tra hộp thư tại<br>
+          <span class="auth-success-email" id="forgot-sent-email"></span><br><br>
+          Nhấn vào link trong email để đặt lại mật khẩu.
+        </p>
+      </div>
+      <div class="auth-switch" style="margin-top:20px">
+        <a onclick="backToLogin()">← Quay lại đăng nhập</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3909,31 +4031,6 @@ let _userProjectsRef = null;
     }
     _hmAuth = firebase.auth();
 
-    /* Xử lý kết quả redirect (sau khi Google/Apple redirect về) */
-    _hmAuth.getRedirectResult().then(async result => {
-      if (result && result.user) {
-        const user = result.user;
-        if (window._hmDb) {
-          const profileRef = window._hmDb.ref(`users/${user.uid}/profile`);
-          const snap = await profileRef.once('value');
-          if (!snap.val()) {
-            await profileRef.set({
-              name: user.displayName || '',
-              email: user.email || '',
-              provider: result.additionalUserInfo?.providerId || 'oauth',
-              createdAt: Date.now()
-            });
-          }
-        }
-        closeLoginModal();
-      }
-    }).catch(err => {
-      if (err.code && err.code !== 'auth/cancelled-popup-request') {
-        _oauthShowErr('Đăng nhập thất bại: ' + (err.message || err.code));
-        openLoginModal();
-      }
-    });
-
     _hmAuth.onAuthStateChanged(user => {
       _currentUser = user;
       updateAuthUI();
@@ -3949,9 +4046,11 @@ let _userProjectsRef = null;
 /* --- Cập nhật giao diện theo trạng thái đăng nhập --- */
 function updateAuthUI() {
   const user = _currentUser;
-  const authBtns = document.getElementById('auth-topbar-btns');
-  const userWrap  = document.getElementById('user-btn-wrap');
+  const authBtns    = document.getElementById('auth-topbar-btns');
+  const userWrap    = document.getElementById('user-btn-wrap');
   const sideUserSec = document.getElementById('sidebar-user-section');
+  const unverDot    = document.getElementById('user-unverified-dot');
+  const ddVerWarn   = document.getElementById('dd-verify-warn');
 
   if (user) {
     if (authBtns) authBtns.style.display = 'none';
@@ -3960,11 +4059,9 @@ function updateAuthUI() {
     const name = user.displayName || user.email || '?';
     const av   = document.getElementById('user-avatar');
     if (av) {
-      if (user.photoURL) {
-        av.innerHTML = `<img src="${user.photoURL}" alt="${name}" referrerpolicy="no-referrer">`;
-      } else {
-        av.textContent = name.charAt(0).toUpperCase();
-      }
+      av.textContent = '';
+      av.style.background = '';
+      av.textContent = name.charAt(0).toUpperCase();
     }
 
     const ns = document.getElementById('user-name-short');
@@ -3976,13 +4073,12 @@ function updateAuthUI() {
 
     if (ddName)  ddName.textContent  = user.displayName || '—';
     if (ddEmail) ddEmail.textContent = user.email || '—';
-    if (ddAvatar) {
-      if (user.photoURL) {
-        ddAvatar.innerHTML = `<img src="${user.photoURL}" alt="${name}" referrerpolicy="no-referrer">`;
-      } else {
-        ddAvatar.textContent = name.charAt(0).toUpperCase();
-      }
-    }
+    if (ddAvatar) ddAvatar.textContent = name.charAt(0).toUpperCase();
+
+    /* Email chưa xác thực */
+    const notVerified = !user.emailVerified;
+    if (unverDot)  unverDot.style.display  = notVerified ? 'block' : 'none';
+    if (ddVerWarn) ddVerWarn.style.display = notVerified ? 'block' : 'none';
 
     if (sideUserSec) {
       sideUserSec.style.display = 'block';
@@ -3994,6 +4090,8 @@ function updateAuthUI() {
   } else {
     if (authBtns) authBtns.style.display = 'flex';
     if (userWrap)  userWrap.style.display  = 'none';
+    if (unverDot)  unverDot.style.display  = 'none';
+    if (ddVerWarn) ddVerWarn.style.display = 'none';
     if (sideUserSec) sideUserSec.style.display = 'none';
   }
 }
@@ -4032,42 +4130,230 @@ function restoreSharedProjects() {
   }
 }
 
-/* === LOGIN MODAL (OAuth) === */
+/* ============================================================
+   AUTH — Email / Password
+   ============================================================ */
+
+/* --- Helpers --- */
+function _authShowErr(fieldId, msg) {
+  const el = document.getElementById(fieldId);
+  if (!el) return;
+  el.textContent = msg; el.classList.add('show');
+  const inp = document.getElementById(fieldId.replace('-err','').replace('global-','').replace('-global',''));
+  if (inp) inp.classList.add('error');
+}
+function _authClearErr(fieldId) {
+  const el = document.getElementById(fieldId);
+  if (!el) return;
+  el.textContent = ''; el.classList.remove('show');
+  const inp = document.getElementById(fieldId.replace('-err',''));
+  if (inp) inp.classList.remove('error');
+}
+function _authGlobalErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg; el.classList.add('show');
+}
+function _authClearGlobal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = ''; el.classList.remove('show');
+}
+function _authSetBtn(btnId, loading, label) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? `<span class="auth-spinner"></span>${label}`
+    : label;
+}
+function _firebaseErrMsg(code) {
+  const map = {
+    'auth/email-already-in-use'    : 'Email này đã được sử dụng.',
+    'auth/invalid-email'           : 'Địa chỉ email không hợp lệ.',
+    'auth/weak-password'           : 'Mật khẩu quá yếu (tối thiểu 6 ký tự).',
+    'auth/user-not-found'          : 'Không tìm thấy tài khoản với email này.',
+    'auth/wrong-password'          : 'Mật khẩu không đúng.',
+    'auth/invalid-credential'      : 'Email hoặc mật khẩu không đúng.',
+    'auth/too-many-requests'       : 'Quá nhiều lần thử. Vui lòng đợi và thử lại sau.',
+    'auth/network-request-failed'  : 'Lỗi kết nối mạng. Kiểm tra internet và thử lại.',
+    'auth/user-disabled'           : 'Tài khoản này đã bị vô hiệu hóa.',
+  };
+  return map[code] || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+}
+
+/* === REGISTER MODAL === */
+function openRegisterModal() {
+  closeLoginModal();
+  _authClearGlobal('register-global-err');
+  ['reg-last','reg-first','reg-phone','reg-email','reg-pw','reg-pw2'].forEach(id => {
+    const inp = document.getElementById(id);
+    if (inp) { inp.value = ''; inp.classList.remove('error'); }
+  });
+  ['reg-last-err','reg-first-err','reg-phone-err','reg-email-err','reg-pw-err','reg-pw2-err'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent=''; el.classList.remove('show'); }
+  });
+  document.getElementById('register-form-screen').style.display = '';
+  document.getElementById('register-verify-screen').style.display = 'none';
+  _authSetBtn('reg-submit-btn', false, 'Tạo tài khoản');
+  document.getElementById('register-overlay').classList.add('open');
+  setTimeout(() => { const e = document.getElementById('reg-last'); if (e) e.focus(); }, 120);
+}
+function closeRegisterModal() {
+  document.getElementById('register-overlay').classList.remove('open');
+}
+
+async function submitRegister() {
+  if (!_hmAuth) { _authGlobalErr('register-global-err','Dịch vụ xác thực chưa sẵn sàng.'); return; }
+  _authClearGlobal('register-global-err');
+
+  const last  = (document.getElementById('reg-last')?.value  || '').trim();
+  const first = (document.getElementById('reg-first')?.value || '').trim();
+  const phone = (document.getElementById('reg-phone')?.value || '').trim();
+  const email = (document.getElementById('reg-email')?.value || '').trim();
+  const pw    = (document.getElementById('reg-pw')?.value    || '');
+  const pw2   = (document.getElementById('reg-pw2')?.value   || '');
+
+  let ok = true;
+  if (!last)  { _authShowErr('reg-last-err',  'Vui lòng nhập họ.'); ok=false; }
+  if (!first) { _authShowErr('reg-first-err', 'Vui lòng nhập tên.'); ok=false; }
+  if (!email) { _authShowErr('reg-email-err', 'Vui lòng nhập email.'); ok=false; }
+  if (!pw)    { _authShowErr('reg-pw-err',    'Vui lòng nhập mật khẩu.'); ok=false; }
+  else if (pw.length < 6) { _authShowErr('reg-pw-err', 'Mật khẩu tối thiểu 6 ký tự.'); ok=false; }
+  if (pw !== pw2) { _authShowErr('reg-pw2-err', 'Mật khẩu xác nhận không khớp.'); ok=false; }
+  if (!ok) return;
+
+  _authSetBtn('reg-submit-btn', true, 'Đang tạo tài khoản…');
+  try {
+    const cred = await _hmAuth.createUserWithEmailAndPassword(email, pw);
+    const user = cred.user;
+    const displayName = `${last} ${first}`.trim();
+    await user.updateProfile({ displayName });
+    await user.sendEmailVerification();
+    if (window._hmDb) {
+      await window._hmDb.ref(`users/${user.uid}/profile`).set({
+        name: displayName, email, phone: phone || '', createdAt: Date.now()
+      });
+    }
+    document.getElementById('reg-sent-email').textContent = email;
+    document.getElementById('register-form-screen').style.display = 'none';
+    document.getElementById('register-verify-screen').style.display = '';
+    _authSetBtn('reg-submit-btn', false, 'Tạo tài khoản');
+  } catch(err) {
+    _authSetBtn('reg-submit-btn', false, 'Tạo tài khoản');
+    _authGlobalErr('register-global-err', _firebaseErrMsg(err.code));
+  }
+}
+
+async function resendVerificationToNew() {
+  if (!_currentUser) return;
+  try {
+    await _currentUser.sendEmailVerification();
+    _showToast('Đã gửi lại email xác thực!', 'ok');
+  } catch(e) {
+    _showToast('Không thể gửi lại. Thử sau.', 'warn');
+  }
+}
+
+async function resendVerification() {
+  closeUserDropdown();
+  if (!_currentUser) return;
+  try {
+    await _currentUser.sendEmailVerification();
+    _showToast('Đã gửi lại email xác thực!', 'ok');
+  } catch(e) {
+    _showToast('Không thể gửi lại. Thử sau.', 'warn');
+  }
+}
+
+/* === LOGIN MODAL === */
 function openLoginModal() {
-  const errEl = document.getElementById('oauth-err');
-  if (errEl) { errEl.textContent=''; errEl.classList.remove('show'); }
-  const gBtn = document.getElementById('google-btn');
-  const aBtn = document.getElementById('apple-btn');
-  if (gBtn) { gBtn.disabled = false; gBtn.querySelector('span').textContent = 'Tiếp tục với Google'; }
-  if (aBtn) { aBtn.disabled = false; aBtn.querySelector('span').textContent = 'Tiếp tục với Apple'; }
+  closeRegisterModal();
+  _authClearGlobal('login-global-err');
+  ['login-email','login-pw'].forEach(id => {
+    const inp = document.getElementById(id);
+    if (inp) { inp.value = ''; inp.classList.remove('error'); }
+  });
+  ['login-email-err','login-pw-err'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent=''; el.classList.remove('show'); }
+  });
+  document.getElementById('login-step1').style.display = '';
+  document.getElementById('login-step2').style.display = 'none';
+  document.getElementById('login-step3').style.display = 'none';
+  _authSetBtn('login-submit-btn', false, 'Đăng nhập');
   document.getElementById('login-overlay').classList.add('open');
+  setTimeout(() => { const e = document.getElementById('login-email'); if (e) e.focus(); }, 120);
 }
 function closeLoginModal() {
   document.getElementById('login-overlay').classList.remove('open');
 }
 
-function _oauthSetLoading(btnId, loading, label) {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  btn.disabled = loading;
-  btn.querySelector('span').textContent = loading ? 'Đang đăng nhập…' : label;
-}
-function _oauthShowErr(msg) {
-  const el = document.getElementById('oauth-err');
-  if (el) { el.textContent = msg; el.classList.add('show'); }
+async function submitLogin() {
+  if (!_hmAuth) { _authGlobalErr('login-global-err','Dịch vụ xác thực chưa sẵn sàng.'); return; }
+  _authClearGlobal('login-global-err');
+
+  const email = (document.getElementById('login-email')?.value || '').trim();
+  const pw    = (document.getElementById('login-pw')?.value    || '');
+
+  let ok = true;
+  if (!email) { _authShowErr('login-email-err', 'Vui lòng nhập email.'); ok=false; }
+  if (!pw)    { _authShowErr('login-pw-err',    'Vui lòng nhập mật khẩu.'); ok=false; }
+  if (!ok) return;
+
+  _authSetBtn('login-submit-btn', true, 'Đang đăng nhập…');
+  try {
+    await _hmAuth.signInWithEmailAndPassword(email, pw);
+    closeLoginModal();
+  } catch(err) {
+    _authSetBtn('login-submit-btn', false, 'Đăng nhập');
+    _authGlobalErr('login-global-err', _firebaseErrMsg(err.code));
+  }
 }
 
-async function signInWithGoogle() {
-  if (!_hmAuth) { _oauthShowErr('Dịch vụ xác thực chưa sẵn sàng.'); return; }
-  _oauthSetLoading('google-btn', true, 'Đang chuyển hướng…');
+/* Forgot password */
+function openForgotPassword() {
+  _authClearGlobal('forgot-global-err');
+  const loginEmail = document.getElementById('login-email')?.value || '';
+  const fe = document.getElementById('forgot-email');
+  if (fe) fe.value = loginEmail;
+  document.getElementById('login-step1').style.display = 'none';
+  document.getElementById('login-step2').style.display = '';
+  document.getElementById('login-step3').style.display = 'none';
+  setTimeout(() => { const e = document.getElementById('forgot-email'); if (e) e.focus(); }, 80);
+}
+function backToLogin() {
+  document.getElementById('login-step1').style.display = '';
+  document.getElementById('login-step2').style.display = 'none';
+  document.getElementById('login-step3').style.display = 'none';
+  _authSetBtn('login-submit-btn', false, 'Đăng nhập');
+}
+async function submitForgotPassword() {
+  if (!_hmAuth) { _authGlobalErr('forgot-global-err','Dịch vụ xác thực chưa sẵn sàng.'); return; }
+  _authClearGlobal('forgot-global-err');
+  const email = (document.getElementById('forgot-email')?.value || '').trim();
+  if (!email) { _authShowErr('forgot-email-err','Vui lòng nhập email.'); return; }
+  _authSetBtn('forgot-submit-btn', true, 'Đang gửi…');
   try {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    await _hmAuth.signInWithRedirect(provider);
-    /* trang sẽ redirect → kết quả xử lý trong getRedirectResult() */
+    await _hmAuth.sendPasswordResetEmail(email);
+    document.getElementById('forgot-sent-email').textContent = email;
+    document.getElementById('login-step2').style.display = 'none';
+    document.getElementById('login-step3').style.display = '';
   } catch(err) {
-    _oauthShowErr('Đăng nhập Google thất bại. Vui lòng thử lại.');
-    _oauthSetLoading('google-btn', false, 'Tiếp tục với Google');
+    _authSetBtn('forgot-submit-btn', false, 'Gửi link đặt lại');
+    _authGlobalErr('forgot-global-err', _firebaseErrMsg(err.code));
   }
+}
+
+/* Switch between modals */
+function switchToLogin() {
+  closeRegisterModal();
+  openLoginModal();
+}
+function switchToRegister() {
+  closeLoginModal();
+  openRegisterModal();
 }
 
 

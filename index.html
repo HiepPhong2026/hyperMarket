@@ -1660,6 +1660,8 @@ textarea { resize: vertical; min-height: 68px; }
   .topbar { grid-column: 1; }
   .menu-btn { display: flex; }
   .topbar-add-btn { display: none; } /* hide desktop add — use FAB */
+  /* Auth buttons compact on tablet */
+  .auth-link-btn { padding: 6px 12px; font-size: 12px; }
 
   /* Sidebar turns into a drawer sliding from left */
   .sidebar {
@@ -1728,9 +1730,31 @@ textarea { resize: vertical; min-height: 68px; }
    ============================================= */
 @media (max-width: 480px) {
   /* ── Topbar: slim single-line ── */
-  .topbar { padding: 8px 12px; gap: 8px; }
-  .topbar-title h1 { font-size: 14px; }
+  .topbar { padding: 6px 10px; gap: 6px; }
+  .topbar-title h1 { font-size: 13px; }
   .topbar-title p  { display: none; }
+  .topbar-left { gap: 8px; min-width: 0; flex: 1; }
+  .topbar-title { min-width: 0; overflow: hidden; }
+  .topbar-title h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-actions { gap: 5px; flex-shrink: 0; }
+
+  /* ── Search ẩn trên topbar điện thoại (quá chật) ── */
+  .topbar .search-box { display: none; }
+
+  /* ── Auth buttons: compact ── */
+  .auth-topbar-btns { gap: 4px; }
+  .auth-link-btn { padding: 5px 9px; font-size: 11px; border-radius: 5px; }
+
+  /* ── User button: chỉ hiện avatar, ẩn tên ── */
+  #user-name-short { display: none; }
+  .user-btn { padding: 3px; gap: 0; border-radius: 50%; }
+  .user-avatar { width: 32px; height: 32px; font-size: 14px; }
+
+  /* ── Admin controls: nhỏ hơn ── */
+  .admin-lock-btn, .admin-users-btn { width: 30px; height: 30px; font-size: 15px; }
+  .admin-badge { display: none !important; }
+
+  /* ── Search box (nơi khác) ── */
   .search-box { max-width: 130px; padding: 5px 8px; }
   .search-box input { font-size: 12px; }
   .search-icon { font-size: 13px; }

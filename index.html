@@ -2261,7 +2261,7 @@ const DEFAULTS = [
     price:98000000,  status:'paused', progress:55, deadline:'2026-10-01', members:2, color:'#D97706', icon:'🔧', created:Date.now()-20*86400000 }
 ];
 
-const APP_VERSION = '20261010-5';
+const APP_VERSION = '20261010-6';
 
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
@@ -2337,6 +2337,17 @@ function submitPin() {
     try { sessionStorage.setItem('hm_admin', '1'); } catch {}
     closePinModal();
     updateAdminUI();
+    // Tự động đẩy dữ liệu lên Cloud nếu phát hiện bộ nhớ phiên này có nhiều hơn Firebase
+    // (xảy ra khi hard-refresh làm mất sessionStorage trước khi Firebase load)
+    if (_fbLoaded && window._hmDb && _localSnapshot.length > projects.length) {
+      console.log(`[HM] Post-login sync: local=${_localSnapshot.length} > firebase=${projects.length} → pushing`);
+      projects = _localSnapshot.slice();
+      window._hmDb.ref('hm/projects').set(projects)
+        .then(() => { try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {} renderAll(); })
+        .catch(() => {});
+    } else {
+      renderAll(); // re-render để hiện nút chỉnh sửa
+    }
   } else {
     if (err) { err.textContent = 'Mã PIN không đúng, thử lại'; }
     const inp = document.getElementById('pin-input');

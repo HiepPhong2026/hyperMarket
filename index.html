@@ -3902,10 +3902,34 @@ let _userProjectsRef = null;
 (function initHMAuth() {
   try {
     if (typeof firebase === 'undefined' || !firebase.apps.length) {
-      // Firebase chưa init — thử lại sau 1s
       setTimeout(initHMAuth, 1000); return;
     }
     _hmAuth = firebase.auth();
+
+    /* Xử lý kết quả redirect (sau khi Google/Apple redirect về) */
+    _hmAuth.getRedirectResult().then(async result => {
+      if (result && result.user) {
+        const user = result.user;
+        if (window._hmDb) {
+          const profileRef = window._hmDb.ref(`users/${user.uid}/profile`);
+          const snap = await profileRef.once('value');
+          if (!snap.val()) {
+            await profileRef.set({
+              name: user.displayName || '',
+              email: user.email || '',
+              provider: result.additionalUserInfo?.providerId || 'oauth',
+              createdAt: Date.now()
+            });
+          }
+        }
+        closeLoginModal();
+      }
+    }).catch(err => {
+      if (err.code && err.code !== 'auth/cancelled-popup-request') {
+        _oauthShowErr('Đăng nhập thất bại: ' + (err.message || err.code));
+        openLoginModal();
+      }
+    });
 
     _hmAuth.onAuthStateChanged(user => {
       _currentUser = user;
@@ -4018,56 +4042,28 @@ function _oauthShowErr(msg) {
 
 async function signInWithGoogle() {
   if (!_hmAuth) { _oauthShowErr('Dịch vụ xác thực chưa sẵn sàng.'); return; }
-  _oauthSetLoading('google-btn', true, 'Tiếp tục với Google');
+  _oauthSetLoading('google-btn', true, 'Đang chuyển hướng…');
   try {
     const provider = new firebase.auth.GoogleAuthProvider();
-    const cred = await _hmAuth.signInWithPopup(provider);
-    if (cred.user && window._hmDb) {
-      const profileRef = window._hmDb.ref(`users/${cred.user.uid}/profile`);
-      const snap = await profileRef.once('value');
-      if (!snap.val()) {
-        await profileRef.set({
-          name: cred.user.displayName || '',
-          email: cred.user.email || '',
-          provider: 'google',
-          createdAt: Date.now()
-        });
-      }
-    }
-    closeLoginModal();
+    await _hmAuth.signInWithRedirect(provider);
+    /* trang sẽ redirect → kết quả xử lý trong getRedirectResult() */
   } catch(err) {
-    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
-      _oauthShowErr('Đăng nhập Google thất bại. Vui lòng thử lại.');
-    }
+    _oauthShowErr('Đăng nhập Google thất bại. Vui lòng thử lại.');
     _oauthSetLoading('google-btn', false, 'Tiếp tục với Google');
   }
 }
 
 async function signInWithApple() {
   if (!_hmAuth) { _oauthShowErr('Dịch vụ xác thực chưa sẵn sàng.'); return; }
-  _oauthSetLoading('apple-btn', true, 'Tiếp tục với Apple');
+  _oauthSetLoading('apple-btn', true, 'Đang chuyển hướng…');
   try {
     const provider = new firebase.auth.OAuthProvider('apple.com');
     provider.addScope('email');
     provider.addScope('name');
-    const cred = await _hmAuth.signInWithPopup(provider);
-    if (cred.user && window._hmDb) {
-      const profileRef = window._hmDb.ref(`users/${cred.user.uid}/profile`);
-      const snap = await profileRef.once('value');
-      if (!snap.val()) {
-        await profileRef.set({
-          name: cred.user.displayName || '',
-          email: cred.user.email || '',
-          provider: 'apple',
-          createdAt: Date.now()
-        });
-      }
-    }
-    closeLoginModal();
+    await _hmAuth.signInWithRedirect(provider);
+    /* trang sẽ redirect → kết quả xử lý trong getRedirectResult() */
   } catch(err) {
-    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
-      _oauthShowErr('Đăng nhập Apple thất bại. Vui lòng thử lại.');
-    }
+    _oauthShowErr('Đăng nhập Apple thất bại. Vui lòng thử lại.');
     _oauthSetLoading('apple-btn', false, 'Tiếp tục với Apple');
   }
 }

@@ -1,19 +1,47 @@
-name: Deploy to Firebase
+name: Auto Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  deploy:
+  # ── 1. Deploy Firebase Database Rules ─────────────────────────────
+  firebase-rules:
+    name: Firebase Database Rules
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Database Rules + Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: hypermarket-44c63
-          channelId: live
+          node-version: 20
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@13
+
+      - name: Deploy Database Rules
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json \
+            firebase deploy --only database \
+            --project hypermarket-44c63 \
+            --non-interactive
+          rm /tmp/sa.json
+
+  # ── 2. Trigger Hostinger Git Pull ─────────────────────────────────
+  hostinger-deploy:
+    name: Hostinger Deploy
+    runs-on: ubuntu-latest
+    needs: firebase-rules
+    if: ${{ always() }}
+    steps:
+      - name: Trigger Hostinger Git Deploy
+        if: ${{ secrets.HOSTINGER_DEPLOY_HOOK != '' }}
+        run: |
+          curl -s -X POST "${{ secrets.HOSTINGER_DEPLOY_HOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{"ref":"main"}' \
+            --max-time 30 || echo "Hostinger webhook called (response ignored)"

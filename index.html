@@ -2262,24 +2262,7 @@ const DEFAULTS = [
     price:98000000,  status:'paused', progress:55, deadline:'2026-10-01', members:2, color:'#D97706', icon:'🔧', created:Date.now()-20*86400000 }
 ];
 
-/* ── Version cache-buster ──────────────────────────────────────────────────
-   Mỗi khi tăng APP_VERSION, thiết bị nào còn cache phiên bản cũ sẽ tự xóa
-   localStorage và tải lại trang → đảm bảo code + dữ liệu luôn mới nhất.
-   ─────────────────────────────────────────────────────────────────────── */
-const APP_VERSION = '20261010-2';
-(function checkVersion(){
-  try {
-    const stored = localStorage.getItem('hm_app_version');
-    if (stored !== APP_VERSION) {
-      // Phiên bản mới hơn → xóa cache dữ liệu cũ
-      localStorage.removeItem('hm_projects_v2');
-      localStorage.removeItem('hm_notifs_v1');
-      localStorage.setItem('hm_app_version', APP_VERSION);
-      // Reload để tải lại trang sạch (chỉ reload 1 lần, tránh vòng lặp)
-      if (stored !== null) { location.reload(true); }
-    }
-  } catch {}
-})();
+const APP_VERSION = '20261010-3';
 
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
@@ -2321,6 +2304,12 @@ function updateAdminUI() {
 
 function forceSyncToCloud() {
   if (!isAdmin || !window._hmDb) return;
+  // Không cho đẩy nếu Firebase chưa xác nhận — tránh ghi đè dữ liệu thật bằng dữ liệu cũ
+  if (!_fbLoaded) {
+    alert('⚠️ Đang đợi Firebase phản hồi. Vui lòng thử lại sau vài giây.');
+    return;
+  }
+  if (!confirm(`Đẩy ${projects.length} dự án hiện tại lên Firebase?\nThao tác này sẽ ghi đè dữ liệu cloud.`)) return;
   window._hmDb.ref('hm/projects').set(projects)
     .then(() => {
       const btn = document.getElementById('force-sync-btn');
@@ -2333,16 +2322,10 @@ function forceSyncToCloud() {
 }
 
 function hardRefreshData() {
-  // Xóa localStorage → tải lại từ Firebase (hoặc DEFAULTS nếu không có mạng)
+  // Chỉ reload trang — KHÔNG xóa dữ liệu. Firebase sẽ đồng bộ lại sau khi tải.
   const btn = document.getElementById('hard-refresh-btn');
   if (btn) btn.textContent = '⏳';
-  try {
-    localStorage.removeItem('hm_projects_v2');
-    localStorage.removeItem('hm_notifs_v1');
-    localStorage.setItem('hm_app_version', APP_VERSION);
-  } catch {}
-  // Reload cứng để tải trang mới nhất từ server (bỏ qua cache trình duyệt)
-  setTimeout(() => location.reload(true), 300);
+  setTimeout(() => location.reload(true), 200);
 }
 
 function toggleAdminModal() {
@@ -3511,15 +3494,18 @@ const _HM_FB_CONFIG = {
       const data = snap.val();
       _fbLoaded = true; // Firebase đã phản hồi — số liệu bây giờ đáng tin cậy
       if (data !== null) {
-        projects = Array.isArray(data) ? data : Object.values(data);
+        // Firebase có dữ liệu → đây là nguồn chân lý
+        const incoming = Array.isArray(data) ? data : Object.values(data);
+        projects = incoming;
         try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
         renderAll();
-      } else if (projects.length > 0 && isAdmin) {
-        // Database trống lần đầu → chỉ admin mới được seed để tránh race condition
-        window._hmDb.ref('hm/projects').set(projects).catch(() => {});
-        renderAll(); // Render sau khi seed để cập nhật stats
       } else {
-        renderAll(); // Render kể cả khi data null để hiện trạng thái trống
+        // Firebase trống — KHÔNG tự động seed để tránh ghi đè dữ liệu thật
+        // Hiển thị cảnh báo cho admin để họ quyết định
+        renderAll();
+        if (isAdmin && projects.length > 0) {
+          console.warn('[HM] Firebase trống. Dữ liệu hiện tại từ localStorage:', projects.length, 'dự án.');
+        }
       }
     });
 

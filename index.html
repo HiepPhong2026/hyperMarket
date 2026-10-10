@@ -4178,8 +4178,12 @@ function _firebaseErrMsg(code) {
     'auth/too-many-requests'       : 'Quá nhiều lần thử. Vui lòng đợi và thử lại sau.',
     'auth/network-request-failed'  : 'Lỗi kết nối mạng. Kiểm tra internet và thử lại.',
     'auth/user-disabled'           : 'Tài khoản này đã bị vô hiệu hóa.',
+    'auth/operation-not-allowed'   : 'Đăng ký email chưa được bật. Vui lòng liên hệ quản trị viên.',
+    'auth/missing-email'           : 'Vui lòng nhập địa chỉ email.',
+    'auth/missing-password'        : 'Vui lòng nhập mật khẩu.',
+    'auth/internal-error'          : 'Lỗi máy chủ. Vui lòng thử lại.',
   };
-  return map[code] || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+  return map[code] || `Đã xảy ra lỗi (${code || 'unknown'}). Vui lòng thử lại.`;
 }
 
 /* === REGISTER MODAL === */
@@ -4229,18 +4233,28 @@ async function submitRegister() {
     const cred = await _hmAuth.createUserWithEmailAndPassword(email, pw);
     const user = cred.user;
     const displayName = `${last} ${first}`.trim();
-    await user.updateProfile({ displayName });
-    await user.sendEmailVerification();
+
+    /* Cập nhật tên hiển thị — không chặn nếu lỗi */
+    try { await user.updateProfile({ displayName }); } catch(e) { console.warn('updateProfile:', e); }
+
+    /* Gửi email xác thực — không chặn nếu lỗi */
+    try { await user.sendEmailVerification(); } catch(e) { console.warn('sendEmailVerification:', e); }
+
+    /* Lưu profile vào Realtime DB */
     if (window._hmDb) {
-      await window._hmDb.ref(`users/${user.uid}/profile`).set({
-        name: displayName, email, phone: phone || '', createdAt: Date.now()
-      });
+      try {
+        await window._hmDb.ref(`users/${user.uid}/profile`).set({
+          name: displayName, email, phone: phone || '', createdAt: Date.now()
+        });
+      } catch(e) { console.warn('saveProfile:', e); }
     }
+
     document.getElementById('reg-sent-email').textContent = email;
     document.getElementById('register-form-screen').style.display = 'none';
     document.getElementById('register-verify-screen').style.display = '';
     _authSetBtn('reg-submit-btn', false, 'Tạo tài khoản');
   } catch(err) {
+    console.error('Register error:', err.code, err.message);
     _authSetBtn('reg-submit-btn', false, 'Tạo tài khoản');
     _authGlobalErr('register-global-err', _firebaseErrMsg(err.code));
   }
@@ -4307,6 +4321,7 @@ async function submitLogin() {
     await _hmAuth.signInWithEmailAndPassword(email, pw);
     closeLoginModal();
   } catch(err) {
+    console.error('Login error:', err.code, err.message);
     _authSetBtn('login-submit-btn', false, 'Đăng nhập');
     _authGlobalErr('login-global-err', _firebaseErrMsg(err.code));
   }

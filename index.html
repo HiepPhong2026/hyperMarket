@@ -504,15 +504,32 @@ body {
 }
 .empty-emoji { font-size: 2rem; margin-bottom: 10px; }
 
-/* Mobile */
+/* Mobile — tablet */
 @media (max-width: 640px) {
   .app-wrapper { padding: 0; }
   .chat-panel { border-radius: 0; border-left: none; border-right: none; }
   .msg-stack { max-width: 85%; }
   .chat-desc { display: none; }
+  .chat-header { padding: 10px 14px; gap: 8px; }
+  .header-right { gap: 6px; }
+  .online-pill { padding: 4px 8px; font-size: .7rem; }
 }
-@media (max-width: 400px) {
+
+/* Mobile — phone nhỏ */
+@media (max-width: 480px) {
+  .chat-header { padding: 8px 12px; gap: 7px; }
+  .chat-icon { width: 32px; height: 32px; border-radius: 9px; font-size: .9rem; }
+  .chat-title { font-size: .85rem; }
+  .header-right { gap: 5px; }
+  /* Ẩn số người online — tiết kiệm chỗ */
+  .online-pill { display: none; }
+  /* Nút Dự án: chỉ giữ icon */
   .chat-app-label { display: none; }
+  a[href="app.html"] { padding: 5px 7px !important; font-size: .85rem !important; }
+  /* User chip: ẩn tên, chỉ hiện avatar */
+  #mini-name { display: none; }
+  .user-chip { padding: 3px; border-radius: 50%; }
+  .mini-avatar { width: 26px; height: 26px; font-size: .7rem; }
 }
 </style>
 </head>

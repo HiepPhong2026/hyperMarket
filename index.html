@@ -2415,16 +2415,16 @@ function renderCard(p,delay){
   const dl=daysLeft(p.deadline);
   const dlClass=dl!==null&&dl<0?'deadline-overdue':'';
   const dlText=dl===null?'':dl<0?`Quá hạn ${Math.abs(dl)} ngày`:dl===0?'Hôm nay!':`Còn ${dl} ngày`;
-  const editAttrs = isAdmin
+  const clickAttr = isAdmin
     ? `onclick="editProject(${p.id})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')editProject(${p.id})"`
-    : '';
+    : `onclick="viewProject(${p.id})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')viewProject(${p.id})"`;
   // Hover preview clip cho khách vãng lai (chỉ khi có youtube/tiktok)
   const hasClip = (p.media||[]).some(u => { const t=detectMediaType(u); return t==='youtube'||t==='tiktok'; });
   const previewAttrs = hasClip
     ? `onmouseenter="showCardPreview(this,${p.id})" onmouseleave="hideCardPreview()"`
     : '';
-  return `<div class="project-card" style="animation-delay:${delay}ms;--card-accent:${p.color};--card-bg:${p.color}22${isAdmin?'':';cursor:default'}"
-      ${editAttrs} ${previewAttrs}>
+  return `<div class="project-card" style="animation-delay:${delay}ms;--card-accent:${p.color};--card-bg:${p.color}22"
+      ${clickAttr} ${previewAttrs}>
     <div class="card-top">
       <div class="card-title-area">
         <div class="project-avatar" style="background:${p.color}22">${p.icon||'📁'}</div>
@@ -2569,17 +2569,12 @@ function renderCardViewer(p, delay) {
 function renderAll(){
   const grid=document.getElementById('projects-grid');
   const list=getFiltered();
-  if (!isAdmin) {
-    grid.className = 'showcase-grid';
-    grid.innerHTML = list.length
-      ? list.map((p,i)=>renderCardViewer(p, Math.min(i*60,500))).join('')
-      : `<div class="empty-state"><div class="empty-icon">🏗️</div><h3>Chưa có dự án nào</h3><p>Các dự án sẽ hiển thị tại đây.</p></div>`;
-  } else {
-    grid.className = 'projects-grid';
-    grid.innerHTML = list.length
-      ? list.map((p,i)=>renderCard(p,Math.min(i*35,250))).join('')
-      : `<div class="empty-state"><div class="empty-icon">📭</div><h3>Không có dự án nào</h3><p>Thêm dự án mới hoặc thay đổi bộ lọc.</p></div>`;
-  }
+  // Luôn dùng cùng một layout projects-grid cho cả admin và guest
+  // (admin thấy nút chỉnh sửa, guest chỉ xem)
+  grid.className = 'projects-grid';
+  grid.innerHTML = list.length
+    ? list.map((p,i)=>renderCard(p,Math.min(i*35,250))).join('')
+    : `<div class="empty-state"><div class="empty-icon">📭</div><h3>Không có dự án nào</h3><p>${isAdmin?'Thêm dự án mới hoặc thay đổi bộ lọc.':'Các dự án sẽ hiển thị tại đây.'}</p></div>`;
   updateStats();
 }
 

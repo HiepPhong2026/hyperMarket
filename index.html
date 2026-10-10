@@ -2889,7 +2889,12 @@ function renderCardViewer(p, delay) {
   const pct = Math.min(100, Math.max(0, p.progress || 0));
   const animDelay = `${delay}ms`;
 
-  return `<div class="showcase-card" onclick="viewProject(${p.id})" style="--sc-accent:${esc(p.color||'var(--accent)')};animation-delay:${animDelay};cursor:pointer">
+  // Hover preview clip cho khách vãng lai
+  const hasClip = (p.media||[]).some(u => { const t=detectMediaType(u); return t==='youtube'||t==='tiktok'; });
+  const previewHover = hasClip
+    ? `onmouseenter="showCardPreview(this,${p.id})" onmouseleave="hideCardPreview()"`
+    : '';
+  return `<div class="showcase-card" onclick="viewProject(${p.id})" style="--sc-accent:${esc(p.color||'var(--accent)')};animation-delay:${animDelay};cursor:pointer" ${previewHover}>
   <div class="sc-hero" style="background:${esc(p.color||'var(--accent)')}">
     ${heroImgHtml}
     <div class="sc-hero-icon">${esc(p.icon||'📁')}</div>

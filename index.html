@@ -1875,6 +1875,7 @@ textarea { resize: vertical; min-height: 68px; }
       <button class="btn btn-primary topbar-add-btn" id="topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
       <span class="admin-badge" id="admin-badge">ADMIN</span>
       <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
+      <button id="push-cloud-btn" onclick="pushLocalToCloud()" title="Đẩy dữ liệu máy tính lên Cloud" style="display:none;background:#f59e0b;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;">☁️ Đồng bộ</button>
       <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
         <span id="sync-dot"></span>
       </div>
@@ -2260,13 +2261,15 @@ const DEFAULTS = [
     price:98000000,  status:'paused', progress:55, deadline:'2026-10-01', members:2, color:'#D97706', icon:'🔧', created:Date.now()-20*86400000 }
 ];
 
-const APP_VERSION = '20261010-4';
+const APP_VERSION = '20261010-5';
 
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
 // Firebase: nguồn chân lý duy nhất
 // _fbLoaded = true sau khi Firebase phản hồi lần đầu
 let _fbLoaded = false;
+// Snapshot localStorage tại lúc load — dùng để phát hiện lệch với Firebase
+let _localSnapshot = projects.slice();
 // Debounce timer cho Firebase write — tránh ghi quá nhiều lần khi admin sửa nhanh
 let _saveDebounce = null;
 
@@ -2339,6 +2342,19 @@ function submitPin() {
     const inp = document.getElementById('pin-input');
     if (inp) { inp.value = ''; inp.focus(); }
   }
+}
+
+/* Đẩy toàn bộ dữ liệu hiện tại trên máy này lên Firebase (dùng khi dữ liệu bị lệch) */
+function pushLocalToCloud(){
+  if(!window._hmDb){ alert('Chưa kết nối Firebase'); return; }
+  const count = projects.length;
+  if(!confirm(`Đẩy ${count} dự án từ máy này lên Cloud?\nThao tác sẽ ghi đè dữ liệu trên Firebase.`)) return;
+  window._hmDb.ref('hm/projects').set(projects)
+    .then(()=>{
+      const btn = document.getElementById('push-cloud-btn');
+      if(btn){ btn.textContent='✅ Đã đồng bộ'; setTimeout(()=>{ btn.style.display='none'; }, 3000); }
+    })
+    .catch(e=>{ alert('Lỗi: ' + e.message); });
 }
 
 function saveProjects(){
@@ -2593,13 +2609,16 @@ function renderCardViewer(p, delay) {
 function renderAll(){
   const grid=document.getElementById('projects-grid');
   const list=getFiltered();
-  // Luôn dùng cùng một layout projects-grid cho cả admin và guest
-  // (admin thấy nút chỉnh sửa, guest chỉ xem)
   grid.className = 'projects-grid';
   grid.innerHTML = list.length
     ? list.map((p,i)=>renderCard(p,Math.min(i*35,250))).join('')
     : `<div class="empty-state"><div class="empty-icon">📭</div><h3>Không có dự án nào</h3><p>${isAdmin?'Thêm dự án mới hoặc thay đổi bộ lọc.':'Các dự án sẽ hiển thị tại đây.'}</p></div>`;
   updateStats();
+  // Hiện nút đồng bộ nếu admin + đã load Firebase + vẫn còn lệch với _localSnapshot
+  if(isAdmin && _fbLoaded && typeof _localSnapshot !== 'undefined'){
+    const btn = document.getElementById('push-cloud-btn');
+    if(btn) btn.style.display = (_localSnapshot.length > projects.length) ? 'inline-block' : 'none';
+  }
 }
 
 /* ============================================================
@@ -3481,31 +3500,38 @@ const _HM_FB_CONFIG = {
     });
 
     /* ── Đồng bộ Dự án — Firebase là nguồn duy nhất ──────────────────────────
-       Mọi thay đổi (thêm / sửa / xóa) admin thực hiện đều gọi saveProjects()
-       → ghi vào Firebase → listener này kích hoạt TRÊN MỌI THIẾT BỊ → renderAll()
-       Không cần người dùng làm gì thêm.
+       _localSnapshot (khai báo ở module level) chứa dữ liệu localStorage tại
+       thời điểm load — dùng để phát hiện Firebase bị thiếu dữ liệu.
     ─────────────────────────────────────────────────────────────────────────── */
     window._hmDb.ref('hm/projects').on('value',
       snap => {
         const data = snap.val();
         if (data !== null) {
-          // Firebase có dữ liệu → cập nhật projects + cache localStorage + render
-          projects = Array.isArray(data) ? data : Object.values(data);
-          try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
-        } else if (!_fbLoaded && projects.length > 0 && isAdmin) {
-          // Firebase trống lần đầu tiên khởi tạo VÀ admin có dữ liệu → seed 1 lần duy nhất
-          window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+          const fbProjects = Array.isArray(data) ? data : Object.values(data);
+
+          // Admin: nếu localStorage có NHIỀU dự án hơn Firebase → Firebase bị thiếu
+          // (xảy ra khi Rules cũ chặn write) → tự động đẩy bản đầy đủ lên Cloud
+          if (isAdmin && !_fbLoaded && _localSnapshot.length > fbProjects.length) {
+            console.log(`[HM] Admin sync: local=${_localSnapshot.length} > firebase=${fbProjects.length} → pushing local to Firebase`);
+            projects = _localSnapshot;
+            window._hmDb.ref('hm/projects').set(_localSnapshot).catch(()=>{});
+            try { localStorage.setItem('hm_projects_v2', JSON.stringify(_localSnapshot)); } catch {}
+          } else {
+            projects = fbProjects;
+            try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+          }
+        } else if (!_fbLoaded && _localSnapshot.length > 0 && isAdmin) {
+          // Firebase trống + admin có dữ liệu → seed
+          projects = _localSnapshot;
+          window._hmDb.ref('hm/projects').set(_localSnapshot).catch(()=>{});
         }
-        // Đánh dấu Firebase đã phản hồi TRƯỚC khi render để stats hiện số thật
         _fbLoaded = true;
         renderAll();
       },
       err => {
-        // ── Firebase từ chối (Security Rules) → fallback localStorage ngay ──
         console.warn('[HM] Firebase projects read denied:', err.code, err.message);
-        // Hiện cảnh báo nhỏ trên sync dot để admin biết cần cập nhật Rules
         const dot = document.getElementById('sync-dot');
-        if (dot) { dot.title = '⚠️ Firebase read bị chặn – cập nhật Security Rules'; dot.style.background = '#f59e0b'; }
+        if (dot) { dot.title = '⚠️ Firebase bị chặn – cập nhật Security Rules'; dot.style.background = '#f59e0b'; }
         if (!_fbLoaded) { _fbLoaded = true; renderAll(); }
       }
     );

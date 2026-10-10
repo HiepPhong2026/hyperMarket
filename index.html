@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
 <!-- SEO Primary -->
 <title>HugMass – Quản lý chợ & bán hàng trực tuyến</title>
@@ -1873,6 +1876,7 @@ textarea { resize: vertical; min-height: 68px; }
       <span class="admin-badge" id="admin-badge">ADMIN</span>
       <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
       <button id="force-sync-btn" class="admin-lock-btn" onclick="forceSyncToCloud()" title="Đồng bộ dữ liệu máy tính lên Firebase" style="display:none;font-size:14px">☁️</button>
+      <button id="hard-refresh-btn" class="admin-lock-btn" onclick="hardRefreshData()" title="Xóa cache & tải lại dữ liệu mới nhất" style="font-size:14px">🔄</button>
       <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
         <span id="sync-dot"></span>
       </div>
@@ -2258,6 +2262,25 @@ const DEFAULTS = [
     price:98000000,  status:'paused', progress:55, deadline:'2026-10-01', members:2, color:'#D97706', icon:'🔧', created:Date.now()-20*86400000 }
 ];
 
+/* ── Version cache-buster ──────────────────────────────────────────────────
+   Mỗi khi tăng APP_VERSION, thiết bị nào còn cache phiên bản cũ sẽ tự xóa
+   localStorage và tải lại trang → đảm bảo code + dữ liệu luôn mới nhất.
+   ─────────────────────────────────────────────────────────────────────── */
+const APP_VERSION = '20261010-2';
+(function checkVersion(){
+  try {
+    const stored = localStorage.getItem('hm_app_version');
+    if (stored !== APP_VERSION) {
+      // Phiên bản mới hơn → xóa cache dữ liệu cũ
+      localStorage.removeItem('hm_projects_v2');
+      localStorage.removeItem('hm_notifs_v1');
+      localStorage.setItem('hm_app_version', APP_VERSION);
+      // Reload để tải lại trang sạch (chỉ reload 1 lần, tránh vòng lặp)
+      if (stored !== null) { location.reload(true); }
+    }
+  } catch {}
+})();
+
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
 // Cờ xác nhận Firebase đã phản hồi — tránh hiện số liệu localStorage chưa đồng bộ
@@ -2307,6 +2330,19 @@ function forceSyncToCloud() {
       const btn = document.getElementById('force-sync-btn');
       if (btn) { btn.textContent = '❌'; setTimeout(() => { btn.textContent = '☁️'; }, 2000); }
     });
+}
+
+function hardRefreshData() {
+  // Xóa localStorage → tải lại từ Firebase (hoặc DEFAULTS nếu không có mạng)
+  const btn = document.getElementById('hard-refresh-btn');
+  if (btn) btn.textContent = '⏳';
+  try {
+    localStorage.removeItem('hm_projects_v2');
+    localStorage.removeItem('hm_notifs_v1');
+    localStorage.setItem('hm_app_version', APP_VERSION);
+  } catch {}
+  // Reload cứng để tải trang mới nhất từ server (bỏ qua cache trình duyệt)
+  setTimeout(() => location.reload(true), 300);
 }
 
 function toggleAdminModal() {

@@ -1875,8 +1875,6 @@ textarea { resize: vertical; min-height: 68px; }
       <button class="btn btn-primary topbar-add-btn" id="topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
       <span class="admin-badge" id="admin-badge">ADMIN</span>
       <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
-      <button id="force-sync-btn" class="admin-lock-btn" onclick="forceSyncToCloud()" title="Đồng bộ dữ liệu máy tính lên Firebase" style="display:none;font-size:14px">☁️</button>
-      <button id="hard-refresh-btn" class="admin-lock-btn" onclick="hardRefreshData()" title="Xóa cache & tải lại dữ liệu mới nhất" style="font-size:14px">🔄</button>
       <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
         <span id="sync-dot"></span>
       </div>
@@ -2266,8 +2264,11 @@ const APP_VERSION = '20261010-3';
 
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
-// Cờ xác nhận Firebase đã phản hồi — tránh hiện số liệu localStorage chưa đồng bộ
+// Firebase: nguồn chân lý duy nhất
+// _fbLoaded = true sau khi Firebase phản hồi lần đầu
 let _fbLoaded = false;
+// Debounce timer cho Firebase write — tránh ghi quá nhiều lần khi admin sửa nhanh
+let _saveDebounce = null;
 
 /* ============================================================
    ADMIN MODE — Phân quyền xem / chỉnh sửa
@@ -2294,39 +2295,11 @@ function updateAdminUI() {
   // Notif add
   const na = document.getElementById('notif-add-btn');
   if (na) na.hidden = !on;
-  // Nút sync (chỉ admin)
-  const fsb = document.getElementById('force-sync-btn');
-  if (fsb) fsb.style.display = on ? '' : 'none';
   // Re-render để ẩn/hiện nút xóa thông báo
   renderNotifs();
   renderAll();
 }
 
-function forceSyncToCloud() {
-  if (!isAdmin || !window._hmDb) return;
-  // Không cho đẩy nếu Firebase chưa xác nhận — tránh ghi đè dữ liệu thật bằng dữ liệu cũ
-  if (!_fbLoaded) {
-    alert('⚠️ Đang đợi Firebase phản hồi. Vui lòng thử lại sau vài giây.');
-    return;
-  }
-  if (!confirm(`Đẩy ${projects.length} dự án hiện tại lên Firebase?\nThao tác này sẽ ghi đè dữ liệu cloud.`)) return;
-  window._hmDb.ref('hm/projects').set(projects)
-    .then(() => {
-      const btn = document.getElementById('force-sync-btn');
-      if (btn) { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '☁️'; }, 2000); }
-    })
-    .catch(() => {
-      const btn = document.getElementById('force-sync-btn');
-      if (btn) { btn.textContent = '❌'; setTimeout(() => { btn.textContent = '☁️'; }, 2000); }
-    });
-}
-
-function hardRefreshData() {
-  // Chỉ reload trang — KHÔNG xóa dữ liệu. Firebase sẽ đồng bộ lại sau khi tải.
-  const btn = document.getElementById('hard-refresh-btn');
-  if (btn) btn.textContent = '⏳';
-  setTimeout(() => location.reload(true), 200);
-}
 
 function toggleAdminModal() {
   if (isAdmin) {
@@ -2369,9 +2342,14 @@ function submitPin() {
 }
 
 function saveProjects(){
+  // localStorage: lưu ngay để dùng offline
   try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{}
+  // Firebase: debounce 300ms — tránh ghi liên tục khi admin chỉnh sửa nhanh
   if(window._hmDb){
-    window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+    clearTimeout(_saveDebounce);
+    _saveDebounce = setTimeout(()=>{
+      window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+    }, 300);
   }
 }
 
@@ -3356,9 +3334,21 @@ function hideCardPreview() {
 function keepCardPreview() { clearTimeout(_cmpTimer); }
 
 /* ============================================================
-   INIT
+   INIT — Hiển thị skeleton, KHÔNG render từ localStorage
+   Firebase sẽ là trigger duy nhất để renderAll() chạy.
+   Fallback 5 giây nếu mất mạng hoàn toàn.
    ============================================================ */
-renderAll();
+(function initSkeleton(){
+  const grid = document.getElementById('projects-grid');
+  if(grid){
+    grid.className = 'projects-grid';
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-icon" style="font-size:2rem">⏳</div>
+      <h3 style="color:var(--text-muted)">Đang tải dữ liệu...</h3>
+    </div>`;
+  }
+  updateStats(); // hiện "…" cho đến khi _fbLoaded = true
+})();
 
 /* ============================================================
    THÔNG BÁO
@@ -3474,47 +3464,49 @@ const _HM_FB_CONFIG = {
 };
 
 (function initFirebase() {
-  // Bỏ qua nếu chưa điền databaseURL thật — dùng localStorage ngay
-  if (_HM_FB_CONFIG.databaseURL.startsWith('PASTE_')) { _fbLoaded = true; renderAll(); return; }
+  /* ── Không có Firebase config thật → dùng localStorage ngay ── */
+  if (_HM_FB_CONFIG.databaseURL.startsWith('PASTE_')) {
+    _fbLoaded = true; renderAll(); return;
+  }
+
   try {
     firebase.initializeApp(_HM_FB_CONFIG);
     window._hmDb = firebase.database();
 
-    // Lắng nghe trạng thái kết nối — cập nhật dot màu
+    /* ── Trạng thái kết nối (dot màu) ── */
     const dot = document.getElementById('sync-dot');
     window._hmDb.ref('.info/connected').on('value', snap => {
-      if (dot) {
-        dot.classList.toggle('online',  !!snap.val());
-        dot.classList.toggle('offline', !snap.val());
-      }
+      const online = !!snap.val();
+      if (dot) { dot.classList.toggle('online', online); dot.classList.toggle('offline', !online); }
     });
 
-    // Đồng bộ Dự án
+    /* ── Đồng bộ Dự án — Firebase là nguồn duy nhất ──────────────────────────
+       Mọi thay đổi (thêm / sửa / xóa) admin thực hiện đều gọi saveProjects()
+       → ghi vào Firebase → listener này kích hoạt TRÊN MỌI THIẾT BỊ → renderAll()
+       Không cần người dùng làm gì thêm.
+    ─────────────────────────────────────────────────────────────────────────── */
     window._hmDb.ref('hm/projects').on('value', snap => {
       const data = snap.val();
-      _fbLoaded = true; // Firebase đã phản hồi — số liệu bây giờ đáng tin cậy
+
       if (data !== null) {
-        // Firebase có dữ liệu → đây là nguồn chân lý
-        const incoming = Array.isArray(data) ? data : Object.values(data);
-        projects = incoming;
+        // Firebase có dữ liệu → cập nhật projects + cache localStorage + render
+        projects = Array.isArray(data) ? data : Object.values(data);
         try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
-        renderAll();
-      } else {
-        // Firebase trống — KHÔNG tự động seed để tránh ghi đè dữ liệu thật
-        // Hiển thị cảnh báo cho admin để họ quyết định
-        renderAll();
-        if (isAdmin && projects.length > 0) {
-          console.warn('[HM] Firebase trống. Dữ liệu hiện tại từ localStorage:', projects.length, 'dự án.');
-        }
+      } else if (!_fbLoaded && projects.length > 0 && isAdmin) {
+        // Firebase trống lần đầu tiên khởi tạo VÀ admin có dữ liệu → seed 1 lần duy nhất
+        window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
       }
+      // Đánh dấu Firebase đã phản hồi TRƯỚC khi render để stats hiện số thật
+      _fbLoaded = true;
+      renderAll();
     });
 
-    // Dự phòng: nếu Firebase không phản hồi sau 6 giây, dùng localStorage
+    /* ── Fallback 5 giây: mất mạng hoàn toàn → dùng localStorage ── */
     setTimeout(() => {
       if (!_fbLoaded) { _fbLoaded = true; renderAll(); }
-    }, 6000);
+    }, 5000);
 
-    // Đồng bộ Thông báo
+    /* ── Đồng bộ Thông báo ── */
     window._hmDb.ref('hm/notifs').on('value', snap => {
       const data = snap.val();
       if (data !== null) {
@@ -3525,7 +3517,9 @@ const _HM_FB_CONFIG = {
     });
 
   } catch(e) {
-    console.warn('Firebase init failed:', e);
+    // Firebase init thất bại → fallback localStorage ngay
+    console.warn('[HM] Firebase init failed:', e);
+    _fbLoaded = true; renderAll();
   }
 })();
 

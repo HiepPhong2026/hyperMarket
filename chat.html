@@ -42,8 +42,8 @@ const FIREBASE_CONFIG = {
 -->
 
 <!-- Firebase SDK -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-app-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.7.1/firebase-database-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-database-compat.min.js"></script>
 
 <style>
 /* ─── Design Tokens ──────────────────────────── */
@@ -533,6 +533,7 @@ body {
 
       <!-- Header -->
       <div class="chat-header">
+        <a href="index.html" title="Về trang chủ" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--surface-2);color:var(--fg);text-decoration:none;font-size:1rem;flex-shrink:0;transition:background .15s" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface-2)'">←</a>
         <div class="chat-icon">🏪</div>
         <div>
           <div class="chat-title">Phòng Chat Chung</div>
@@ -770,24 +771,35 @@ function connectFirebase() {
 function subscribeMessages() {
   const msgsRef = chatRef.child('messages').limitToLast(MAX_MESSAGES);
 
+  const onError = (err) => {
+    console.error('Firebase error:', err);
+    if (err && err.code === 'PERMISSION_DENIED') {
+      document.getElementById('app').hidden = true;
+      const ev = document.getElementById('error-view');
+      ev.querySelector('h2').textContent = '⚠️ Không có quyền truy cập';
+      ev.querySelector('p').textContent = 'Database chưa được cấu hình quy tắc bảo mật. Vui lòng liên hệ quản trị viên.';
+      ev.hidden = false;
+    }
+  };
+
   // child_added fires for existing + new messages in order
   msgsRef.on('child_added', (snap) => {
     const data = snap.val();
     if (!data) return;
     appendMsg(snap.key, data, false);
     maybeScrollDown();
-  });
+  }, onError);
 
   msgsRef.on('child_changed', (snap) => {
     const data = snap.val();
     if (!data) return;
     msgData.set(snap.key, data);
     updateMsgReactions(snap.key, data.reactions || {});
-  });
+  }, onError);
 
   msgsRef.on('child_removed', (snap) => {
     removeMsgEl(snap.key);
-  });
+  }, onError);
 }
 
 // ─── Render message ──────────────────────────────────────────────────

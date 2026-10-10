@@ -2260,7 +2260,7 @@ const DEFAULTS = [
     price:98000000,  status:'paused', progress:55, deadline:'2026-10-01', members:2, color:'#D97706', icon:'🔧', created:Date.now()-20*86400000 }
 ];
 
-const APP_VERSION = '20261010-3';
+const APP_VERSION = '20261010-4';
 
 let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
 let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
@@ -3485,36 +3485,50 @@ const _HM_FB_CONFIG = {
        → ghi vào Firebase → listener này kích hoạt TRÊN MỌI THIẾT BỊ → renderAll()
        Không cần người dùng làm gì thêm.
     ─────────────────────────────────────────────────────────────────────────── */
-    window._hmDb.ref('hm/projects').on('value', snap => {
-      const data = snap.val();
-
-      if (data !== null) {
-        // Firebase có dữ liệu → cập nhật projects + cache localStorage + render
-        projects = Array.isArray(data) ? data : Object.values(data);
-        try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
-      } else if (!_fbLoaded && projects.length > 0 && isAdmin) {
-        // Firebase trống lần đầu tiên khởi tạo VÀ admin có dữ liệu → seed 1 lần duy nhất
-        window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+    window._hmDb.ref('hm/projects').on('value',
+      snap => {
+        const data = snap.val();
+        if (data !== null) {
+          // Firebase có dữ liệu → cập nhật projects + cache localStorage + render
+          projects = Array.isArray(data) ? data : Object.values(data);
+          try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+        } else if (!_fbLoaded && projects.length > 0 && isAdmin) {
+          // Firebase trống lần đầu tiên khởi tạo VÀ admin có dữ liệu → seed 1 lần duy nhất
+          window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+        }
+        // Đánh dấu Firebase đã phản hồi TRƯỚC khi render để stats hiện số thật
+        _fbLoaded = true;
+        renderAll();
+      },
+      err => {
+        // ── Firebase từ chối (Security Rules) → fallback localStorage ngay ──
+        console.warn('[HM] Firebase projects read denied:', err.code, err.message);
+        // Hiện cảnh báo nhỏ trên sync dot để admin biết cần cập nhật Rules
+        const dot = document.getElementById('sync-dot');
+        if (dot) { dot.title = '⚠️ Firebase read bị chặn – cập nhật Security Rules'; dot.style.background = '#f59e0b'; }
+        if (!_fbLoaded) { _fbLoaded = true; renderAll(); }
       }
-      // Đánh dấu Firebase đã phản hồi TRƯỚC khi render để stats hiện số thật
-      _fbLoaded = true;
-      renderAll();
-    });
+    );
 
-    /* ── Fallback 5 giây: mất mạng hoàn toàn → dùng localStorage ── */
+    /* ── Fallback 3 giây: mất mạng hoàn toàn → dùng localStorage ── */
     setTimeout(() => {
       if (!_fbLoaded) { _fbLoaded = true; renderAll(); }
-    }, 5000);
+    }, 3000);
 
     /* ── Đồng bộ Thông báo ── */
-    window._hmDb.ref('hm/notifs').on('value', snap => {
-      const data = snap.val();
-      if (data !== null) {
-        notifs = Array.isArray(data) ? data : Object.values(data);
-        try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
-        renderNotifs();
+    window._hmDb.ref('hm/notifs').on('value',
+      snap => {
+        const data = snap.val();
+        if (data !== null) {
+          notifs = Array.isArray(data) ? data : Object.values(data);
+          try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
+          renderNotifs();
+        }
+      },
+      err => {
+        console.warn('[HM] Firebase notifs read denied:', err.code, err.message);
       }
-    });
+    );
 
   } catch(e) {
     // Firebase init thất bại → fallback localStorage ngay

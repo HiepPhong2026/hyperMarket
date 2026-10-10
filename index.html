@@ -1872,6 +1872,7 @@ textarea { resize: vertical; min-height: 68px; }
       <button class="btn btn-primary topbar-add-btn" id="topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
       <span class="admin-badge" id="admin-badge">ADMIN</span>
       <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
+      <button id="force-sync-btn" class="admin-lock-btn" onclick="forceSyncToCloud()" title="Đồng bộ dữ liệu máy tính lên Firebase" style="display:none;font-size:14px">☁️</button>
       <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
         <span id="sync-dot"></span>
       </div>
@@ -2285,9 +2286,25 @@ function updateAdminUI() {
   // Notif add
   const na = document.getElementById('notif-add-btn');
   if (na) na.hidden = !on;
+  // Nút sync (chỉ admin)
+  const fsb = document.getElementById('force-sync-btn');
+  if (fsb) fsb.style.display = on ? '' : 'none';
   // Re-render để ẩn/hiện nút xóa thông báo
   renderNotifs();
   renderAll();
+}
+
+function forceSyncToCloud() {
+  if (!isAdmin || !window._hmDb) return;
+  window._hmDb.ref('hm/projects').set(projects)
+    .then(() => {
+      const btn = document.getElementById('force-sync-btn');
+      if (btn) { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '☁️'; }, 2000); }
+    })
+    .catch(() => {
+      const btn = document.getElementById('force-sync-btn');
+      if (btn) { btn.textContent = '❌'; setTimeout(() => { btn.textContent = '☁️'; }, 2000); }
+    });
 }
 
 function toggleAdminModal() {
@@ -3450,8 +3467,8 @@ const _HM_FB_CONFIG = {
         projects = Array.isArray(data) ? data : Object.values(data);
         try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
         renderAll();
-      } else if (projects.length > 0) {
-        // Database trống lần đầu → seed dữ liệu hiện tại lên
+      } else if (projects.length > 0 && isAdmin) {
+        // Database trống lần đầu → chỉ admin mới được seed để tránh race condition
         window._hmDb.ref('hm/projects').set(projects).catch(() => {});
       }
     });

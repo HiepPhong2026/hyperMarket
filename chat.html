@@ -833,7 +833,7 @@ function connectFirebase() {
 
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   db      = firebase.database();
-  chatRef = db.ref('hm_chat');
+  chatRef = db.ref('hm/chat');
 
   subscribeMessages();
   subscribeTyping();

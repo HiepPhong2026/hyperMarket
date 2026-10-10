@@ -77,8 +77,6 @@
   ]
 }
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
 
 <!--
   ╔══════════════════════════════════════════════════════╗
@@ -114,9 +112,9 @@ const FIREBASE_CONFIG = {
   ╚══════════════════════════════════════════════════════╝
 -->
 
-<!-- Firebase SDK -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-app-compat.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-database-compat.min.js"></script>
+<!-- Firebase SDK (defer = non-blocking, runs before DOMContentLoaded) -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-app-compat.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-database-compat.min.js"></script>
 
 <style>
 /* ─── Design Tokens ──────────────────────────── */
@@ -177,23 +175,25 @@ const FIREBASE_CONFIG = {
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html { height: 100%; }
 body {
+  /* 100dvh shrinks when virtual keyboard appears → input stays visible */
+  height: 100%;
+  height: 100dvh;
   background: var(--bg);
   color: var(--fg);
-  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: 15px;
   line-height: 1.5;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* ─── Setup Modal ──────────────────────────────── */
 .overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(0,0,0,.65);
   display: flex; align-items: center; justify-content: center;
   z-index: 50; padding: 20px;
 }
@@ -476,7 +476,9 @@ body {
 
 /* Scroll to bottom FAB */
 .scroll-fab {
-  position: absolute; bottom: 76px; right: 20px;
+  position: absolute;
+  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  right: 20px;
   width: 36px; height: 36px; border-radius: 50%;
   background: var(--accent); color: #fff;
   border: none; cursor: pointer;
@@ -492,6 +494,8 @@ body {
 .input-area {
   border-top: 1px solid var(--border);
   padding: 12px 16px;
+  /* iPhone notch / home indicator clearance */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   display: flex; gap: 8px; align-items: flex-end;
   flex-shrink: 0;
 }
@@ -567,12 +571,31 @@ body {
 }
 .empty-emoji { font-size: 2rem; margin-bottom: 10px; }
 
-/* Mobile */
+/* ─── Mobile ──────────────────────────────────── */
 @media (max-width: 640px) {
-  .app-wrapper { padding: 0; }
-  .chat-panel { border-radius: 0; border-left: none; border-right: none; }
+  .app-wrapper {
+    padding: 0;
+    /* Full height column */
+    height: 100%;
+  }
+  .chat-panel {
+    border-radius: 0;
+    border-left: none; border-right: none; border-top: none;
+  }
   .msg-stack { max-width: 85%; }
-  .chat-desc { display: none; }
+  .chat-desc  { display: none; }
+  /* Tighter header */
+  .chat-header { padding: 10px 14px; gap: 8px; }
+  .chat-icon   { width: 32px; height: 32px; font-size: .95rem; border-radius: 9px; }
+  .chat-title  { font-size: .9rem; }
+  .online-pill { padding: 3px 8px; font-size: .7rem; }
+  /* More breathing room in message list */
+  .messages    { padding: 12px 12px 8px; }
+  /* Reaction hover → don't hide trigger on touch */
+  .react-trigger { opacity: 1; position: static; transform: none; background: none; border: none; padding: 0 2px; }
+  .bubble-wrap   { display: flex; align-items: center; gap: 4px; }
+  .bubble-wrap .bubble { flex: 1; }
+  .msg-row.own .bubble-wrap { flex-direction: row-reverse; }
 }
 </style>
 </head>

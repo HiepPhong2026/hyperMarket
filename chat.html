@@ -482,6 +482,26 @@ body {
 .dice-name  { font-size: .78rem; opacity: .9; font-weight: 700; }
 .dice-time  { font-size: .68rem; color: var(--fg-muted); padding: 0 2px; margin-top: 2px; }
 
+/* ─── Coin flip ──────────────────────────────────────────── */
+.coin-row { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 4px; }
+.coin-row.own { flex-direction: row-reverse; }
+.coin-bubble {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 10px 20px;
+  background: linear-gradient(135deg, #B45309, #D97706);
+  border-radius: 16px; color: #fff;
+  min-width: 120px; text-align: center;
+  box-shadow: 0 2px 8px rgba(180,83,9,.35);
+}
+.coin-row.own .coin-bubble {
+  background: linear-gradient(135deg, #0369A1, #0284C7);
+  box-shadow: 0 2px 8px rgba(3,105,161,.35);
+}
+.coin-face  { font-size: 2.6rem; line-height: 1; }
+.coin-label { font-size: .8rem; opacity: .9; font-weight: 700; letter-spacing: .04em; }
+.coin-name  { font-size: .78rem; opacity: .9; font-weight: 700; }
+.coin-time  { font-size: .68rem; color: var(--fg-muted); padding: 0 2px; margin-top: 2px; }
+
 /* ─── Quiz game ──────────────────────────────────────────── */
 .quiz-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
 .quiz-row.own { flex-direction: row-reverse; }
@@ -739,7 +759,7 @@ body {
 
       <!-- Tips banner -->
       <div class="tips-banner" id="tips-banner">
-        <span>🎲 Gõ <code>/xucxac</code> lắc xúc xắc · ❓ Gõ <code>/dovui</code> ra câu đố!</span>
+        <span>🎲 <code>/xucxac</code> lắc xúc xắc · 🪙 <code>/tung</code> tung đồng xu · ❓ <code>/dovui</code> ra câu đố!</span>
         <button class="tips-close" id="tips-close" title="Ẩn">✕</button>
       </div>
 
@@ -1269,6 +1289,31 @@ function buildDiceEl(id, data, isOwn) {
   return row;
 }
 
+// ─── Coin flip element ────────────────────────────────────────────────
+function buildCoinEl(id, data, isOwn) {
+  const row = document.createElement('div');
+  row.className = 'coin-row' + (isOwn ? ' own' : '');
+  row.id = 'msg-' + id;
+  const isSap = data.result === 'sap';
+  const face  = isSap ? '🪙' : '⭕';
+  const label = isSap ? 'SẤP' : 'NGỬA';
+  const avatar = !isOwn
+    ? `<div class="msg-avatar" style="background:${escHtml(data.color)}">${escHtml(initial(data.nickname))}</div>`
+    : '';
+  row.innerHTML = `
+    ${avatar}
+    <div>
+      <div class="coin-bubble">
+        <div class="coin-name">${escHtml(data.nickname)} tung đồng xu</div>
+        <div class="coin-face">${face}</div>
+        <div class="coin-label">${label}!</div>
+      </div>
+      <div class="coin-time">${escHtml(formatTime(data.ts))}</div>
+    </div>
+  `;
+  return row;
+}
+
 // ─── Quiz element ─────────────────────────────────────────────────────
 function buildQuizEl(id, data, isOwn) {
   const row = document.createElement('div');
@@ -1368,6 +1413,7 @@ async function answerQuiz(quizId, answerIdx) {
 
 function buildMsgEl(id, data, isOwn) {
   if (data.type === 'dice') return buildDiceEl(id, data, isOwn);
+  if (data.type === 'coin') return buildCoinEl(id, data, isOwn);
   if (data.type === 'quiz') return buildQuizEl(id, data, isOwn);
 
   const row = document.createElement('div');
@@ -1570,6 +1616,25 @@ async function sendMessage() {
       });
       scrollToBottom(true);
     } catch(err) { console.error('Dice send failed:', err); }
+    finally { document.getElementById('send-btn').disabled = !textarea.value.trim(); }
+    return;
+  }
+
+  // ── Lệnh /tung ───────────────────────────────────────────
+  if (text === '/tung') {
+    textarea.value = '';
+    autoResizeTextarea(textarea);
+    document.getElementById('send-btn').disabled = true;
+    chatRef.child('typing').child(user.uuid).remove().catch(() => {});
+    const result = Math.random() < 0.5 ? 'sap' : 'ngua';
+    try {
+      await chatRef.child('messages').push({
+        uuid: user.uuid, nickname: user.nickname, color: user.color,
+        type: 'coin', result,
+        ts: firebase.database.ServerValue.TIMESTAMP,
+      });
+      scrollToBottom(true);
+    } catch(err) { console.error('Coin send failed:', err); }
     finally { document.getElementById('send-btn').disabled = !textarea.value.trim(); }
     return;
   }

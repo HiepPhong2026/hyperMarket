@@ -475,7 +475,7 @@ body {
 }
 .help-overlay[hidden] { display: none !important; }
 .help-modal {
-  background: var(--surface-1); border: 1px solid var(--border);
+  background: var(--bg); border: 1px solid var(--border);
   border-radius: 18px; padding: 24px 22px;
   width: 100%; max-width: 360px;
   box-shadow: 0 8px 40px rgba(0,0,0,.45);
@@ -489,14 +489,20 @@ body {
 .help-card-title {
   font-size: .85rem; font-weight: 800; margin-bottom: 4px; color: var(--fg);
   display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
 }
 .help-card-title code {
   background: var(--surface-2); border: 1px solid var(--border);
   border-radius: 4px; padding: 1px 7px;
   font-size: .78rem; color: #B983FF; font-family: monospace; font-weight: 700;
 }
-.help-card-body { font-size: .78rem; color: var(--fg-muted); line-height: 1.55; }
-.help-card-body li { margin-bottom: 2px; }
+.help-card-body { font-size: .78rem; color: var(--fg); opacity: .75; line-height: 1.6; }
+.help-card-body ul { margin: 4px 0 0; padding-left: 16px; }
+.help-card-body li { margin-bottom: 3px; }
+.help-card-body code {
+  background: var(--surface-2); border-radius: 3px; padding: 1px 5px;
+  font-size: .75rem; color: #B983FF; font-family: monospace;
+}
 .help-close-btn {
   width: 100%; margin-top: 14px; padding: 10px;
   background: linear-gradient(135deg,#6B46C1,#B83280);

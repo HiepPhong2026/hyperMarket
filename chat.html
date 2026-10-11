@@ -437,20 +437,21 @@ body {
 .bubble-wrap:hover .react-trigger { opacity: 1; }
 
 /* ─── Delete own message ─────────────────────────────────── */
-.delete-btn {
-  display: none;
-  position: absolute; top: 50%; transform: translateY(-50%);
-  left: -68px;
-  background: var(--surface-2); border: 1px solid var(--border);
-  border-radius: 20px; padding: 3px 8px; font-size: .78rem;
-  cursor: pointer; opacity: 0; transition: opacity .15s;
-  color: var(--fg-muted); line-height: 1; white-space: nowrap;
-  user-select: none;
+.msg-time-own-row {
+  display: flex; align-items: center; gap: 5px;
+  justify-content: flex-end; padding: 0 2px;
 }
-.msg-row.own .delete-btn { display: block; }
-.bubble-wrap:hover .delete-btn { opacity: 1; }
-@media (max-width: 640px) {
-  .msg-row.own .delete-btn { opacity: .45; }
+.delete-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: .78rem; padding: 1px 5px; border-radius: 6px;
+  color: var(--fg-muted); line-height: 1; user-select: none;
+  opacity: 0; transition: opacity .15s;
+}
+/* Desktop: hiện khi hover vào message row */
+.msg-row.own:hover .delete-btn { opacity: .8; }
+/* Mobile / touch: luôn hiển thị */
+@media (hover: none) {
+  .msg-row.own .delete-btn { opacity: .6; }
 }
 
 .del-confirm {
@@ -960,14 +961,14 @@ function buildMsgEl(id, data, isOwn) {
     ? `<div class="msg-meta"><span class="msg-name">${escHtml(data.nickname)}</span><span>${escHtml(formatTime(data.ts))}</span></div>`
     : '';
 
-  const timeOwnHtml = isOwn
-    ? `<div class="msg-time-own">${escHtml(formatTime(data.ts))}</div>`
-    : '';
-
   const reactionsHtml = buildReactionsHtml(id, data.reactions || {});
 
-  const deleteBtnHtml = isOwn
-    ? `<button class="delete-btn" title="Xoá tin nhắn" aria-label="Xoá tin nhắn">🗑</button>`
+  // Nút xoá + timestamp cùng hàng (chỉ cho tin nhắn của mình)
+  const timeOwnHtml = isOwn
+    ? `<div class="msg-time-own-row">
+        <button class="delete-btn" title="Xoá tin nhắn" aria-label="Xoá tin nhắn">🗑</button>
+        <div class="msg-time-own">${escHtml(formatTime(data.ts))}</div>
+      </div>`
     : '';
 
   const delConfirmHtml = isOwn
@@ -985,7 +986,6 @@ function buildMsgEl(id, data, isOwn) {
       <div class="bubble-wrap" data-msgid="${escHtml(id)}" data-own="${isOwn}">
         <div class="bubble">${escHtml(data.text)}</div>
         <button class="react-trigger" title="Thả cảm xúc">😊</button>
-        ${deleteBtnHtml}
       </div>
       ${delConfirmHtml}
       <div class="reactions" id="reactions-${escHtml(id)}">${reactionsHtml}</div>

@@ -436,6 +436,29 @@ body {
 .msg-row.own .react-trigger { right: auto; left: -32px; }
 .bubble-wrap:hover .react-trigger { opacity: 1; }
 
+/* ─── Dice game ──────────────────────────────────────────── */
+.dice-row {
+  display: flex; align-items: flex-end; gap: 8px;
+  margin-bottom: 4px;
+}
+.dice-row.own { flex-direction: row-reverse; }
+.dice-bubble {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 10px 18px;
+  background: linear-gradient(135deg, #6B46C1, #B83280);
+  border-radius: 16px; color: #fff;
+  min-width: 110px; text-align: center;
+  box-shadow: 0 2px 8px rgba(107,70,193,.35);
+}
+.dice-row.own .dice-bubble {
+  background: linear-gradient(135deg, #059669, #0B7B6F);
+  box-shadow: 0 2px 8px rgba(5,150,105,.35);
+}
+.dice-face { font-size: 2.4rem; line-height: 1; }
+.dice-label { font-size: .72rem; opacity: .85; font-weight: 600; letter-spacing: .03em; }
+.dice-name  { font-size: .78rem; opacity: .9; font-weight: 700; }
+.dice-time  { font-size: .68rem; color: var(--fg-muted); padding: 0 2px; margin-top: 2px; }
+
 /* ─── Delete own message ─────────────────────────────────── */
 .msg-time-own-row {
   display: flex; align-items: center; gap: 5px;
@@ -943,7 +966,33 @@ function appendToList(el) {
   list.appendChild(el);
 }
 
+const DICE_FACES = ['', '⚀','⚁','⚂','⚃','⚄','⚅'];
+
+function buildDiceEl(id, data, isOwn) {
+  const row = document.createElement('div');
+  row.className = 'dice-row' + (isOwn ? ' own' : '');
+  row.id = 'msg-' + id;
+  const face = DICE_FACES[data.value] || '🎲';
+  const avatar = !isOwn
+    ? `<div class="msg-avatar" style="background:${escHtml(data.color)}">${escHtml(initial(data.nickname))}</div>`
+    : '';
+  row.innerHTML = `
+    ${avatar}
+    <div>
+      <div class="dice-bubble">
+        <div class="dice-name">${escHtml(data.nickname)} lắc xúc xắc</div>
+        <div class="dice-face">${face}</div>
+        <div class="dice-label">Lăn được <strong>${data.value}</strong> điểm!</div>
+      </div>
+      <div class="dice-time">${escHtml(formatTime(data.ts))}</div>
+    </div>
+  `;
+  return row;
+}
+
 function buildMsgEl(id, data, isOwn) {
+  if (data.type === 'dice') return buildDiceEl(id, data, isOwn);
+
   const row = document.createElement('div');
   row.className = 'msg-row' + (isOwn ? ' own' : '');
   row.id = 'msg-' + id;
@@ -1128,6 +1177,25 @@ async function sendMessage() {
   const textarea = document.getElementById('msg-input');
   const text = textarea.value.trim();
   if (!text || !chatRef || !user) return;
+
+  // ── Lệnh /xucxac ─────────────────────────────────────────────
+  if (text === '/xucxac') {
+    textarea.value = '';
+    autoResizeTextarea(textarea);
+    document.getElementById('send-btn').disabled = true;
+    chatRef.child('typing').child(user.uuid).remove().catch(() => {});
+    const value = Math.ceil(Math.random() * 6);
+    try {
+      await chatRef.child('messages').push({
+        uuid: user.uuid, nickname: user.nickname, color: user.color,
+        type: 'dice', value,
+        ts:   firebase.database.ServerValue.TIMESTAMP,
+      });
+      scrollToBottom(true);
+    } catch(err) { console.error('Dice send failed:', err); }
+    finally { document.getElementById('send-btn').disabled = !textarea.value.trim(); }
+    return;
+  }
 
   // ── Gửi bình thường ──────────────────────────────────────────
   textarea.value = '';

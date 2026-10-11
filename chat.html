@@ -482,6 +482,37 @@ body {
 .dice-name  { font-size: .78rem; opacity: .9; font-weight: 700; }
 .dice-time  { font-size: .68rem; color: var(--fg-muted); padding: 0 2px; margin-top: 2px; }
 
+/* ─── Quiz game ──────────────────────────────────────────── */
+.quiz-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.quiz-row.own { flex-direction: row-reverse; }
+.quiz-bubble {
+  background: linear-gradient(135deg, #1A56DB, #7E3AF2);
+  border-radius: 16px; padding: 14px 16px;
+  color: #fff; min-width: 230px; max-width: 290px;
+  box-shadow: 0 2px 8px rgba(26,86,219,.35);
+}
+.quiz-asker  { font-size: .72rem; opacity: .85; font-weight: 700; margin-bottom: 8px; }
+.quiz-question { font-size: .9rem; font-weight: 700; line-height: 1.45; margin-bottom: 12px; }
+.quiz-options { display: flex; flex-direction: column; gap: 6px; }
+.quiz-opt {
+  background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.25);
+  border-radius: 10px; padding: 7px 12px;
+  font-size: .83rem; font-weight: 600; color: #fff;
+  cursor: pointer; text-align: left; font-family: inherit;
+  transition: background .15s, border-color .15s; line-height: 1.3;
+}
+.quiz-opt:hover:not(:disabled) { background: rgba(255,255,255,.28); border-color: rgba(255,255,255,.6); }
+.quiz-opt:disabled { cursor: default; opacity: .7; }
+.quiz-opt.correct { background: #16A34A !important; border-color: #22C55E !important; opacity: 1 !important; }
+.quiz-opt.wrong   { background: rgba(239,68,68,.6) !important; border-color: #EF4444 !important; opacity: 1 !important; }
+.quiz-winner-bar {
+  margin-top: 10px; padding: 7px 10px;
+  background: rgba(255,255,255,.18);
+  border-radius: 9px; font-size: .8rem;
+  text-align: center; font-weight: 700;
+}
+.quiz-time { font-size: .68rem; color: var(--fg-muted); padding: 0 2px; margin-top: 2px; }
+
 /* ─── Delete own message ─────────────────────────────────── */
 .msg-time-own-row {
   display: flex; align-items: center; gap: 5px;
@@ -708,7 +739,7 @@ body {
 
       <!-- Tips banner -->
       <div class="tips-banner" id="tips-banner">
-        <span>🎲 Gõ <code>/xucxac</code> để lắc xúc xắc cùng mọi người!</span>
+        <span>🎲 Gõ <code>/xucxac</code> lắc xúc xắc · ❓ Gõ <code>/dofvui</code> ra câu đố!</span>
         <button class="tips-close" id="tips-close" title="Ẩn">✕</button>
       </div>
 
@@ -956,7 +987,11 @@ function subscribeMessages() {
     const data = snap.val();
     if (!data) return;
     msgData.set(snap.key, data);
-    updateMsgReactions(snap.key, data.reactions || {});
+    if (data.type === 'quiz') {
+      updateQuizEl(snap.key, data);
+    } else {
+      updateMsgReactions(snap.key, data.reactions || {});
+    }
   }, onError);
 
   msgsRef.on('child_removed', (snap) => {
@@ -998,6 +1033,220 @@ function appendToList(el) {
 
 const DICE_FACES = ['', '⚀','⚁','⚂','⚃','⚄','⚅'];
 
+// ─── Quiz Bank (200 câu) ─────────────────────────────────────────────
+// Mỗi phần tử: [câu hỏi, [A,B,C,D], chỉ số đáp án đúng]
+const QUIZ_BANK = [
+  // ── Địa lý Việt Nam ──
+  ["Thủ đô của Việt Nam là gì?",["Hà Nội","Hồ Chí Minh","Đà Nẵng","Huế"],0],
+  ["Tỉnh nào có diện tích lớn nhất Việt Nam?",["Gia Lai","Nghệ An","Đắk Lắk","Sơn La"],1],
+  ["Vịnh Hạ Long nằm ở tỉnh nào?",["Hải Phòng","Quảng Ninh","Hải Dương","Thái Bình"],1],
+  ["Núi Fansipan thuộc tỉnh nào?",["Hà Giang","Lai Châu","Lào Cai","Yên Bái"],2],
+  ["Đảo lớn nhất Việt Nam là đảo nào?",["Cát Bà","Côn Đảo","Lý Sơn","Phú Quốc"],3],
+  ["Sông nào dài nhất chảy qua lãnh thổ Việt Nam?",["Sông Hồng","Sông Đà","Sông Mã","Sông Cửu Long"],3],
+  ["Vùng đồng bằng rộng nhất Việt Nam là vùng nào?",["ĐBSH","ĐBSCL","ĐB ven biển miền Trung","ĐB Thanh Hoá"],1],
+  ["Hội An nằm ở tỉnh nào?",["Quảng Ngãi","Quảng Trị","Quảng Nam","Bình Định"],2],
+  ["Tỉnh nào nằm ở cực Nam của Việt Nam?",["Kiên Giang","Bạc Liêu","Cà Mau","Sóc Trăng"],2],
+  ["Cầu Rồng nổi tiếng nằm ở thành phố nào?",["Hà Nội","Huế","Đà Nẵng","Nha Trang"],2],
+  ["Quần đảo Trường Sa thuộc tỉnh nào quản lý?",["Đà Nẵng","Bình Thuận","Khánh Hoà","Quảng Nam"],2],
+  ["Sông Hương chảy qua thành phố nào?",["Đà Nẵng","Hội An","Huế","Quảng Trị"],2],
+  ["Vườn quốc gia Cúc Phương nằm ở tỉnh nào?",["Ninh Bình","Hoà Bình","Thanh Hoá","Nam Định"],0],
+  ["Núi Bà Đen nằm ở tỉnh nào?",["Bình Dương","Đồng Nai","Long An","Tây Ninh"],3],
+  ["Thành phố Nha Trang thuộc tỉnh nào?",["Bình Định","Phú Yên","Khánh Hoà","Ninh Thuận"],2],
+  ["Vịnh nào được UNESCO công nhận là Di sản Thiên nhiên Thế giới 2 lần?",["Vịnh Nha Trang","Vịnh Hạ Long","Vịnh Lăng Cô","Vịnh Xuân Đài"],1],
+  ["Thành phố Cần Thơ nằm trên sông nào?",["Sông Tiền","Sông Hậu","Sông Đồng Nai","Sông Vàm Cỏ"],1],
+  ["Tỉnh nào có đường biên giới dài nhất với Trung Quốc?",["Lào Cai","Hà Giang","Cao Bằng","Lạng Sơn"],1],
+  ["Hang Sơn Đoòng – hang động lớn nhất thế giới – thuộc tỉnh nào?",["Hà Tĩnh","Nghệ An","Quảng Bình","Quảng Trị"],2],
+  ["Thành phố Đà Lạt nằm trên cao nguyên nào?",["Di Linh","Bảo Lộc","Lâm Viên","Mộc Châu"],2],
+  ["Thành phố Hồ Chí Minh nằm bên sông nào?",["Sông Đồng Nai","Sông Sài Gòn","Sông Vàm Cỏ","Sông Bé"],1],
+  ["Vịnh nào nổi tiếng ở Hà Nội?",["Hồ Gươm","Hồ Tây","Hồ Trúc Bạch","Hồ Thiền Quang"],1],
+  ["Tỉnh nào nằm cực Bắc của Việt Nam?",["Hà Giang","Cao Bằng","Lào Cai","Điện Biên"],0],
+  ["Thành phố nào được mệnh danh 'Thành phố ngàn thông'?",["Sa Pa","Đà Lạt","Tam Đảo","Mộc Châu"],1],
+  ["Cố đô Hoa Lư thuộc tỉnh nào?",["Nam Định","Thanh Hoá","Ninh Bình","Hà Nam"],2],
+  // ── Lịch sử Việt Nam ──
+  ["Nước Việt Nam Dân chủ Cộng hoà được thành lập năm nào?",["1944","1945","1946","1954"],1],
+  ["Chủ tịch Hồ Chí Minh đọc Tuyên ngôn Độc lập tại đâu?",["Quảng trường Ba Đình – Hà Nội","Đình Tân Trào","Chiến khu Việt Bắc","Kinh thành Huế"],0],
+  ["Chiến thắng Điện Biên Phủ diễn ra năm nào?",["1953","1954","1955","1956"],1],
+  ["Vua nào dời đô về Thăng Long năm 1010?",["Lý Thái Tổ","Lý Thái Tông","Trần Thái Tông","Lê Thái Tổ"],0],
+  ["Trận Bạch Đằng năm 938 do ai lãnh đạo?",["Đinh Bộ Lĩnh","Lê Hoàn","Ngô Quyền","Lý Công Uẩn"],2],
+  ["Nhà Trần đánh thắng quân Mông Nguyên bao nhiêu lần?",["1","2","3","4"],2],
+  ["Kinh thành Huế được xây dựng dưới triều vua nào?",["Gia Long","Minh Mạng","Thiệu Trị","Tự Đức"],0],
+  ["Hiệp định Paris về Việt Nam được ký năm nào?",["1971","1972","1973","1975"],2],
+  ["Đại thắng mùa Xuân 1975 kết thúc vào ngày nào?",["28/4","29/4","30/4","1/5"],2],
+  ["Thực dân Pháp nổ súng xâm lược Việt Nam lần đầu vào năm nào?",["1855","1857","1858","1860"],2],
+  ["Quốc hiệu đầu tiên của nước ta dưới triều Đinh là gì?",["Văn Lang","Đại Việt","Đại Cồ Việt","Đại Ngu"],2],
+  ["Ai là vị vua cuối cùng của triều Nguyễn?",["Khải Định","Bảo Đại","Hàm Nghi","Duy Tân"],1],
+  ["Thủ đô Hà Nội được giải phóng vào ngày nào?",["10/10/1954","2/9/1945","30/4/1975","21/7/1954"],0],
+  ["Việt Nam gia nhập ASEAN năm nào?",["1993","1994","1995","1997"],2],
+  ["Việt Nam gia nhập WTO năm nào?",["2005","2006","2007","2008"],2],
+  ["Sự kiện nào đánh dấu kháng chiến chống Pháp toàn quốc bắt đầu?",["19/8/1945","19/12/1946","7/5/1954","2/9/1945"],1],
+  ["Phong trào Cần Vương do ai phát động?",["Phan Bội Châu","Phan Chu Trinh","Vua Hàm Nghi","Tôn Thất Thuyết"],2],
+  ["Chiến dịch Hồ Chí Minh bắt đầu ngày nào?",["26/4/1975","27/4/1975","28/4/1975","29/4/1975"],0],
+  ["Đảng Cộng sản Việt Nam thành lập năm nào?",["1928","1929","1930","1931"],2],
+  ["Triều đại phong kiến nào tồn tại lâu nhất trong lịch sử Việt Nam?",["Nhà Lý","Nhà Trần","Nhà Lê","Nhà Nguyễn"],2],
+  ["Hai Bà Trưng khởi nghĩa chống lại ách đô hộ của triều đại nào?",["Nhà Tần","Nhà Hán","Nhà Đường","Nhà Minh"],1],
+  // ── Khoa học & Tự nhiên ──
+  ["Hành tinh nào lớn nhất trong Hệ Mặt Trời?",["Sao Thổ","Sao Mộc","Sao Thiên Vương","Sao Hải Vương"],1],
+  ["Công thức hoá học của nước là gì?",["H2O2","HO","H2O","H3O"],2],
+  ["Ánh sáng đi từ Mặt Trời đến Trái Đất mất bao lâu?",["8 giây","8 phút","8 giờ","8 ngày"],1],
+  ["Nguyên tố nào chiếm nhiều nhất trong khí quyển Trái Đất?",["Oxy","Carbon dioxide","Nitơ","Argon"],2],
+  ["Tốc độ ánh sáng trong chân không là bao nhiêu?",["300.000 km/s","150.000 km/s","30.000 km/s","3.000.000 km/s"],0],
+  ["Kim cương là dạng thù hình của nguyên tố nào?",["Silicon","Carbon","Boron","Nitrogen"],1],
+  ["Nhiệt độ sôi của nước ở điều kiện tiêu chuẩn là bao nhiêu?",["90°C","95°C","100°C","105°C"],2],
+  ["Trái Đất quay quanh Mặt Trời mất bao nhiêu ngày?",["360","364","365,25","366"],2],
+  ["Nguyên tử nhẹ nhất là của nguyên tố nào?",["Heli","Hydro","Lithi","Beri"],1],
+  ["Chất nào tạo màu đỏ cho máu?",["Hemoglobin","Myoglobin","Collagen","Keratin"],0],
+  ["Lực kéo vật về phía Trái Đất gọi là gì?",["Lực ly tâm","Lực ma sát","Lực hấp dẫn","Lực từ"],2],
+  ["Loài động vật có vú nào có thể bay?",["Chim cánh cụt","Dơi","Nhím","Chuột túi"],1],
+  ["Bao nhiêu nhiễm sắc thể trong tế bào lưỡng bội của người?",["23","44","46","48"],2],
+  ["Vitamin C còn được gọi là gì?",["Axit Citric","Axit Ascorbic","Axit Lactic","Axit Folic"],1],
+  ["Hành tinh nào gần Mặt Trời nhất?",["Kim Tinh","Trái Đất","Thuỷ Tinh","Hoả Tinh"],2],
+  ["Âm thanh không thể truyền trong môi trường nào?",["Nước","Không khí","Chân không","Kim loại"],2],
+  ["Tế bào thần kinh được gọi là gì?",["Nơron","Axon","Synap","Myelin"],0],
+  ["Ai phát minh ra bóng đèn điện?",["Benjamin Franklin","Thomas Edison","Nikola Tesla","Albert Einstein"],1],
+  ["Lực nào giữ các hành tinh quay quanh Mặt Trời?",["Lực điện từ","Lực hạt nhân","Lực hấp dẫn","Lực ly tâm"],2],
+  ["Bao nhiêu xương trong cơ thể người trưởng thành?",["186","206","226","246"],1],
+  ["Nhiệt độ cơ thể người bình thường là bao nhiêu?",["35,5°C","36°C","37°C","38°C"],2],
+  ["Kim loại nào dẫn điện tốt nhất?",["Đồng","Vàng","Nhôm","Bạc"],3],
+  ["Nguyên tố nào có ký hiệu hoá học là Au?",["Sắt","Vàng","Đồng","Bạc"],1],
+  ["Nguyên tố nào có ký hiệu là Fe?",["Đồng","Kẽm","Sắt","Chì"],2],
+  ["Cơ quan nào lọc máu trong cơ thể người?",["Gan","Phổi","Thận","Tim"],2],
+  // ── Công nghệ & Internet ──
+  ["CPU là viết tắt của từ gì?",["Central Programming Unit","Central Processing Unit","Computer Processing Unit","Core Processing Unit"],1],
+  ["Ngôn ngữ lập trình nào được tạo ra bởi Guido van Rossum?",["Java","C++","Python","Ruby"],2],
+  ["WWW viết tắt của từ gì?",["World Wide Web","Wide World Web","World Web Wide","Web World Wide"],0],
+  ["Hệ điều hành Android được phát triển bởi công ty nào?",["Apple","Microsoft","Google","Samsung"],2],
+  ["Giao thức nào dùng để gửi email?",["HTTP","FTP","SMTP","TCP"],2],
+  ["Ngôn ngữ lập trình nào được dùng nhiều nhất cho web front-end?",["Python","Java","JavaScript","PHP"],2],
+  ["RAM là viết tắt của gì?",["Read Access Memory","Random Access Memory","Read And Memory","Rapid Access Memory"],1],
+  ["Blockchain được biết đến lần đầu qua loại tiền điện tử nào?",["Ethereum","Dogecoin","Bitcoin","Litecoin"],2],
+  ["Phần mở rộng .pdf đại diện cho định dạng gì?",["Portable Document Format","Print Document File","Personal Data Format","Page Design Format"],0],
+  ["Git là công cụ dùng để làm gì?",["Biên dịch code","Quản lý phiên bản","Thiết kế giao diện","Quản lý database"],1],
+  ["SQL là ngôn ngữ dùng cho mục đích gì?",["Lập trình web","Thao tác cơ sở dữ liệu","Thiết kế đồ hoạ","Phát triển game"],1],
+  ["USB là viết tắt của gì?",["Universal Serial Bus","United Serial Bus","Universal System Board","Unified Serial Bridge"],0],
+  ["SSD khác HDD ở điểm chính nào?",["Dung lượng lớn hơn","Không có bộ phận chuyển động","Giá thành rẻ hơn","Nhỏ gọn hơn"],1],
+  ["Ngôn ngữ lập trình nào nổi tiếng với 'Write Once, Run Anywhere'?",["Python","C++","Java","Go"],2],
+  ["DNS có nghĩa là gì?",["Dynamic Network System","Domain Name System","Data Network Server","Digital Node System"],1],
+  ["HTTP là viết tắt của gì?",["HyperText Transfer Protocol","High Transfer Text Protocol","HyperText Transmission Protocol","High Text Transfer Protocol"],0],
+  ["Mạng xã hội nào có nhiều người dùng nhất thế giới?",["Instagram","X (Twitter)","Facebook","TikTok"],2],
+  ["AI là viết tắt của gì?",["Automated Intelligence","Artificial Intelligence","Advanced Integration","Automatic Interface"],1],
+  ["Thiết bị nào kết nối máy tính với mạng Internet qua đường dây điện thoại?",["Switch","Router","Modem","Hub"],2],
+  ["Ngôn ngữ lập trình nào được dùng nhiều nhất cho khoa học dữ liệu?",["Java","C#","Python","R"],2],
+  // ── Thể thao ──
+  ["Giải bóng đá lớn nhất thế giới là giải nào?",["Euro","Copa America","FIFA World Cup","Champions League"],2],
+  ["Bao nhiêu cầu thủ có trong một đội bóng đá thi đấu?",["9","10","11","12"],2],
+  ["Giải quần vợt Grand Slam nào được tổ chức ở Paris?",["Australian Open","Wimbledon","French Open","US Open"],2],
+  ["Ai được mệnh danh là 'Vua bóng đá'?",["Messi","Ronaldo","Pelé","Maradona"],2],
+  ["Vận động viên nào giữ kỷ lục thế giới 100m nam?",["Usain Bolt","Carl Lewis","Asafa Powell","Justin Gatlin"],0],
+  ["Olympic được tổ chức bao nhiêu năm một lần?",["2","4","3","5"],1],
+  ["Môn thể thao nào dùng gậy đánh bóng vào lỗ trên sân cỏ?",["Cricket","Baseball","Golf","Polo"],2],
+  ["Đội bóng đá nào vô địch World Cup nhiều nhất?",["Đức","Argentina","Brazil","Ý"],2],
+  ["Bơi lội có bao nhiêu kiểu bơi chính thức thi đấu?",["2","3","4","5"],2],
+  ["Đội tuyển Việt Nam lần đầu vô địch AFF Cup năm nào?",["2004","2006","2008","2010"],2],
+  ["Sân vận động nào là sân nhà của đội tuyển Việt Nam?",["Hàng Đẫy","Thiên Trường","Mỹ Đình","Thống Nhất"],2],
+  ["Cầu thủ nào ghi nhiều bàn thắng nhất cho ĐT Việt Nam?",["Lê Công Vinh","Nguyễn Hồng Sơn","Huỳnh Đức","Văn Quyết"],0],
+  ["Wushu là môn võ thuật của nước nào?",["Hàn Quốc","Nhật Bản","Trung Quốc","Thái Lan"],2],
+  ["Giải bóng đá Premier League thuộc nước nào?",["Tây Ban Nha","Đức","Pháp","Anh"],3],
+  ["Môn võ Aikido xuất phát từ nước nào?",["Hàn Quốc","Nhật Bản","Trung Quốc","Thái Lan"],1],
+  ["Công Phượng là cầu thủ quê ở tỉnh nào?",["Nghệ An","Hà Tĩnh","Thanh Hoá","Quảng Bình"],0],
+  ["Tây Ban Nha vô địch FIFA World Cup lần đầu năm nào?",["2006","2008","2010","2014"],2],
+  // ── Văn hoá & Giải trí ──
+  ["Nhạc sĩ nào sáng tác bài 'Tiến quân ca' (Quốc ca VN)?",["Văn Cao","Phạm Duy","Trịnh Công Sơn","Nguyễn Văn Tý"],0],
+  ["Bài hát 'Diễm Xưa' của nhạc sĩ nào?",["Trịnh Công Sơn","Phạm Duy","Văn Cao","Lam Phương"],0],
+  ["Tác phẩm 'Truyện Kiều' do ai sáng tác?",["Hồ Xuân Hương","Nguyễn Du","Đoàn Thị Điểm","Nguyễn Trãi"],1],
+  ["Ca sĩ nào được mệnh danh 'Ông hoàng nhạc pop'?",["Elvis Presley","Michael Jackson","Prince","Justin Timberlake"],1],
+  ["Ban nhạc 'The Beatles' đến từ thành phố nào?",["London","Manchester","Liverpool","Birmingham"],2],
+  ["Nhà văn nào viết truyện 'Harry Potter'?",["J.R.R Tolkien","J.K. Rowling","C.S. Lewis","Suzanne Collins"],1],
+  ["Bức tranh 'Mona Lisa' do ai vẽ?",["Michelangelo","Raphael","Leonardo da Vinci","Rembrandt"],2],
+  ["Phim 'Titanic' do đạo diễn nào thực hiện?",["Steven Spielberg","James Cameron","Christopher Nolan","Ridley Scott"],1],
+  ["Nhóm nhạc nào của Hàn Quốc nổi tiếng với bài 'Dynamite'?",["EXO","Got7","BTS","BLACKPINK"],2],
+  ["Seri truyện tranh One Piece do tác giả nào vẽ?",["Akira Toriyama","Masashi Kishimoto","Eiichiro Oda","Tite Kubo"],2],
+  ["Bộ phim hoạt hình 'Spirited Away' của đạo diễn nào?",["Hayao Miyazaki","Satoshi Kon","Mamoru Hosoda","Makoto Shinkai"],0],
+  ["Phim 'Parasite' đoạt Oscar Phim hay nhất 2020 đến từ nước nào?",["Trung Quốc","Nhật Bản","Đài Loan","Hàn Quốc"],3],
+  ["Nhân vật Doraemon đến từ năm nào trong tương lai?",["2112","2100","2050","2150"],0],
+  ["Ca sĩ Sơn Tùng M-TP sinh ra ở tỉnh nào?",["Hà Nội","Nam Định","Thái Bình","Hải Phòng"],2],
+  ["Nhà thơ nào viết bài 'Đây thôn Vĩ Dạ'?",["Xuân Diệu","Huy Cận","Hàn Mặc Tử","Tố Hữu"],2],
+  ["Tiểu thuyết 'Tắt Đèn' của ai?",["Ngô Tất Tố","Nam Cao","Vũ Trọng Phụng","Nguyên Hồng"],0],
+  ["Lễ hội Tết Nguyên Đán tính theo lịch nào?",["Dương lịch","Âm lịch","Lịch Hồi giáo","Lịch Do Thái"],1],
+  ["Bài quốc ca Việt Nam tên là gì?",["Quốc ca Việt Nam","Tiến quân ca","Diệt phát xít","Chiến sĩ Việt Nam"],1],
+  ["Game show nào có câu nói 'Đây là câu trả lời cuối cùng của bạn'?",["Ai là triệu phú?","Deal or No Deal","Ký ức vui vẻ","Chiếc nón kỳ diệu"],0],
+  ["Nhà thơ nào được xem là tác giả của 'Quốc âm thi tập'?",["Nguyễn Du","Nguyễn Trãi","Hồ Xuân Hương","Lê Thánh Tông"],1],
+  // ── Kiến thức tổng hợp ──
+  ["Quốc gia nào có dân số đông nhất thế giới?",["Ấn Độ","Trung Quốc","Mỹ","Indonesia"],0],
+  ["Quốc gia nào có diện tích lớn nhất thế giới?",["Canada","Mỹ","Trung Quốc","Nga"],3],
+  ["Đại dương nào lớn nhất thế giới?",["Đại Tây Dương","Thái Bình Dương","Ấn Độ Dương","Bắc Băng Dương"],1],
+  ["Sông nào dài nhất thế giới?",["Amazon","Mississippi","Nile","Yangtze"],2],
+  ["Núi nào cao nhất thế giới?",["K2","Kangchenjunga","Everest","Lhotse"],2],
+  ["Tháp Eiffel nằm ở nước nào?",["Ý","Anh","Pháp","Bỉ"],2],
+  ["Thủ đô của Nhật Bản là gì?",["Osaka","Kyoto","Tokyo","Nagoya"],2],
+  ["Đơn vị tiền tệ của Nhật Bản là gì?",["Won","Nhân dân tệ","Yên","Baht"],2],
+  ["Quốc gia nào có diện tích nhỏ nhất thế giới?",["Monaco","Liechtenstein","Vatican","San Marino"],2],
+  ["Đơn vị đo nhiệt độ dùng ở Mỹ là gì?",["Celsius","Kelvin","Fahrenheit","Rankine"],2],
+  ["Công thức tính diện tích hình tròn là gì?",["2πr","πr²","πd","2πr²"],1],
+  ["Số Pi (π) bằng xấp xỉ bao nhiêu?",["3,14","2,71","1,41","1,73"],0],
+  ["Đơn vị đo lực trong hệ SI là gì?",["Watt","Newton","Joule","Pascal"],1],
+  ["Quốc gia nào đầu tiên phóng vệ tinh nhân tạo vào vũ trụ?",["Mỹ","Trung Quốc","Đức","Liên Xô"],3],
+  ["Người đầu tiên đặt chân lên Mặt Trăng là ai?",["Yuri Gagarin","Buzz Aldrin","Neil Armstrong","Alan Shepard"],2],
+  ["Vĩ tuyến 0° gọi là gì?",["Kinh tuyến gốc","Đường xích đạo","Chí tuyến Bắc","Chí tuyến Nam"],1],
+  ["Chất khí nào cần thiết cho sự cháy?",["Nitơ","Cacbon dioxide","Oxy","Hydro"],2],
+  ["Đơn vị đo điện áp là gì?",["Ampe","Watt","Ohm","Volt"],3],
+  ["Bao nhiêu giây trong một giờ?",["360","3600","36000","360000"],1],
+  ["Quốc gia nào phát minh ra pháo hoa?",["Nhật Bản","Ấn Độ","Trung Quốc","Hàn Quốc"],2],
+  ["Loài chim nào không biết bay?",["Đà điểu","Vẹt","Chim sẻ","Chim bồ câu"],0],
+  ["Một tá bằng bao nhiêu?",["10","11","12","13"],2],
+  ["Màu sắc nào không có trong cầu vồng?",["Xanh lá","Tím","Hồng","Đỏ"],2],
+  ["Bao nhiêu màu trong cầu vồng?",["5","6","7","8"],2],
+  ["Phép tính 2 mũ 10 bằng bao nhiêu?",["512","1024","2048","256"],1],
+  ["Một byte bằng bao nhiêu bit?",["4","8","16","32"],1],
+  ["Ai viết 'Tuyên ngôn Cộng sản'?",["Lenin và Stalin","Marx và Engels","Roosevelt và Churchill","Napoleon và Bismarck"],1],
+  ["Quốc gia nào có nền kinh tế lớn nhất thế giới?",["Trung Quốc","Nhật Bản","Đức","Mỹ"],3],
+  ["Ai là nhà khoa học nổi tiếng với thuyết tương đối?",["Isaac Newton","Stephen Hawking","Albert Einstein","Niels Bohr"],2],
+  ["Thủ đô của Trung Quốc là gì?",["Thượng Hải","Bắc Kinh","Quảng Châu","Nam Kinh"],1],
+  ["Đơn vị tiền tệ của Mỹ là gì?",["Pound","Dollar","Euro","Franc"],1],
+  ["Ai phát hiện ra châu Mỹ năm 1492?",["Amerigo Vespucci","Ferdinand Magellan","Christopher Columbus","Vasco da Gama"],2],
+  ["Đất nước nào có hình dạng giống chiếc ủng?",["Hy Lạp","Tây Ban Nha","Ý","Bồ Đào Nha"],2],
+  ["Ngôn ngữ nào có nhiều người nói nhất thế giới?",["Tiếng Anh","Tiếng Tây Ban Nha","Tiếng Hindi","Tiếng Quan Thoại"],3],
+  ["Cơ quan nào của thực vật tổng hợp chất dinh dưỡng qua quang hợp?",["Rễ","Thân","Lá","Hoa"],2],
+  ["Vòng tuần hoàn của nước gồm bao nhiêu bước chính?",["2","3","4","5"],1],
+  ["Tơ nhện được tạo ra bởi bộ phận nào?",["Miệng","Chân","Tuyến nhả tơ ở bụng","Mắt"],2],
+  ["Máu tươi đỏ khi có nhiều gì?",["CO2","O2","N2","H2O"],1],
+  ["Quốc kỳ Việt Nam có màu gì?",["Đỏ nền vàng sao","Vàng nền đỏ sao","Đỏ trắng sao","Xanh đỏ sao"],0],
+  ["Kính hiển vi được cải tiến bởi ai vào thế kỷ 17?",["Galileo Galilei","Isaac Newton","Antonie van Leeuwenhoek","Robert Hooke"],2],
+  ["Tháp Eiffel cao bao nhiêu mét (kể cả ăng-ten)?",["300m","324m","350m","380m"],1],
+  ["Mặt Trời là ngôi sao thuộc loại nào?",["Sao lùn đỏ","Sao lùn vàng","Sao khổng lồ đỏ","Sao neutron"],1],
+  ["Loài động vật có vú nào lớn nhất thế giới?",["Cá voi xanh","Voi châu Phi","Cá mập trắng lớn","Hà mã"],0],
+  ["Thủ đô của Hàn Quốc là gì?",["Busan","Incheon","Seoul","Daegu"],2],
+  ["Thủ đô của Thái Lan là gì?",["Chiang Mai","Pattaya","Phuket","Bangkok"],3],
+  ["Đơn vị tiền tệ của Thái Lan là gì?",["Won","Ringgit","Baht","Rupiah"],2],
+  ["Sông nào chảy qua Hà Nội?",["Sông Đà","Sông Đuống","Sông Hồng","Sông Thái Bình"],2],
+  ["Quốc gia nào có số múi giờ nhiều nhất thế giới?",["Mỹ","Nga","Trung Quốc","Canada"],1],
+  ["Đường kính Trái Đất vào khoảng bao nhiêu km?",["6.371 km","12.742 km","40.075 km","1.737 km"],1],
+  ["Tốc độ âm thanh trong không khí vào khoảng bao nhiêu m/s?",["300 m/s","343 m/s","400 m/s","500 m/s"],1],
+  ["Ngôn ngữ chính thức của Brazil là gì?",["Tiếng Tây Ban Nha","Tiếng Anh","Tiếng Bồ Đào Nha","Tiếng Pháp"],2],
+  ["Thủ đô của Úc là gì?",["Sydney","Melbourne","Brisbane","Canberra"],3],
+  ["Bộ phận nào của não bộ điều khiển thăng bằng và phối hợp vận động?",["Đại não","Tiểu não","Hành não","Não giữa"],1],
+  ["Công thức tính vận tốc là gì?",["V = m×a","V = s/t","V = F/m","V = P/t"],1],
+  ["Ai là tác giả của thuyết tiến hóa?",["Gregor Mendel","Louis Pasteur","Charles Darwin","Isaac Newton"],2],
+  ["Thủ đô của Pháp là gì?",["Lyon","Marseille","Paris","Bordeaux"],2],
+  ["Thủ đô của Anh là gì?",["Manchester","Birmingham","Edinburgh","London"],3],
+  ["Thủ đô của Đức là gì?",["Hamburg","Munich","Frankfurt","Berlin"],3],
+  ["Thủ đô của Mỹ là gì?",["New York","Los Angeles","Washington D.C.","Chicago"],2],
+  ["Thủ đô của Nga là gì?",["St. Petersburg","Novosibirsk","Moscow","Yekaterinburg"],2],
+  ["Đơn vị tiền tệ chung của Liên minh châu Âu là gì?",["Franc","Pound","Euro","Mark"],2],
+  ["Khí nào gây hiệu ứng nhà kính chủ yếu?",["Oxy","Nitơ","CO2","Hydro"],2],
+  ["Loài hoa nào là quốc hoa của Việt Nam?",["Hoa sen","Hoa mai","Hoa đào","Hoa lan"],0],
+  ["Bao nhiêu múi giờ trên Trái Đất?",["12","18","24","36"],2],
+  ["Tế bào nào trong máu chịu trách nhiệm chống nhiễm trùng?",["Hồng cầu","Tiểu cầu","Bạch cầu","Huyết tương"],2],
+  ["Loài khỉ nào thông minh nhất?",["Khỉ đuôi dài","Tinh tinh","Đười ươi","Khỉ mặt đỏ"],1],
+  ["Công thức phân tử của muối ăn là gì?",["KCl","CaCl2","NaCl","MgCl2"],2],
+  ["Ngôn ngữ nào được dùng nhiều nhất ở châu Phi?",["Tiếng Ả Rập","Tiếng Anh","Tiếng Pháp","Tiếng Swahili"],0],
+  ["Tốc độ trung bình của sóng thần có thể đạt bao nhiêu km/h?",["100 km/h","300 km/h","600 km/h","900 km/h"],2],
+  ["Vitamin D cơ thể tổng hợp từ nguồn nào?",["Thức ăn","Ánh nắng mặt trời","Nước uống","Không khí"],1],
+  ["Thành Cổ Loa thuộc huyện nào của Hà Nội?",["Gia Lâm","Đông Anh","Sóc Sơn","Mê Linh"],1],
+  ["Hội nghị Diên Hồng năm 1284 được tổ chức để bàn về điều gì?",["Cải cách ruộng đất","Kháng chiến chống Mông Nguyên","Xây dựng kinh đô","Bầu vua mới"],1],
+];
+
+const localAnswered = new Set(); // quiz ids đã trả lời trong phiên này
+
 function buildDiceEl(id, data, isOwn) {
   const row = document.createElement('div');
   row.className = 'dice-row' + (isOwn ? ' own' : '');
@@ -1020,8 +1269,106 @@ function buildDiceEl(id, data, isOwn) {
   return row;
 }
 
+// ─── Quiz element ─────────────────────────────────────────────────────
+function buildQuizEl(id, data, isOwn) {
+  const row = document.createElement('div');
+  row.className = 'quiz-row' + (isOwn ? ' own' : '');
+  row.id = 'msg-' + id;
+
+  const avatar = !isOwn
+    ? `<div class="msg-avatar" style="background:${escHtml(data.color)}">${escHtml(initial(data.nickname))}</div>`
+    : '';
+
+  const optHtml = (data.options || []).map((opt, i) =>
+    `<button class="quiz-opt" data-idx="${i}">${String.fromCharCode(65+i)}. ${escHtml(opt)}</button>`
+  ).join('');
+
+  row.innerHTML = `
+    ${avatar}
+    <div>
+      <div class="quiz-bubble">
+        <div class="quiz-asker">❓ ${escHtml(data.nickname)} ra câu đố</div>
+        <div class="quiz-question">${escHtml(data.question)}</div>
+        <div class="quiz-options">${optHtml}</div>
+        <div class="quiz-winner-bar" style="display:none"></div>
+      </div>
+      <div class="quiz-time">${escHtml(formatTime(data.ts))}</div>
+    </div>
+  `;
+
+  row.querySelectorAll('.quiz-opt').forEach(btn => {
+    btn.addEventListener('click', () => answerQuiz(id, parseInt(btn.dataset.idx, 10)));
+  });
+
+  applyQuizState(row, id, data);
+  return row;
+}
+
+function applyQuizState(row, id, data) {
+  const opts = row.querySelectorAll('.quiz-opt');
+  const bar  = row.querySelector('.quiz-winner-bar');
+  const won  = data.winner;
+  const myUuid   = user?.uuid;
+  const myAnswer = data.answers?.[myUuid];
+
+  opts.forEach(btn => { btn.disabled = false; btn.className = 'quiz-opt'; });
+
+  if (won) {
+    opts.forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === data.correct) btn.classList.add('correct');
+    });
+    bar.style.display = '';
+    bar.textContent = won.uuid === myUuid
+      ? '🎉 Bạn trả lời đúng đầu tiên!'
+      : `🏆 ${won.nickname} trả lời đúng!`;
+  } else if (myAnswer !== undefined || localAnswered.has(id)) {
+    opts.forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === myAnswer) btn.classList.add('wrong');
+    });
+    bar.style.display = '';
+    bar.textContent = '❌ Sai rồi! Chờ người khác trả lời...';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function updateQuizEl(id, data) {
+  const el = msgEls.get(id);
+  if (!el) return;
+  msgData.set(id, data);
+  applyQuizState(el, id, data);
+}
+
+async function answerQuiz(quizId, answerIdx) {
+  const data = msgData.get(quizId);
+  if (!data || !user || !chatRef) return;
+  if (localAnswered.has(quizId) || data.winner) return;
+
+  localAnswered.add(quizId);
+  const el = msgEls.get(quizId);
+  el?.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+
+  if (answerIdx === data.correct) {
+    try {
+      await chatRef.child('messages').child(quizId).transaction(cur => {
+        if (!cur || cur.winner) return; // huỷ nếu đã có người thắng
+        return { ...cur, winner: { uuid: user.uuid, nickname: user.nickname, color: user.color } };
+      });
+    } catch(e) { console.error('[quiz]', e); }
+  } else {
+    try {
+      await chatRef.child('messages').child(quizId).child('answers').child(user.uuid).set(answerIdx);
+    } catch(e) { console.error('[quiz wrong]', e); }
+    if (el) applyQuizState(el, quizId,
+      { ...data, answers: { ...(data.answers || {}), [user.uuid]: answerIdx } });
+  }
+}
+
 function buildMsgEl(id, data, isOwn) {
   if (data.type === 'dice') return buildDiceEl(id, data, isOwn);
+  if (data.type === 'quiz') return buildQuizEl(id, data, isOwn);
 
   const row = document.createElement('div');
   row.className = 'msg-row' + (isOwn ? ' own' : '');
@@ -1223,6 +1570,29 @@ async function sendMessage() {
       });
       scrollToBottom(true);
     } catch(err) { console.error('Dice send failed:', err); }
+    finally { document.getElementById('send-btn').disabled = !textarea.value.trim(); }
+    return;
+  }
+
+  // ── Lệnh /dofvui ─────────────────────────────────────────
+  if (text === '/dofvui') {
+    textarea.value = '';
+    autoResizeTextarea(textarea);
+    document.getElementById('send-btn').disabled = true;
+    chatRef.child('typing').child(user.uuid).remove().catch(() => {});
+    const q = QUIZ_BANK[Math.floor(Math.random() * QUIZ_BANK.length)];
+    try {
+      await chatRef.child('messages').push({
+        uuid: user.uuid, nickname: user.nickname, color: user.color,
+        type: 'quiz',
+        question: q[0],
+        options:  q[1],
+        correct:  q[2],
+        winner:   null,
+        ts: firebase.database.ServerValue.TIMESTAMP,
+      });
+      scrollToBottom(true);
+    } catch(err) { console.error('Quiz send failed:', err); }
     finally { document.getElementById('send-btn').disabled = !textarea.value.trim(); }
     return;
   }

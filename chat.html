@@ -449,10 +449,8 @@ body {
 }
 /* Desktop: hiện khi hover vào message row */
 .msg-row.own:hover .delete-btn { opacity: .8; }
-/* Mobile / touch: luôn hiển thị */
-@media (hover: none) {
-  .msg-row.own .delete-btn { opacity: .6; }
-}
+/* Mobile / touch: luôn hiển thị (class set bằng JS) */
+html.touch .msg-row.own .delete-btn { opacity: .6; }
 
 .del-confirm {
   display: flex; align-items: center; gap: 6px;
@@ -711,6 +709,11 @@ body {
 </div>
 
 <script>
+// Detect touch device – reliable hơn @media (hover: none) trên iOS Safari
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  document.documentElement.classList.add('touch');
+}
+
 // ─── Constants ──────────────────────────────────────────────────────
 const COLORS = ['#E53E3E','#DD6B20','#D69E2E','#2F855A','#0B7B6F',
                 '#2B6CB0','#6B46C1','#B83280','#744210','#4A5568'];

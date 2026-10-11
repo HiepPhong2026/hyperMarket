@@ -401,6 +401,39 @@ body {
   border-radius: 18px 18px 4px 18px;
 }
 
+.msg-time-own-row {
+  display: flex; align-items: center; gap: 5px;
+  justify-content: flex-end; padding: 0 2px;
+}
+.delete-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: .78rem; padding: 1px 5px; border-radius: 6px;
+  color: var(--fg-muted); line-height: 1; user-select: none;
+  opacity: .45; transition: opacity .15s;
+}
+.msg-row.own:hover .delete-btn { opacity: .85; }
+.del-confirm {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .72rem; color: var(--fg-muted);
+  padding: 3px 4px; justify-content: flex-end;
+  animation: delIn .15s ease;
+}
+.del-confirm[hidden] { display: none !important; }
+@keyframes delIn { from{opacity:0;transform:translateY(-3px)} to{opacity:1;transform:none} }
+.dc-yes {
+  background: #EF4444; color: #fff; border: none;
+  border-radius: 10px; padding: 2px 11px;
+  font-size: .72rem; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: opacity .1s;
+}
+.dc-yes:hover { opacity: .85; }
+.dc-no {
+  background: none; border: 1px solid var(--border);
+  border-radius: 10px; padding: 2px 10px;
+  font-size: .72rem; cursor: pointer; font-family: inherit; color: var(--fg-muted);
+  transition: background .1s;
+}
+.dc-no:hover { background: var(--surface-2); }
 .msg-time-own {
   font-size: .7rem; color: var(--fg-muted);
   padding: 0 4px; margin-top: 1px;
@@ -944,7 +977,18 @@ function buildMsgEl(id, data, isOwn) {
     : '';
 
   const timeOwnHtml = isOwn
-    ? `<div class="msg-time-own">${escHtml(formatTime(data.ts))}</div>`
+    ? `<div class="msg-time-own-row">
+        <button class="delete-btn" title="Xoá tin nhắn" aria-label="Xoá tin nhắn">🗑</button>
+        <div class="msg-time-own">${escHtml(formatTime(data.ts))}</div>
+      </div>`
+    : '';
+
+  const delConfirmHtml = isOwn
+    ? `<div class="del-confirm" id="del-confirm-${escHtml(id)}" hidden>
+        <span>Xoá tin nhắn này?</span>
+        <button class="dc-yes">Xoá</button>
+        <button class="dc-no">Huỷ</button>
+      </div>`
     : '';
 
   const reactionsHtml = buildReactionsHtml(id, data.reactions || {});
@@ -957,6 +1001,7 @@ function buildMsgEl(id, data, isOwn) {
         <div class="bubble">${escHtml(data.text)}</div>
         <button class="react-trigger" title="Thả cảm xúc">😊</button>
       </div>
+      ${delConfirmHtml}
       <div class="reactions" id="reactions-${escHtml(id)}">${reactionsHtml}</div>
       ${timeOwnHtml}
     </div>
@@ -973,6 +1018,44 @@ function buildMsgEl(id, data, isOwn) {
     const pill = e.target.closest('.reaction-pill');
     if (pill) toggleReaction(id, pill.dataset.emoji);
   });
+
+  // Delete own message
+  if (isOwn) {
+    const deleteBtn  = row.querySelector('.delete-btn');
+    const confirmRow = row.querySelector('.del-confirm');
+    let confirmTimer = null;
+
+    function showConfirm() {
+      confirmRow.hidden = false;
+      clearTimeout(confirmTimer);
+      confirmTimer = setTimeout(() => { confirmRow.hidden = true; }, 4000);
+    }
+    function hideConfirm() {
+      clearTimeout(confirmTimer);
+      confirmRow.hidden = true;
+    }
+
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      confirmRow.hidden ? showConfirm() : hideConfirm();
+    });
+
+    confirmRow.querySelector('.dc-yes').addEventListener('click', async () => {
+      hideConfirm();
+      row.style.transition = 'opacity .22s, transform .22s';
+      row.style.opacity    = '0';
+      row.style.transform  = 'scale(.96)';
+      try {
+        await chatRef.child('messages').child(id).remove();
+      } catch (err) {
+        row.style.opacity   = '';
+        row.style.transform = '';
+        console.error('[delete]', err);
+      }
+    });
+
+    confirmRow.querySelector('.dc-no').addEventListener('click', hideConfirm);
+  }
 
   return row;
 }

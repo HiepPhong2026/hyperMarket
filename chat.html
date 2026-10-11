@@ -436,6 +436,29 @@ body {
 .msg-row.own .react-trigger { right: auto; left: -32px; }
 .bubble-wrap:hover .react-trigger { opacity: 1; }
 
+/* ─── Tips banner ────────────────────────────────────────── */
+.tips-banner {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 16px;
+  background: linear-gradient(90deg, rgba(107,70,193,.12), rgba(184,50,128,.08));
+  border-bottom: 1px solid rgba(107,70,193,.25);
+  font-size: .8rem; color: var(--fg-muted);
+  flex-shrink: 0;
+}
+.tips-banner code {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 6px;
+  font-size: .78rem; color: #B983FF; font-family: monospace;
+}
+.tips-banner[hidden] { display: none !important; }
+.tips-close {
+  margin-left: auto; background: none; border: none;
+  cursor: pointer; color: var(--fg-muted); font-size: .8rem;
+  padding: 2px 6px; border-radius: 4px; line-height: 1;
+  transition: background .15s;
+}
+.tips-close:hover { background: var(--surface-2); }
+
 /* ─── Dice game ──────────────────────────────────────────── */
 .dice-row {
   display: flex; align-items: flex-end; gap: 8px;
@@ -683,6 +706,12 @@ body {
         </div>
       </div>
 
+      <!-- Tips banner -->
+      <div class="tips-banner" id="tips-banner">
+        <span>🎲 Gõ <code>/xucxac</code> để lắc xúc xắc cùng mọi người!</span>
+        <button class="tips-close" id="tips-close" title="Ẩn">✕</button>
+      </div>
+
       <!-- Messages -->
       <div class="messages" id="messages">
         <div class="empty-state" id="empty-state">
@@ -880,6 +909,7 @@ function showApp() {
   buildEmojiPicker();
   buildInputListeners();
   buildScrollFab();
+  initTipsBanner();
 }
 
 // ─── Firebase ────────────────────────────────────────────────────────
@@ -1267,6 +1297,22 @@ function trackOnline() {
   chatRef.child('online').on('value', (snap) => {
     const count = snap.numChildren();
     document.getElementById('online-count').textContent = count;
+  });
+}
+
+// ─── Tips banner ──────────────────────────────────────────────────────
+function initTipsBanner() {
+  const banner = document.getElementById('tips-banner');
+  const closeBtn = document.getElementById('tips-close');
+  try {
+    if (localStorage.getItem('hm_tips_closed') === '1') {
+      banner.hidden = true;
+      return;
+    }
+  } catch(e) {}
+  closeBtn.addEventListener('click', () => {
+    banner.hidden = true;
+    try { localStorage.setItem('hm_tips_closed', '1'); } catch(e) {}
   });
 }
 

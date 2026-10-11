@@ -502,6 +502,42 @@ body {
 .coin-name  { font-size: .78rem; opacity: .9; font-weight: 700; }
 .coin-time  { font-size: .68rem; color: var(--fg-muted); padding: 0 2px; margin-top: 2px; }
 
+/* ─── Bingo game ─────────────────────────────────────────── */
+.bingo-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+.bingo-row.own { flex-direction: row-reverse; }
+.bingo-bubble {
+  background: linear-gradient(135deg, #7C3AED, #DB2777);
+  border-radius: 16px; padding: 14px 16px;
+  color: #fff; min-width: 260px; max-width: 300px;
+  box-shadow: 0 2px 8px rgba(124,58,237,.35);
+}
+.bingo-title { font-size: .9rem; font-weight: 800; margin-bottom: 6px; }
+.bingo-info  { font-size: .73rem; opacity: .85; margin: 3px 0; }
+.bingo-called-wrap { display: flex; flex-wrap: wrap; gap: 3px; margin: 5px 0; max-height: 62px; overflow-y: auto; }
+.bingo-chip { background: rgba(255,255,255,.2); border-radius: 20px; padding: 2px 8px; font-size: .7rem; font-weight: 700; }
+.bingo-chip.last { background: #F59E0B; color: #1a1a1a; }
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin: 8px 0; }
+.bingo-cell {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.12); border-radius: 6px;
+  font-size: .7rem; font-weight: 700;
+}
+.bingo-cell.called { background: rgba(255,255,255,.28); }
+.bingo-cell.win    { background: #F59E0B; color: #1a1a1a; }
+.bingo-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.bingo-btn {
+  background: rgba(255,255,255,.18); border: 1.5px solid rgba(255,255,255,.3);
+  border-radius: 10px; padding: 6px 12px; color: #fff; font-weight: 700;
+  font-size: .78rem; cursor: pointer; font-family: inherit; transition: background .15s;
+}
+.bingo-btn:disabled { opacity: .45; cursor: default; }
+.bingo-btn.join-btn { background: rgba(255,255,255,.3); }
+.bingo-winner-bar {
+  margin-top: 10px; padding: 8px 10px; background: rgba(255,255,255,.2);
+  border-radius: 9px; font-size: .83rem; text-align: center; font-weight: 800;
+}
+.bingo-time { font-size: .68rem; color: var(--fg-muted); padding: 0 2px; margin-top: 2px; }
+
 /* ─── Quiz game ──────────────────────────────────────────── */
 .quiz-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
 .quiz-row.own { flex-direction: row-reverse; }
@@ -759,7 +795,7 @@ body {
 
       <!-- Tips banner -->
       <div class="tips-banner" id="tips-banner">
-        <span>🎲 <code>/xucxac</code> lắc xúc xắc · 🪙 <code>/tung</code> tung đồng xu · ❓ <code>/dovui</code> ra câu đố!</span>
+        <span>🎲 <code>/xucxac</code> · 🪙 <code>/tung</code> · 🎰 <code>/bingo</code> bingo cộng đồng · ❓ <code>/dovui</code></span>
         <button class="tips-close" id="tips-close" title="Ẩn">✕</button>
       </div>
 
@@ -1007,11 +1043,9 @@ function subscribeMessages() {
     const data = snap.val();
     if (!data) return;
     msgData.set(snap.key, data);
-    if (data.type === 'quiz') {
-      updateQuizEl(snap.key, data);
-    } else {
-      updateMsgReactions(snap.key, data.reactions || {});
-    }
+    if (data.type === 'quiz')  updateQuizEl(snap.key, data);
+    else if (data.type === 'bingo') updateBingoEl(snap.key, data);
+    else updateMsgReactions(snap.key, data.reactions || {});
   }, onError);
 
   msgsRef.on('child_removed', (snap) => {
@@ -1314,6 +1348,155 @@ function buildCoinEl(id, data, isOwn) {
   return row;
 }
 
+// ─── Bingo game ───────────────────────────────────────────────────────
+function getBingoWinCells(card, called) {
+  const s = new Set(called);
+  const m = card.map(n => s.has(n));
+  const win = new Set();
+  for (let r = 0; r < 5; r++) {
+    const cells = [0,1,2,3,4].map(c => r*5+c);
+    if (cells.every(i => m[i])) cells.forEach(i => win.add(i));
+  }
+  for (let c = 0; c < 5; c++) {
+    const cells = [0,1,2,3,4].map(r => r*5+c);
+    if (cells.every(i => m[i])) cells.forEach(i => win.add(i));
+  }
+  const d1 = [0,6,12,18,24], d2 = [4,8,12,16,20];
+  if (d1.every(i => m[i])) d1.forEach(i => win.add(i));
+  if (d2.every(i => m[i])) d2.forEach(i => win.add(i));
+  return win;
+}
+
+function applyBingoState(row, id, data) {
+  const inner = row.querySelector('#bingo-inner-' + id);
+  if (!inner) return;
+  const myUuid = user?.uuid;
+  const called  = data.called || [];
+  const calledSet = new Set(called);
+  const players = data.players || {};
+  const myPlayer = players[myUuid];
+  const pCount  = Object.keys(players).length;
+  const hasWinner = !!data.winner;
+  const uncalled = 50 - called.length;
+
+  let html = `<div class="bingo-title">🎰 Bingo Cộng Đồng</div>`;
+  html += `<div class="bingo-info">Tạo bởi <strong>${escHtml(data.nickname)}</strong> · ${pCount} người tham gia</div>`;
+
+  if (called.length === 0) {
+    html += `<div class="bingo-info">Chưa rút số nào</div>`;
+  } else {
+    html += `<div class="bingo-info">Đã rút ${called.length}/50 số:</div>`;
+    html += `<div class="bingo-called-wrap">`;
+    called.forEach((n, i) => {
+      const cls = i === called.length - 1 ? 'bingo-chip last' : 'bingo-chip';
+      html += `<span class="${cls}">${n}</span>`;
+    });
+    html += `</div>`;
+  }
+
+  if (myPlayer) {
+    const card = myPlayer.card;
+    const winCells = getBingoWinCells(card, called);
+    html += `<div class="bingo-grid">`;
+    card.forEach((num, idx) => {
+      let cls = 'bingo-cell';
+      if (winCells.has(idx)) cls += ' win';
+      else if (calledSet.has(num)) cls += ' called';
+      html += `<div class="${cls}">${num}</div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="bingo-info" style="margin:8px 0;opacity:.7">Nhấn Tham gia để nhận thẻ bingo của bạn</div>`;
+  }
+
+  if (hasWinner) {
+    const isMe = data.winner.uuid === myUuid;
+    html += `<div class="bingo-winner-bar">🏆 ${isMe ? '🎉 Bạn' : escHtml(data.winner.nickname)} thắng! BINGO!</div>`;
+  } else {
+    html += `<div class="bingo-actions">`;
+    if (!myPlayer) {
+      html += `<button class="bingo-btn join-btn" onclick="joinBingo('${escHtml(id)}')">🎯 Tham gia</button>`;
+    }
+    if (uncalled > 0) {
+      html += `<button class="bingo-btn" onclick="drawBingo('${escHtml(id)}')">🎲 Rút số (còn ${uncalled})</button>`;
+    } else {
+      html += `<div class="bingo-info">Đã hết số – không ai thắng!</div>`;
+    }
+    html += `</div>`;
+  }
+
+  inner.innerHTML = html;
+}
+
+function buildBingoEl(id, data, isOwn) {
+  const row = document.createElement('div');
+  row.className = 'bingo-row' + (isOwn ? ' own' : '');
+  row.id = 'msg-' + id;
+  const avatar = !isOwn
+    ? `<div class="msg-avatar" style="background:${escHtml(data.color)}">${escHtml(initial(data.nickname))}</div>`
+    : '';
+  row.innerHTML = `
+    ${avatar}
+    <div>
+      <div class="bingo-bubble" id="bingo-inner-${id}"></div>
+      <div class="bingo-time">${escHtml(formatTime(data.ts))}</div>
+    </div>`;
+  applyBingoState(row, id, data);
+  return row;
+}
+
+function updateBingoEl(id, data) {
+  const el = msgEls.get(id);
+  if (!el) return;
+  msgData.set(id, data);
+  applyBingoState(el, id, data);
+}
+
+async function joinBingo(bingoId) {
+  if (!user) return;
+  const snap = await chatRef.child('messages').child(bingoId).once('value');
+  const data = snap.val();
+  if (!data || data.winner || data.players?.[user.uuid]) return;
+  // Shuffle 25 random unique numbers from 1-50 for the card
+  const pool = Array.from({length: 50}, (_, i) => i + 1);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const card = pool.slice(0, 25);
+  await chatRef.child('messages').child(bingoId).child('players').child(user.uuid).set({
+    nickname: user.nickname, color: user.color, card,
+  });
+}
+
+async function drawBingo(bingoId) {
+  if (!user) return;
+  await chatRef.child('messages').child(bingoId).transaction(d => {
+    if (!d || d.winner) return;
+    const called = d.called || [];
+    const calledSet = new Set(called);
+    const uncalled = [];
+    for (let i = 1; i <= 50; i++) if (!calledSet.has(i)) uncalled.push(i);
+    if (!uncalled.length) return;
+    const drawn = uncalled[Math.floor(Math.random() * uncalled.length)];
+    const newCalled = [...called, drawn];
+    const newSet = new Set(newCalled);
+    let winner = null;
+    for (const [uuid, p] of Object.entries(d.players || {})) {
+      if (winner) break;
+      const m = (p.card || []).map(n => newSet.has(n));
+      const lines = [
+        [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
+        [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],
+        [0,6,12,18,24],[4,8,12,16,20],
+      ];
+      if (lines.some(ln => ln.every(i => m[i])))
+        winner = { uuid, nickname: p.nickname, color: p.color };
+    }
+    return { ...d, called: newCalled, winner: winner || d.winner || null };
+  });
+}
+
 // ─── Quiz element ─────────────────────────────────────────────────────
 function buildQuizEl(id, data, isOwn) {
   const row = document.createElement('div');
@@ -1412,9 +1595,10 @@ async function answerQuiz(quizId, answerIdx) {
 }
 
 function buildMsgEl(id, data, isOwn) {
-  if (data.type === 'dice') return buildDiceEl(id, data, isOwn);
-  if (data.type === 'coin') return buildCoinEl(id, data, isOwn);
-  if (data.type === 'quiz') return buildQuizEl(id, data, isOwn);
+  if (data.type === 'dice')  return buildDiceEl(id, data, isOwn);
+  if (data.type === 'coin')  return buildCoinEl(id, data, isOwn);
+  if (data.type === 'bingo') return buildBingoEl(id, data, isOwn);
+  if (data.type === 'quiz')  return buildQuizEl(id, data, isOwn);
 
   const row = document.createElement('div');
   row.className = 'msg-row' + (isOwn ? ' own' : '');
@@ -1635,6 +1819,36 @@ async function sendMessage() {
       });
       scrollToBottom(true);
     } catch(err) { console.error('Coin send failed:', err); }
+    finally { document.getElementById('send-btn').disabled = !textarea.value.trim(); }
+    return;
+  }
+
+  // ── Lệnh /bingo ──────────────────────────────────────────
+  if (text === '/bingo') {
+    textarea.value = '';
+    autoResizeTextarea(textarea);
+    document.getElementById('send-btn').disabled = true;
+    chatRef.child('typing').child(user.uuid).remove().catch(() => {});
+    // Creator auto-joins với card của mình
+    const pool = Array.from({length: 50}, (_, i) => i + 1);
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const card = pool.slice(0, 25);
+    try {
+      await chatRef.child('messages').push({
+        uuid: user.uuid, nickname: user.nickname, color: user.color,
+        type: 'bingo',
+        called: [],
+        winner: null,
+        players: {
+          [user.uuid]: { nickname: user.nickname, color: user.color, card },
+        },
+        ts: firebase.database.ServerValue.TIMESTAMP,
+      });
+      scrollToBottom(true);
+    } catch(err) { console.error('Bingo send failed:', err); }
     finally { document.getElementById('send-btn').disabled = !textarea.value.trim(); }
     return;
   }

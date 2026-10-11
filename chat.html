@@ -567,45 +567,6 @@ body {
 }
 .empty-emoji { font-size: 2rem; margin-bottom: 10px; }
 
-/* ─── Filter Warning Banner ─────────────────────────── */
-.filter-warning {
-  margin: 0 16px 8px;
-  padding: 9px 14px;
-  border-radius: var(--r-sm);
-  font-size: .82rem; font-weight: 600;
-  display: flex; align-items: center; gap: 8px;
-  animation: warnIn .2s ease;
-  flex-shrink: 0;
-}
-.filter-warning[hidden] { display: none !important; }
-@keyframes warnIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: none; }
-}
-.filter-warn {
-  background: #FFF8E1;
-  border-left: 4px solid #F59E0B;
-  color: #92400E;
-}
-.filter-block {
-  background: #FEF2F2;
-  border-left: 4px solid #EF4444;
-  color: #991B1B;
-}
-.filter-mute {
-  background: #F5F3FF;
-  border-left: 4px solid #8B5CF6;
-  color: #5B21B6;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .filter-warn  { background:#2D2208; color:#FCD34D; border-color:#D97706; }
-  :root:not([data-theme="light"]) .filter-block { background:#2D0A0A; color:#FCA5A5; border-color:#DC2626; }
-  :root:not([data-theme="light"]) .filter-mute  { background:#1E0A2E; color:#C4B5FD; border-color:#7C3AED; }
-}
-:root[data-theme="dark"] .filter-warn  { background:#2D2208; color:#FCD34D; border-color:#D97706; }
-:root[data-theme="dark"] .filter-block { background:#2D0A0A; color:#FCA5A5; border-color:#DC2626; }
-:root[data-theme="dark"] .filter-mute  { background:#1E0A2E; color:#C4B5FD; border-color:#7C3AED; }
-
 /* Mobile */
 @media (max-width: 640px) {
   .app-wrapper { padding: 0; }
@@ -676,9 +637,6 @@ body {
         <div class="typing-dots"><span></span><span></span><span></span></div>
         <span id="typing-text"></span>
       </div>
-
-      <!-- Filter Warning -->
-      <div class="filter-warning" id="filter-warning" hidden></div>
 
       <!-- Input -->
       <div class="input-area">
@@ -863,7 +821,6 @@ function showApp() {
   buildEmojiPicker();
   buildInputListeners();
   buildScrollFab();
-  checkMuteOnLoad(); // Kiểm tra mute còn hiệu lực từ phiên trước
 }
 
 // ─── Firebase ────────────────────────────────────────────────────────
@@ -1078,175 +1035,11 @@ function toggleReaction(msgId, emoji) {
   else            reactionRef.set(true);
 }
 
-// ─── Profanity Filter ────────────────────────────────────────────────────
-const PROFANITY = (() => {
-  // Danh sách từ cấm (lowercase, tiếng Việt + tiếng Anh)
-  const BANNED = [
-    // Tiếng Việt — chửi thề & xúc phạm
-    'đụ','địt','đéo','lồn','cặc','buồi','chịch',
-    'đm','đmm','đmcs','clm','vkl','vcl','đcm','wtf',
-    'đĩ','điếm','thằng chó','con chó','óc chó',
-    'mất dạy','khốn nạn','địt mẹ','đụ má','đụ mẹ',
-    'cứt','ỉa',
-    // Tiếng Anh
-    'fuck','fck','fuk','fuq',
-    'shit','sh1t','sh!t',
-    'bitch','b1tch','b!tch',
-    'dick','d1ck','cock',
-    'pussy','cunt',
-    'asshole','bastard','whore','slut',
-    'nigger','nigga',
-  ];
-
-  // Bản đồ ký tự thay thế (leet speak + dấu tiếng Việt)
-  const CMAP = {
-    '@':'a','4':'a','á':'a','à':'a','ả':'a','ã':'a','ạ':'a','â':'a','ă':'a',
-    '0':'o','ó':'o','ò':'o','ỏ':'o','õ':'o','ọ':'o','ô':'o','ơ':'o',
-    '1':'i','!':'i','|':'i','í':'i','ì':'i','ỉ':'i','ĩ':'i','ị':'i',
-    '3':'e','é':'e','è':'e','ẻ':'e','ẽ':'e','ẹ':'e','ê':'e',
-    '5':'s','$':'s',
-    '7':'t','+':'t',
-    '8':'b',
-    '9':'g',
-    'đ':'d',
-    'ú':'u','ù':'u','ủ':'u','ũ':'u','ụ':'u','ư':'u',
-    'ý':'y','ỳ':'y','ỷ':'y','ỹ':'y','ỵ':'y',
-  };
-
-  function normalize(text) {
-    let s = text.toLowerCase();
-    for (const [c, r] of Object.entries(CMAP)) s = s.split(c).join(r);
-    s = s.replace(/[^a-z0-9 ]/g, ''); // bỏ ký tự lạ còn lại
-    s = s.replace(/(.)\1{2,}/g, '$1$1'); // "fuuuck" → "fuuck"
-    return s;
-  }
-
-  function check(text) {
-    const norm  = normalize(text);
-    const nosp  = norm.replace(/ /g, '');
-    const found = BANNED.filter(w => {
-      const nw = normalize(w);
-      return norm.includes(nw) || nosp.includes(nw);
-    });
-    return { clean: found.length === 0, found };
-  }
-
-  return { check };
-})();
-
-// Trạng thái vi phạm (lưu localStorage để persist khi reload)
-const filterState = (() => {
-  const KEY = 'hm_filter_v';
-  const def = () => ({ count: 0, mutedUntil: 0 });
-  const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null') || def(); } catch(e) { return def(); } };
-  const save = s => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e) {} };
-  return {
-    get:       ()    => load(),
-    increment: ()    => { const s = load(); s.count++; save(s); return s; },
-    setMute:   until => { const s = load(); s.mutedUntil = until; save(s); return s; },
-    reset:     ()    => save(def()),
-  };
-})();
-
-const MUTE_MS = 5 * 60 * 1000; // 5 phút
-let muteTimer = null;
-
-function showFilterWarning(msg, type) {
-  const el = document.getElementById('filter-warning');
-  el.className = 'filter-warning filter-' + type;
-  el.textContent = msg;
-  el.hidden = false;
-  if (type === 'warn') {
-    clearTimeout(el._autoHide);
-    el._autoHide = setTimeout(clearFilterWarning, 4500);
-  }
-}
-
-function clearFilterWarning() {
-  const el = document.getElementById('filter-warning');
-  if (el) el.hidden = true;
-  if (muteTimer) { clearInterval(muteTimer); muteTimer = null; }
-}
-
-function startMuteCountdown(until) {
-  const textarea = document.getElementById('msg-input');
-  const sendBtn  = document.getElementById('send-btn');
-  if (textarea) textarea.disabled = true;
-  if (sendBtn)  sendBtn.disabled  = true;
-
-  const tick = () => {
-    const left = Math.ceil((until - Date.now()) / 1000);
-    if (left <= 0) {
-      clearFilterWarning();
-      if (textarea) { textarea.disabled = false; textarea.focus(); }
-      if (sendBtn)  sendBtn.disabled = !textarea?.value.trim();
-      return;
-    }
-    const m = Math.floor(left / 60), s = left % 60;
-    showFilterWarning(
-      '⛔ Bạn bị tạm khoả chat' + (m ? ' ' + m + ' phút' : '') + ' ' + s + ' giây do vi phạm nhiều lần.',
-      'mute'
-    );
-  };
-
-  clearInterval(muteTimer);
-  tick();
-  muteTimer = setInterval(tick, 1000);
-}
-
-// Kiểm tra khi vừa vào trang (có thể vẫn đang bị mute từ phiên trước)
-function checkMuteOnLoad() {
-  const s = filterState.get();
-  if (s.mutedUntil && Date.now() < s.mutedUntil) {
-    startMuteCountdown(s.mutedUntil);
-  }
-}
-
 // ─── Send message ────────────────────────────────────────────────────
 async function sendMessage() {
   const textarea = document.getElementById('msg-input');
   const text = textarea.value.trim();
   if (!text || !chatRef || !user) return;
-
-  // ── Kiểm tra mute ────────────────────────────────────────────
-  const fState = filterState.get();
-  if (fState.mutedUntil && Date.now() < fState.mutedUntil) {
-    startMuteCountdown(fState.mutedUntil);
-    return;
-  }
-
-  // ── Kiểm tra từ ngữ ──────────────────────────────────────────
-  const { clean } = PROFANITY.check(text);
-  if (!clean) {
-    const s = filterState.increment();
-
-    if (s.count >= 5) {
-      // Mute 5 phút
-      const until = Date.now() + MUTE_MS;
-      filterState.setMute(until);
-      textarea.value = '';
-      autoResizeTextarea(textarea);
-      document.getElementById('send-btn').disabled = true;
-      startMuteCountdown(until);
-      return;
-    }
-
-    if (s.count >= 3) {
-      // Chặn hoàn toàn, xoá tin nhắn
-      showFilterWarning('🚫 Tin nhắn bị chặn. Vui lòng không dùng ngôn từ không phù hợp.', 'block');
-      textarea.value = '';
-      autoResizeTextarea(textarea);
-      document.getElementById('send-btn').disabled = true;
-      return;
-    }
-
-    // Cảnh báo, giữ nguyên nội dung để user sửa
-    showFilterWarning('⚠️ Tin nhắn chứa ngôn từ không phù hợp (cảnh báo ' + s.count + '/2). Hãy chỉnh sửa trước khi gửi.', 'warn');
-    return;
-  }
-
-  // Tin nhắn sạch → bỏ cảnh báo cũ nếu có
-  clearFilterWarning();
 
   // ── Gửi bình thường ──────────────────────────────────────────
   textarea.value = '';

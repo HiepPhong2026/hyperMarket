@@ -78,7 +78,8 @@
 }
 </script>
 
-<script>window.location.replace('chat.html');</script>
+<!-- Fallback redirect nếu Firebase rewrite không hoạt động -->
+<script>if(!window.__firebase_rewrite)window.location.replace('chat.html');</script>
 </head>
 <body></body>
 </html>

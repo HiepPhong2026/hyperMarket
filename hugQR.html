@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hugQR – Tạo QR Chuyển Khoản Ngân Hàng</title>
+<meta name="description" content="Tải ảnh lên, nhận diện thông tin ngân hàng tự động và tạo mã QR VietQR chuẩn để chia sẻ">
+<meta name="theme-color" content="#0078D4">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+
+<style>
+/* =============================================
+   DESIGN TOKENS – matching HugMass style
+   ============================================= */
+:root {
+  --bg:        #F2F2F2;
+  --surface:   #FFFFFF;
+  --surface-2: #F5F5F5;
+  --surface-3: #EBEBEB;
+  --border:    #D6D6D6;
+  --border-focus: #0078D4;
+  --fg:        #1F1F1F;
+  --fg-muted:  #616161;
+  --fg-subtle: #8A8A8A;
+  --accent:    #0078D4;
+  --accent-2:  #106EBE;
+  --accent-light: rgba(0,120,212,0.08);
+  --success:   #107C10;
+  --success-bg: #F1FAF1;
+  --warning:   #CA5010;
+  --danger:    #D13438;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow:    0 2px 8px rgba(0,0,0,0.09);
+  --shadow-lg: 0 4px 20px rgba(0,0,0,0.12);
+  --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #141414;
+    --surface:   #1E1E1E;
+    --surface-2: #252525;
+    --surface-3: #2E2E2E;
+    --border:    #3A3A3A;
+    --fg:        #E8E8E8;
+    --fg-muted:  #9A9A9A;
+    --fg-subtle: #707070;
+    --accent-light: rgba(0,120,212,0.15);
+    --success-bg: #0F2A0F;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow:    0 2px 8px rgba(0,0,0,0.4);
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ─── Header ─── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: var(--shadow-sm);
+}
+.header-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--fg);
+}
+.logo-badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--fg-muted);
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: var(--r-sm);
+  transition: background .15s, color .15s;
+}
+.nav-link:hover { background: var(--surface-3); color: var(--fg); }
+
+/* ─── Main ─── */
+.main {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+/* ─── Page Hero ─── */
+.page-hero {
+  margin-bottom: 28px;
+}
+.page-hero h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 4px;
+}
+.page-hero p {
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+.page-hero .badge-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.chip-blue { color: var(--accent); border-color: rgba(0,120,212,0.3); background: var(--accent-light); }
+.chip-green { color: var(--success); border-color: rgba(16,124,16,0.3); background: var(--success-bg); }
+
+/* ─── Grid ─── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 720px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* ─── Card ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.card-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--surface-2);
+}
+.card-body { padding: 18px; }
+
+/* ─── Upload Zone ─── */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--r-md);
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 180px;
+  justify-content: center;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.upload-icon { font-size: 36px; }
+.upload-title { font-size: 14px; font-weight: 500; }
+.upload-title span { color: var(--accent); }
+.upload-sub { font-size: 12px; color: var(--fg-subtle); }
+
+/* Image preview */
+.img-preview-wrap {
+  display: none;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.img-preview-wrap.show { display: block; }
+.img-preview-wrap img {
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  background: var(--surface-2);
+  display: block;
+}
+.img-preview-actions {
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+}
+
+/* OCR progress */
+.ocr-box {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+.ocr-box.show { display: block; }
+.ocr-label { font-size: 13px; color: var(--fg-muted); margin-bottom: 8px; }
+.ocr-bar-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.ocr-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width .3s ease;
+  border-radius: 2px;
+}
+
+/* Alert banners */
+.alert {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  margin-top: 10px;
+}
+.alert.show { display: flex; }
+.alert-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16,124,16,0.25); }
+.alert-info { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(0,120,212,0.25); }
+.alert-warn { background: #FFF4E5; color: var(--warning); border: 1px solid rgba(202,80,16,0.25); }
+
+/* ─── Form ─── */
+.form-group { margin-bottom: 14px; }
+.form-group:last-child { margin-bottom: 0; }
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-muted);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.req { color: var(--danger); }
+.form-input {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 14px;
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+}
+.form-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(0,120,212,0.12);
+}
+.form-input::placeholder { color: var(--fg-subtle); }
+
+/* Bank picker */
+.bank-picker { position: relative; }
+.bank-picker-input-wrap { position: relative; }
+.bank-picker-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+}
+.bank-picker-input { padding-left: 34px !important; }
+.bank-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 100;
+}
+.bank-dropdown.open { display: block; }
+.bank-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .1s;
+}
+.bank-opt:hover, .bank-opt.focused { background: var(--surface-2); }
+.bank-opt-code {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 12px;
+  min-width: 56px;
+  font-variant-numeric: tabular-nums;
+}
+.bank-opt-name { color: var(--fg); }
+.bank-opt-full { color: var(--fg-subtle); font-size: 11px; }
+.bank-selected-display {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--accent-light);
+  border: 1px solid rgba(0,120,212,0.3);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: 14px;
+}
+.bank-selected-display.show { display: flex; }
+.bank-clear {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--fg-subtle);
+  font-weight: 500;
+}
+.bank-selected-display:hover .bank-clear { color: var(--danger); }
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background .15s, transform .1s, box-shadow .15s;
+  user-select: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.45; pointer-events: none; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-2); box-shadow: 0 2px 10px rgba(0,120,212,0.3); }
+.btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--surface-3); }
+.btn-danger-ghost { background: transparent; color: var(--danger); border: 1px solid rgba(209,52,56,0.3); }
+.btn-danger-ghost:hover { background: rgba(209,52,56,0.06); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #0B6A0B; }
+.btn-full { width: 100%; }
+.btn-lg { padding: 11px 22px; font-size: 14px; }
+
+/* ─── QR Output ─── */
+.qr-section { display: none; margin-top: 24px; }
+.qr-section.show { display: block; }
+
+.qr-card-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qr-visual-card {
+  background: #fff;
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 320px;
+  width: 100%;
+}
+.qr-visual-card .qr-logo {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.qr-canvas-wrap {
+  border: 3px solid #F0F0F0;
+  border-radius: 8px;
+  overflow: hidden;
+  line-height: 0;
+}
+img#qrCanvas { display: block; }
+.qr-bank-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.qr-account-no {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #1A1A1A;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.qr-owner-name {
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+  text-align: center;
+}
+.qr-amount-badge {
+  font-size: 12px;
+  background: #F0F7FF;
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+.qr-scan-hint {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+}
+
+/* QR actions */
+.qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* VietQR template image */
+.vietqr-template-wrap {
+  margin-top: 12px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.vietqr-template-wrap img {
+  max-width: 320px;
+  width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+.template-label {
+  font-size: 11px;
+  color: var(--fg-subtle);
+  padding: 6px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+}
+
+/* ─── How-to steps ─── */
+.how-to { margin-top: 48px; }
+.how-to-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--fg); }
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 720px) { .steps-grid { grid-template-columns: repeat(2, 1fr); } }
+.step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px;
+  text-align: center;
+}
+.step-num {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 auto 10px;
+}
+.step-icon { font-size: 22px; margin-bottom: 8px; }
+.step-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+.step-desc { font-size: 12px; color: var(--fg-muted); line-height: 1.5; }
+
+/* ─── Footer ─── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 60px;
+  background: var(--surface);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+
+/* ─── Misc ─── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+.no-ocr-hint {
+  font-size: 12px;
+  color: var(--fg-subtle);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Format number input */
+.form-input[type="number"] { -moz-appearance: textfield; }
+.form-input::-webkit-outer-spin-button,
+.form-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .page-hero h1 { font-size: 20px; }
+  .qr-actions { flex-direction: column; align-items: stretch; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════ HEADER ════ -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <span>hug</span><span style="color:var(--accent)">QR</span>
+      <span class="logo-badge">BETA</span>
+    </a>
+    <a class="nav-link" href="index.html">
+      ← HugMass
+    </a>
+  </div>
+</header>
+
+<!-- ════ MAIN ════ -->
+<main class="main">
+
+  <!-- Hero -->
+  <div class="page-hero">
+    <h1>🏦 Tạo Mã QR Chuyển Khoản</h1>
+    <p>Tải ảnh lên → Nhận diện thông tin → Tạo QR VietQR chuẩn → Tải về &amp; Chia sẻ</p>
+    <div class="badge-row">
+      <span class="chip chip-blue">⚡ VietQR Chuẩn</span>
+      <span class="chip chip-blue">🤖 OCR Tự Động</span>
+      <span class="chip chip-green">✓ 30+ Ngân Hàng</span>
+      <span class="chip chip-green">✓ Miễn Phí</span>
+    </div>
+  </div>
+
+  <!-- ── Two-column: Upload + Form ── -->
+  <div class="grid-2">
+
+    <!-- LEFT: Image Upload -->
+    <div class="card">
+      <div class="card-head">
+        📷 Tải Ảnh Lên
+        <span class="chip chip-blue" style="margin-left:auto">Tùy chọn</span>
+      </div>
+      <div class="card-body">
+
+        <!-- Upload dropzone (visible before image) -->
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(this.files[0])">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-title"><span>Nhấn để chọn ảnh</span> hoặc kéo thả</div>
+          <div class="upload-sub">Ảnh sổ TK, screenshot app, thẻ ngân hàng...</div>
+          <div class="upload-sub">PNG · JPG · WEBP · tối đa 10MB</div>
+        </div>
+
+        <!-- Image preview (visible after upload) -->
+        <div class="img-preview-wrap" id="previewWrap">
+          <img id="previewImg" src="" alt="Ảnh đã tải">
+          <div class="img-preview-actions">
+            <button class="btn btn-primary" id="ocrBtn" onclick="startOCR()">
+              🔍 Nhận diện tự động
+            </button>
+            <button class="btn btn-ghost" onclick="clearImage()">
+              ✕ Xóa ảnh
+            </button>
+          </div>
+        </div>
+
+        <!-- OCR Progress -->
+        <div class="ocr-box" id="ocrBox">
+          <div class="ocr-label" id="ocrLabel">Đang tải thư viện OCR...</div>
+          <div class="ocr-bar-track"><div class="ocr-bar-fill" id="ocrFill"></div></div>
+        </div>
+
+        <!-- Result alerts -->
+        <div class="alert alert-success" id="alertOcrOk">✅ Nhận diện xong! Kiểm tra thông tin bên phải và điều chỉnh nếu cần.</div>
+        <div class="alert alert-info" id="alertOcrPartial">ℹ️ Nhận diện một phần. Vui lòng bổ sung thông tin còn thiếu.</div>
+        <div class="alert alert-warn" id="alertOcrFail">⚠️ Không nhận diện được. Hãy nhập thủ công bên phải.</div>
+
+        <p class="no-ocr-hint" id="noOcrHint">
+          💡 <strong>Mẹo:</strong> Ảnh rõ nét, đủ sáng sẽ cho kết quả nhận diện tốt hơn. Bạn cũng có thể tự nhập thông tin mà không cần tải ảnh.
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT: Form -->
+    <div class="card">
+      <div class="card-head">📋 Thông Tin Tài Khoản</div>
+      <div class="card-body">
+
+        <!-- Bank Picker -->
+        <div class="form-group">
+          <label class="form-label">Ngân hàng <span class="req">*</span></label>
+          <div class="bank-picker">
+            <!-- Search input (visible when no bank selected) -->
+            <div class="bank-picker-input-wrap" id="bankInputWrap">
+              <span class="bank-picker-icon">🏦</span>
+              <input type="text" class="form-input bank-picker-input" id="bankSearch"
+                placeholder="Tìm ngân hàng..."
+                autocomplete="off"
+                oninput="filterBanks(this.value)"
+                onfocus="openBankDropdown()"
+              >
+              <div class="bank-dropdown" id="bankDropdown"></div>
+            </div>
+            <!-- Selected bank display -->
+            <div class="bank-selected-display" id="bankSelectedDisplay" onclick="clearBankSelection()">
+              <span id="bankSelEmoji">🏦</span>
+              <span>
+                <strong id="bankSelCode"></strong>
+                &nbsp;–&nbsp;
+                <span id="bankSelName"></span>
+              </span>
+              <span class="bank-clear">✕ đổi</span>
+            </div>
+          </div>
+          <input type="hidden" id="bankCode">
+          <input type="hidden" id="bankBin">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Số tài khoản <span class="req">*</span></label>
+          <input type="text" class="form-input" id="accountNo"
+            placeholder="VD: 0123456789"
+            inputmode="numeric"
+            maxlength="30"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tên chủ tài khoản <span class="req">*</span></label>
+          <input type="text" class="form-input" id="accountName"
+            placeholder="VD: NGUYEN VAN AN"
+            maxlength="50"
+            style="text-transform:uppercase"
+          >
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-group">
+          <label class="form-label">Số tiền (không bắt buộc)</label>
+          <input type="text" class="form-input" id="amount"
+            placeholder="VD: 100000"
+            inputmode="numeric"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nội dung chuyển khoản (không bắt buộc)</label>
+          <input type="text" class="form-input" id="noteField"
+            placeholder="VD: Thanh toan don hang 01"
+            maxlength="50"
+          >
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg" id="generateBtn" onclick="generateQR()">
+          ⚡ Tạo Mã QR VietQR
+        </button>
+
+        <div class="alert alert-warn" id="alertFormErr" style="margin-top:10px">
+          <span id="alertFormErrMsg">Vui lòng điền đầy đủ thông tin bắt buộc.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── QR Output Section ── -->
+  <div class="qr-section" id="qrSection">
+    <div class="card">
+      <div class="card-head">
+        ✅ Mã QR Đã Tạo
+        <span class="chip chip-green" style="margin-left:auto">Sẵn sàng chia sẻ</span>
+      </div>
+      <div class="card-body">
+        <div class="qr-card-wrap">
+
+          <!-- Local QR card (for download) -->
+          <div class="qr-visual-card" id="qrVisualCard">
+            <div class="qr-logo">hugQR · VietQR</div>
+            <div class="qr-canvas-wrap">
+              <img id="qrCanvas" alt="QR Code" style="width:240px;height:240px;display:block;border-radius:6px;object-fit:contain">
+            </div>
+            <div class="qr-bank-tag">
+              <span id="qrBankEmoji">🏦</span>
+              <span id="qrBankLabel"></span>
+            </div>
+            <div class="qr-account-no" id="qrAccNo"></div>
+            <div class="qr-owner-name" id="qrOwnerName"></div>
+            <div class="qr-amount-badge" id="qrAmountBadge" style="display:none"></div>
+            <div class="qr-scan-hint">Quét mã để chuyển khoản nhanh</div>
+          </div>
+
+          <!-- Actions -->
+          <div class="qr-actions">
+            <button class="btn btn-success btn-lg" onclick="downloadQR()">
+              ⬇️ Tải xuống PNG
+            </button>
+            <button class="btn btn-ghost btn-lg" onclick="copyQR()">
+              📋 Sao chép QR
+            </button>
+            <button class="btn btn-ghost btn-lg" id="shareBtn" onclick="shareQR()" style="display:none">
+              📤 Chia sẻ
+            </button>
+          </div>
+
+          <div class="alert alert-success" id="alertCopied">✅ Đã sao chép QR vào clipboard!</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── How To ── -->
+  <div class="how-to">
+    <div class="how-to-title">Cách sử dụng</div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-icon">🖼️</div>
+        <div class="step-title">Tải ảnh lên</div>
+        <div class="step-desc">Chụp ảnh sổ tài khoản, screenshot app banking, hoặc bỏ qua và nhập tay</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-icon">🤖</div>
+        <div class="step-title">Nhận diện tự động</div>
+        <div class="step-desc">AI đọc số tài khoản, tên ngân hàng và tên chủ tài khoản từ ảnh</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-icon">✏️</div>
+        <div class="step-title">Kiểm tra &amp; điền</div>
+        <div class="step-desc">Xem lại thông tin, chỉnh sửa nếu cần, thêm số tiền và nội dung</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-icon">📲</div>
+        <div class="step-title">Tải QR &amp; chia sẻ</div>
+        <div class="step-desc">Tải về PNG chuẩn VietQR, khách quét để chuyển khoản ngay</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>hugQR bởi <a href="index.html">HugMass</a> · Công cụ tạo QR VietQR miễn phí · Mã QR theo chuẩn NAPAS &amp; EMVCo</p>
+</footer>
+
+
+<script>
+/* ================================================
+   hugQR – Main Script
+   ================================================ */
+
+// ── Bank Database ──
+const BANKS = [
+  { code:'VCB',  name:'Vietcombank',      full:'Ngân hàng Ngoại Thương Việt Nam',          bin:'970436', emoji:'🟢' },
+  { code:'BIDV', name:'BIDV',             full:'Ngân hàng Đầu tư và Phát triển Việt Nam',  bin:'970418', emoji:'🔵' },
+  { code:'VTB',  name:'VietinBank',       full:'Ngân hàng Công Thương Việt Nam',            bin:'970415', emoji:'🔴' },
+  { code:'AGR',  name:'Agribank',         full:'Ngân hàng Nông nghiệp &amp; PTNT',          bin:'970405', emoji:'🟡' },
+  { code:'MB',   name:'MB Bank',          full:'Ngân hàng Quân đội',                        bin:'970422', emoji:'⚫' },
+  { code:'TCB',  name:'Techcombank',      full:'Ngân hàng Kỹ Thương Việt Nam',              bin:'970407', emoji:'🔴' },
+  { code:'ACB',  name:'ACB',              full:'Ngân hàng Á Châu',                          bin:'970416', emoji:'🔵' },
+  { code:'VPB',  name:'VPBank',           full:'Ngân hàng Việt Nam Thịnh Vượng',            bin:'970432', emoji:'🟢' },
+  { code:'TPB',  name:'TPBank',           full:'Ngân hàng Tiên Phong',                      bin:'970423', emoji:'🟣' },
+  { code:'STB',  name:'Sacombank',        full:'Ngân hàng Sài Gòn Thương Tín',              bin:'970403', emoji:'🔵' },
+  { code:'SHB',  name:'SHB',              full:'Ngân hàng Sài Gòn – Hà Nội',               bin:'970443', emoji:'🟤' },
+  { code:'LPB',  name:'LienVietPostBank', full:'Ngân hàng Bưu điện Liên Việt',              bin:'970449', emoji:'🔴' },
+  { code:'OCB',  name:'OCB',              full:'Ngân hàng Phương Đông',                     bin:'970448', emoji:'🟠' },
+  { code:'VIB',  name:'VIB',              full:'Ngân hàng Quốc tế',                         bin:'970441', emoji:'🟢' },
+  { code:'MSB',  name:'MSB',              full:'Ngân hàng Hàng Hải',                        bin:'970426', emoji:'🟡' },
+  { code:'HDB',  name:'HDBank',           full:'Ngân hàng Phát triển TP.HCM',               bin:'970437', emoji:'🔵' },
+  { code:'SCB',  name:'SCB',              full:'Ngân hàng Sài Gòn',                         bin:'970429', emoji:'🔴' },
+  { code:'EIB',  name:'Eximbank',         full:'Ngân hàng Xuất Nhập Khẩu',                  bin:'970431', emoji:'🔵' },
+  { code:'NCB',  name:'NCB',              full:'Ngân hàng Quốc Dân',                        bin:'970419', emoji:'⚫' },
+  { code:'BAB',  name:'BacABank',         full:'Ngân hàng Bắc Á',                           bin:'970409', emoji:'🔴' },
+  { code:'KLB',  name:'KienlongBank',     full:'Ngân hàng Kiên Long',                       bin:'970452', emoji:'🟢' },
+  { code:'PGB',  name:'PGBank',           full:'Ngân hàng Xăng dầu Petrolimex',             bin:'970430', emoji:'🟤' },
+  { code:'SEAB', name:'SeABank',          full:'Ngân hàng Đông Nam Á',                      bin:'970440', emoji:'🟡' },
+  { code:'IVB',  name:'IndovinaBank',     full:'Ngân hàng Indovina',                        bin:'970434', emoji:'⚫' },
+  { code:'CIMB', name:'CIMB',             full:'Ngân hàng CIMB Việt Nam',                   bin:'422589', emoji:'🔴' },
+  { code:'CAKE', name:'CAKE by VPBank',   full:'Ngân hàng số CAKE',                         bin:'546034', emoji:'🟣' },
+  { code:'TIMO', name:'Timo',             full:'Ngân hàng số Timo (Bản Việt)',              bin:'963388', emoji:'🟣' },
+  { code:'TNEX', name:'TNEX',             full:'Ngân hàng số TNEX (MSB)',                   bin:'533948', emoji:'🔵' },
+  { code:'VCCB', name:'BVBank',           full:'Ngân hàng Bản Việt',                        bin:'970454', emoji:'🟢' },
+  { code:'WOO',  name:'Woori',            full:'Ngân hàng Woori Việt Nam',                  bin:'970457', emoji:'🔵' },
+  { code:'MOMO', name:'Ví MoMo',          full:'Ví điện tử MoMo',                           bin:'970462', emoji:'🟣' },
+];
+
+// State
+let selectedBank = null;
+let currentImageFile = null;
+let tesseractWorker = null;
+let workerInitPromise = null;
+let ocrTimeout = null;
+
+// ── VietQR Encoder ──
+function crc16(str) {
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= str.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4, '0');
+}
+
+function f(tag, val) {
+  if (val === null || val === undefined || val === '') return '';
+  const v = String(val);
+  return tag + String(v.length).padStart(2, '0') + v;
+}
+
+function removeDiacritics(str) {
+  return String(str)
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/đ/g,'d').replace(/Đ/g,'D')
+    .replace(/[^\x20-\x7E]/g, '')
+    .trim();
+}
+
+function buildVietQRString({ bin, accountNo, accountName = '', amount = 0, note = '' }) {
+  // Sanitize for EMVCo
+  const cleanName = removeDiacritics(accountName).toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g,' ').trim().substring(0, 25);
+  const cleanNote = removeDiacritics(note).replace(/[^A-Za-z0-9 ]/g, ' ').replace(/\s+/g,' ').trim().substring(0, 25);
+
+  // Merchant Account Info (Napas sub-template, tag 38)
+  const sub = f('00','A000000727') + f('01', bin) + f('02', accountNo);
+
+  let qr = '';
+  qr += f('00', '01');          // Payload Format Indicator
+  qr += f('01', '11');          // Static QR
+  qr += f('38', sub);           // Napas Merchant Account
+  qr += f('52', '0000');        // Merchant Category Code
+  qr += f('53', '704');         // Currency: VND
+  if (amount > 0) qr += f('54', String(Math.floor(amount)));
+  qr += f('58', 'VN');          // Country Code
+  if (cleanName) qr += f('59', cleanName); // Merchant Name
+  qr += f('60', 'Ho Chi Minh'); // City
+  if (cleanNote) qr += f('62', f('08', cleanNote)); // Additional data
+
+  // CRC (always last)
+  const crcInput = qr + '6304';
+  qr += '6304' + crc16(crcInput);
+
+  return qr;
+}
+
+// ── Bank Search / Dropdown ──
+function renderBankOptions(banks) {
+  const dd = document.getElementById('bankDropdown');
+  if (!banks.length) {
+    dd.innerHTML = '<div class="bank-opt" style="color:var(--fg-subtle);justify-content:center">Không tìm thấy</div>';
+    return;
+  }
+  dd.innerHTML = banks.map((b, i) => `
+    <div class="bank-opt" data-idx="${i}" onclick="selectBankByCode('${b.code}')">
+      <span class="bank-opt-code">${b.code}</span>
+      <span>
+        <div class="bank-opt-name">${b.name}</div>
+        <div class="bank-opt-full">${b.full}</div>
+      </span>
+    </div>
+  `).join('');
+}
+
+function openBankDropdown() {
+  const q = document.getElementById('bankSearch').value;
+  filterBanks(q);
+  document.getElementById('bankDropdown').classList.add('open');
+}
+
+function filterBanks(q) {
+  const lo = q.toLowerCase();
+  const filtered = lo
+    ? BANKS.filter(b =>
+        b.code.toLowerCase().includes(lo) ||
+        b.name.toLowerCase().includes(lo) ||
+        b.full.toLowerCase().includes(lo) ||
+        removeDiacritics(b.name).toLowerCase().includes(lo) ||
+        removeDiacritics(b.full).toLowerCase().includes(lo)
+      )
+    : BANKS;
+  renderBankOptions(filtered);
+  document.getElementById('bankDropdown').classList.add('open');
+}
+
+function selectBankByCode(code) {
+  const bank = BANKS.find(b => b.code === code);
+  if (!bank) return;
+  selectedBank = bank;
+
+  document.getElementById('bankCode').value = bank.code;
+  document.getElementById('bankBin').value = bank.bin;
+
+  // Show selected display, hide search
+  document.getElementById('bankInputWrap').style.display = 'none';
+  const disp = document.getElementById('bankSelectedDisplay');
+  document.getElementById('bankSelEmoji').textContent = bank.emoji;
+  document.getElementById('bankSelCode').textContent = bank.code;
+  document.getElementById('bankSelName').textContent = bank.name;
+  disp.classList.add('show');
+
+  document.getElementById('bankDropdown').classList.remove('open');
+}
+
+function clearBankSelection() {
+  selectedBank = null;
+  document.getElementById('bankCode').value = '';
+  document.getElementById('bankBin').value = '';
+  document.getElementById('bankSelectedDisplay').classList.remove('show');
+  const wrap = document.getElementById('bankInputWrap');
+  wrap.style.display = '';
+  document.getElementById('bankSearch').value = '';
+  document.getElementById('bankSearch').focus();
+  renderBankOptions(BANKS);
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.bank-picker')) {
+    document.getElementById('bankDropdown').classList.remove('open');
+  }
+});
+
+// Pre-render all bank options
+renderBankOptions(BANKS);
+
+// ── Image Upload / OCR ──
+const uploadZone = document.getElementById('uploadZone');
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) handleFileSelect(file);
+});
+
+function handleFileSelect(file) {
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    alert('Ảnh quá lớn. Tối đa 10MB.');
+    return;
+  }
+  currentImageFile = file;
+  const url = URL.createObjectURL(file);
+  document.getElementById('previewImg').src = url;
+  uploadZone.style.display = 'none';
+  document.getElementById('previewWrap').classList.add('show');
+  // Reset alerts
+  ['alertOcrOk','alertOcrPartial','alertOcrFail'].forEach(id => document.getElementById(id).classList.remove('show'));
+
+  // ── Pre-load Tesseract in background as soon as image is selected ──
+  preInitWorker();
+}
+
+// Pre-process: resize + multi-pass colour-aware sharpening for OCR
+// Strategy: run TWO passes and pick the one with more text (line count heuristic)
+function preprocessImage(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const objUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objUrl);
+      const MAX = 1600;   // larger = more detail for OCR
+      let w = img.naturalWidth, h = img.naturalHeight;      if (w > MAX || h > MAX) {
+        if (w >= h) { h = Math.round(h * MAX / w); w = MAX; }
+        else        { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      const ctx = cv.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+
+      const id = ctx.getImageData(0, 0, w, h);
+      const d = id.data;
+
+      // ── Colour-aware grayscale ──────────────────────────────────────────
+      // Problem: coloured text (blue/red) on white looks light with luma formula
+      //   → OCR misses it (e.g. "LÊ" in blue = low contrast after luma grayscale)
+      // Fix: use the DARKEST channel (min RGB).
+      //   • Black text on white  → min(0,0,0)=0   → stays black  ✓
+      //   • Blue text on white   → min(0,0,255)=0  → becomes black ✓
+      //   • Red text on white    → min(255,0,0)=0  → becomes black ✓
+      //   • White background     → min(255,255,255)=255 → stays white ✓
+      // Then apply stronger contrast stretch for cleaner binarization.
+      for (let i = 0; i < d.length; i += 4) {
+        // Darkest channel captures any coloured-on-light text
+        const dark = Math.min(d[i], d[i+1], d[i+2]);
+        // Blend with luma (softer edges on monochrome content)
+        const luma = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+        const g = dark * 0.6 + luma * 0.4;
+        // Stronger contrast stretch (×1.8) → crisper edges for Tesseract
+        const c = Math.min(255, Math.max(0, (g - 128) * 1.8 + 128));
+        d[i] = d[i+1] = d[i+2] = c;
+      }
+      ctx.putImageData(id, 0, 0);
+      cv.toBlob(resolve, 'image/jpeg', 0.95);  // higher quality → less JPEG blur
+    };
+    img.onerror = () => { URL.revokeObjectURL(objUrl); resolve(file); };
+    img.src = objUrl;
+  });
+}
+
+// Pre-initialise worker (called silently on image upload)
+async function preInitWorker() {
+  if (workerInitPromise) return;
+  workerInitPromise = (async () => {
+    if (typeof Tesseract === 'undefined') {
+      await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js');
+    }
+    // v5 API: createWorker(lang, oem?, options?) – no corePath needed, CDN handles it
+    const w = await Tesseract.createWorker('vie+eng');
+    tesseractWorker = w;
+    return w;
+  })();
+  workerInitPromise.catch((e) => { console.error('[hugQR] worker init failed:', e); workerInitPromise = null; });
+}
+
+function clearImage() {
+  currentImageFile = null;
+  document.getElementById('previewImg').src = '';
+  document.getElementById('previewWrap').classList.remove('show');
+  uploadZone.style.display = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('ocrBox').classList.remove('show');
+  ['alertOcrOk','alertOcrPartial','alertOcrFail'].forEach(id => document.getElementById(id).classList.remove('show'));
+}
+
+// OCR with Tesseract.js – optimised with pre-load + image preprocess + timeout
+async function startOCR() {
+  if (!currentImageFile) return;
+  const btn = document.getElementById('ocrBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+  ['alertOcrOk','alertOcrPartial','alertOcrFail'].forEach(id => document.getElementById(id).classList.remove('show'));
+
+  const ocrBox = document.getElementById('ocrBox');
+  ocrBox.classList.add('show');
+
+  // Safety timeout: 45s auto-fail so button never stays locked
+  if (ocrTimeout) clearTimeout(ocrTimeout);
+  ocrTimeout = setTimeout(() => {
+    ocrBox.classList.remove('show');
+    document.getElementById('alertOcrFail').classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Nhận diện tự động';
+  }, 45000);
+
+  try {
+    // Step 1 – ensure Tesseract is ready (may already be pre-loading from upload)
+    setOCRProgress('Đang chuẩn bị engine OCR...', 8);
+    if (!workerInitPromise) preInitWorker();
+    await workerInitPromise;
+
+    // Guard: if worker still null after init, abort gracefully
+    if (!tesseractWorker) throw new Error('Tesseract worker failed to init');
+
+    // Step 2 – preprocess image (resize + grayscale) for speed & accuracy
+    setOCRProgress('Đang xử lý ảnh...', 20);
+    const processedBlob = await preprocessImage(currentImageFile);
+
+    // Step 3 – run OCR (v5 API: recognize(image) — extra options removed for compatibility)
+    setOCRProgress('Đang nhận diện văn bản...', 35);
+    const { data } = await tesseractWorker.recognize(processedBlob);
+
+    setOCRProgress('Đang phân tích kết quả...', 90);
+    const text = data.text || '';
+    console.log('[hugQR OCR raw]', text);
+
+    const result = extractBankInfo(text);
+    let filled = 0;
+
+    if (result.bankCode && !selectedBank) { selectBankByCode(result.bankCode); filled++; }
+    if (result.accountNo)   { document.getElementById('accountNo').value = result.accountNo; filled++; }
+    if (result.accountName) { document.getElementById('accountName').value = result.accountName.toUpperCase(); filled++; }
+
+    setOCRProgress('Hoàn tất!', 100);
+    clearTimeout(ocrTimeout);
+
+    if (filled >= 2)      document.getElementById('alertOcrOk').classList.add('show');
+    else if (filled >= 1) document.getElementById('alertOcrPartial').classList.add('show');
+    else                  document.getElementById('alertOcrFail').classList.add('show');
+
+    setTimeout(() => ocrBox.classList.remove('show'), 700);
+  } catch (err) {
+    console.error('[hugQR OCR Error]', err);
+    clearTimeout(ocrTimeout);
+    // Worker may have crashed; reset so next click retries fresh
+    if (tesseractWorker) { try { await tesseractWorker.terminate(); } catch(_){} }
+    tesseractWorker = null; workerInitPromise = null;
+    ocrBox.classList.remove('show');
+    document.getElementById('alertOcrFail').classList.add('show');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Nhận diện tự động';
+  }
+}
+
+function setOCRProgress(label, pct) {
+  document.getElementById('ocrLabel').textContent = label;
+  document.getElementById('ocrFill').style.width = pct + '%';
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ── Extract Bank Info from OCR Text ──
+function extractBankInfo(text) {
+  const result = { bankCode: null, accountNo: null, accountName: null };
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  const flat = lines.join(' ');
+  const flatLo = removeDiacritics(flat).toLowerCase();
+
+  // ── 1. Account number ─────────────────────────────────────────────────────
+  // Priority A: labelled patterns (most reliable)
+  //   "Stc: 050131969802"  "STK: 123"  "Số TK: ..."  "SỐ TÀI KHOẢN: ..."
+  const labelledAcct = flat.match(
+    /(?:stc|stk|số\s*t(?:k|ài\s*khoản)|so\s*t(?:k|ai\s*khoan)|account\s*(?:no|number))[:\s]+(\d[\d\s]{7,20}\d)/i
+  );
+  if (labelledAcct) {
+    result.accountNo = labelledAcct[1].replace(/\s/g, '');
+  }
+
+  // Priority B: any 9-20 digit sequence (prefer 10-14 digits = most common VN)
+  if (!result.accountNo) {
+    const nums = (flat.replace(/[\-\.]/g, ' ')).match(/\b\d{9,20}\b/g);
+    if (nums) {
+      result.accountNo = nums.find(n => n.length >= 10 && n.length <= 14) || nums[0];
+    }
+  }
+
+  // ── 2. Account name ───────────────────────────────────────────────────────
+  // Helper: clean a raw name string to uppercase Latin (no diacritics)
+  function cleanName(s) {
+    return removeDiacritics(s).toUpperCase().replace(/[^A-Z\s]/g,' ').replace(/\s+/g,' ').trim();
+  }
+
+  // Priority A: scan each OCR LINE for a name label, then take the rest of THAT LINE as name.
+  // Working per-line avoids bleeding into the next label (e.g. "Ngân hàng:") that appears
+  // after the name in the joined flat string.
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    const lo = removeDiacritics(line).toLowerCase();
+    const labelMatch = lo.match(/(?:ten|chu\s*t[k]|account\s*(?:name|holder)|owner)\s*[:\-]\s*/);
+    if (!labelMatch) continue;
+    // Everything after the label colon on this same line
+    const afterLabel = line.substring(labelMatch.index + labelMatch[0].length).trim();
+    // Also collect the next 1-2 lines in case the name wraps
+    const extra = lines.slice(li + 1, li + 3)
+      .filter(l => {
+        const lln = removeDiacritics(l).toLowerCase();
+        return !/(?:ngan|bank|stk|stc|so\s*t|chi\s|ma\s|ngay|date|\d{5})/.test(lln);
+      })
+      .join(' ');
+    const combined = (afterLabel + ' ' + extra).trim();
+    // Extract up to 5 name-like words (letters only, no numbers)
+    const words = combined.split(/\s+/)
+      .map(w => removeDiacritics(w).replace(/[^A-Za-z]/g,'').toUpperCase())
+      .filter(w => w.length >= 2)
+      .slice(0, 5);
+    if (words.length >= 1) { result.accountName = words.join(' '); break; }
+  }
+
+  // Priority B: flat-string fallback – match label then stop before next label keyword
+  if (!result.accountName) {
+    const labelledName = flat.match(
+      /(?:tên|ten|t[6ế]n|chủ\s*t[k]|chu\s*t[k]|account\s*(?:name|holder)|owner)[:\-\s]+([^\n\r:]{2,60})/i
+    );
+    if (labelledName) {
+      let raw = labelledName[1].trim();
+      raw = raw.replace(/\s+(?:ng[aâ]n|ngan|bank|stk|stc|s[oố][\s.]|chi[\s.]|\d{5}).*/i, '').trim();
+      const words = raw.split(/\s+/)
+        .map(w => removeDiacritics(w).replace(/[^A-Za-z]/g,'').toUpperCase())
+        .filter(w => w.length >= 2).slice(0, 5);
+      if (words.length >= 1) result.accountName = words.join(' ');
+    }
+  }
+
+  // Priority C: line-by-line all-caps name (2–5 words, skip label-starting lines)
+  const LABEL_START = /^(?:STK|STC|TEN|NGAN|BANK|CHU|ACC|SO|MA|NGAY|DATE|LOAI|CHI)/;
+  if (!result.accountName) {
+    for (const line of lines) {
+      const u = cleanName(line);
+      if (LABEL_START.test(u)) continue;
+      if (/^[A-Z]{2,}(\s+[A-Z]{2,}){1,4}$/.test(u) && u.length >= 6 && u.length <= 42) {
+        result.accountName = u;
+        break;
+      }
+    }
+  }
+
+  // Priority D: line immediately after a label line
+  if (!result.accountName) {
+    for (let i = 0; i < lines.length - 1; i++) {
+      const lo = removeDiacritics(lines[i]).toLowerCase();
+      if (/(?:ten|chu\s*tk|account\s*name)/.test(lo)) {
+        const u = cleanName(lines[i + 1]);
+        if (/^[A-Z]{2,}(\s+[A-Z]{2,}){0,4}$/.test(u) && u.length >= 2) {
+          result.accountName = u; break;
+        }
+      }
+    }
+  }
+
+  // ── 2b. Strip bank-name prefix OCR may prepend to person's name ────────────
+  // e.g., "VIETCOMBANK NGUYEN THI THU LAN" → "NGUYEN THI THU LAN"
+  if (result.accountName) {
+    const BANK_PREFIX = /^(?:VIETCOMBANK|BIDV|VIETINBANK|AGRIBANK|MBBANK|MB\s|TECHCOMBANK|SACOMBANK|TPBANK|VPBANK|SEABANK|HDBANK|EXIMBANK|PGBANK|BVBANK|WOORI|LIENVIETPOSTBANK|KIENLONGBANK|BACABANK|INDOVINABANK|CIMB|NCB|MSB|VIB|OCB|SHB|ACB|SCB|WOO)\s+/i;
+    const stripped = result.accountName.replace(BANK_PREFIX, '').trim();
+    // Only accept strip if at least one word remains and it's a plausible name
+    if (stripped && stripped.length >= 2) result.accountName = stripped;
+  }
+
+  // ── 3. Bank ───────────────────────────────────────────────────────────────
+  // More extensive keyword list including "chi nhánh" suffixes
+  const bankKeywords = {
+    VCB:  ['vietcombank', 'ngoai thuong', 'vcb bank'],
+    BIDV: ['bidv', 'dau tu phat trien', 'investment and development'],
+    VTB:  ['vietinbank', 'cong thuong', 'viettin'],
+    AGR:  ['agribank', 'nong nghiep', 'nong nghiep va phat trien nong thon'],
+    MB:   ['mb bank', 'quan doi', 'mbbank', 'military bank'],
+    TCB:  ['techcombank', 'ky thuong'],
+    ACB:  ['acb', 'a chau', 'asia commercial'],
+    VPB:  ['vpbank', 'thinh vuong', 'viet nam prosperity'],
+    TPB:  ['tpbank', 'tien phong'],
+    STB:  ['sacombank', 'sai gon thuong tin', 'sai gon commercial'],
+    SHB:  ['shb', 'sai gon ha noi'],
+    LPB:  ['lienvietpostbank', 'lien viet', 'buu dien lien viet'],
+    OCB:  ['ocb', 'phuong dong', 'orient commercial'],
+    VIB:  ['vib', 'quoc te viet nam', 'vietnam international'],
+    MSB:  ['msb', 'hang hai', 'maritime bank'],
+    HDB:  ['hdbank', 'hd bank', 'phat trien tp hcm'],
+    SCB:  ['scb', 'sai gon bank'],
+    EIB:  ['eximbank', 'xuat nhap khau'],
+    NCB:  ['ncb', 'quoc dan'],
+    SEAB: ['seabank', 'dong nam a', 'southeast asia'],
+    MOMO: ['momo', 'vi momo'],
+    WOO:  ['woori'],
+    CIMB: ['cimb'],
+  };
+
+  // Also try to pull the label "Ngân hàng: Sacombank ..." first
+  const bankLabel = flat.match(/(?:ngan hang|ngân hàng|bank)[:\s]+([^\n\r:,]{3,50})/i);
+  const bankHint = bankLabel ? removeDiacritics(bankLabel[1]).toLowerCase() : null;
+
+  const searchIn = bankHint ? bankHint + ' ' + flatLo : flatLo;
+  for (const [code, keywords] of Object.entries(bankKeywords)) {
+    if (keywords.some(kw => searchIn.includes(removeDiacritics(kw).toLowerCase()))) {
+      result.bankCode = code;
+      break;
+    }
+  }
+
+  console.log('[hugQR extract]', result);
+  return result;
+}
+
+// ── Generate QR ──
+async function generateQR() {
+  const bankCode = document.getElementById('bankCode').value;
+  const bankBin  = document.getElementById('bankBin').value;
+  const accountNo = document.getElementById('accountNo').value.replace(/\s/g,'');
+  const accountName = document.getElementById('accountName').value.trim();
+  const amount = parseInt(document.getElementById('amount').value.replace(/\D/g,'')) || 0;
+  const note = document.getElementById('noteField').value.trim();
+
+  // Validate
+  const alertErr = document.getElementById('alertFormErr');
+  const errMsg = document.getElementById('alertFormErrMsg');
+  alertErr.classList.remove('show');
+
+  if (!bankCode || !bankBin) {
+    errMsg.textContent = 'Vui lòng chọn ngân hàng.';
+    alertErr.classList.add('show');
+    document.getElementById('bankSearch').focus();
+    return;
+  }
+  if (!accountNo) {
+    errMsg.textContent = 'Vui lòng nhập số tài khoản.';
+    alertErr.classList.add('show');
+    document.getElementById('accountNo').focus();
+    return;
+  }
+  if (!accountName) {
+    errMsg.textContent = 'Vui lòng nhập tên chủ tài khoản.';
+    alertErr.classList.add('show');
+    document.getElementById('accountName').focus();
+    return;
+  }
+  if (!/^\d+$/.test(accountNo)) {
+    errMsg.textContent = 'Số tài khoản chỉ chứa chữ số.';
+    alertErr.classList.add('show');
+    document.getElementById('accountNo').focus();
+    return;
+  }
+
+  const bank = BANKS.find(b => b.code === bankCode);
+
+  // Build VietQR image URL from img.vietqr.io (no library needed)
+  // Use BIN code (numeric) – more reliable than short name with VietQR API
+  const cleanName = encodeURIComponent(removeDiacritics(accountName).toUpperCase());
+  let qrImgUrl = `https://img.vietqr.io/image/${bankBin}-${accountNo}-qr_only.png?accountName=${cleanName}`;
+  if (amount > 0) qrImgUrl += `&amount=${amount}`;
+  if (note) qrImgUrl += `&addInfo=${encodeURIComponent(removeDiacritics(note))}`;
+
+  const qrImg = document.getElementById('qrCanvas');
+  // Set onerror BEFORE src so it fires even for fast failures
+  qrImg.onerror = () => {
+    qrImg.removeAttribute('src');
+    qrImg.style.background = '#FFF4F4';
+    qrImg.alt = '⚠️ Không tải được QR – kiểm tra kết nối mạng';
+  };
+  qrImg.src = qrImgUrl;
+  qrImg.dataset.qrUrl = qrImgUrl;
+
+  // Fill QR card info
+  document.getElementById('qrBankEmoji').textContent = bank ? bank.emoji : '🏦';
+  document.getElementById('qrBankLabel').textContent = bank ? bank.name : bankCode;
+  document.getElementById('qrAccNo').textContent = accountNo.replace(/(\d{4})(?=\d)/g, '$1 ');
+  document.getElementById('qrOwnerName').textContent = accountName.toUpperCase();
+  const amtBadge = document.getElementById('qrAmountBadge');
+  if (amount > 0) {
+    amtBadge.textContent = '💰 ' + amount.toLocaleString('vi-VN') + ' VND';
+    amtBadge.style.display = '';
+  } else {
+    amtBadge.style.display = 'none';
+  }
+
+  // Show QR section
+  const qrSection = document.getElementById('qrSection');
+  qrSection.classList.add('show');
+  qrSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Show share button if API available
+  if (navigator.share) {
+    document.getElementById('shareBtn').style.display = '';
+  }
+}
+
+// ── Download QR ──
+async function downloadQR() {
+  const bankCode = document.getElementById('bankCode').value;
+  const bankBin  = document.getElementById('bankBin').value;
+  const accountNo = document.getElementById('accountNo').value;
+  const accountName = document.getElementById('accountName').value.trim();
+  const bank = BANKS.find(b => b.code === bankCode);
+  const amount = parseInt(document.getElementById('amount').value.replace(/\D/g,'')) || 0;
+
+  // Get the QR URL stored on the img element
+  const qrImgEl = document.getElementById('qrCanvas');
+  const qrUrl = qrImgEl.dataset.qrUrl || qrImgEl.src;
+  if (!qrUrl) { alert('Chưa có QR để tải. Hãy nhấn Tạo Mã QR trước.'); return; }
+
+  try {
+    // Fetch the QR image blob (avoids canvas CORS taint)
+    const resp = await fetch(qrUrl);
+    if (!resp.ok) throw new Error('fetch ' + resp.status);
+    const blob = await resp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    // Load it as an Image so we can drawImage onto canvas
+    const qrBitmap = await new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => res(img);
+      img.onerror = rej;
+      img.src = blobUrl;
+    });
+
+    // Build branded download card
+    const W = 320, H = 430;
+    const out = document.createElement('canvas');
+    out.width = W * 2; out.height = H * 2; // 2× retina
+    const ctx = out.getContext('2d');
+    ctx.scale(2, 2);
+
+    // Background
+    ctx.fillStyle = '#FFFFFF';
+    roundRect(ctx, 0, 0, W, H, 16);
+    ctx.fill();
+
+    // Top stripe
+    ctx.fillStyle = '#0078D4';
+    roundRect(ctx, 0, 0, W, 52, { tl: 16, tr: 16, bl: 0, br: 0 });
+    ctx.fill();
+
+    // Logo text
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 18px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('hug', W/2 - 14, 33);
+    ctx.fillStyle = '#C0DEFF';
+    ctx.fillText('QR', W/2 + 14, 33);
+
+    // Bank name
+    ctx.fillStyle = '#1A1A1A';
+    ctx.font = 'bold 15px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(bank ? bank.name.toUpperCase() : bankCode, W/2, 84);
+
+    // QR code image (fetched above)
+    const qrX = (W - 220) / 2;
+    ctx.drawImage(qrBitmap, qrX, 96, 220, 220);
+
+    // Border around QR
+    ctx.strokeStyle = '#E8E8E8';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(qrX - 6, 90, 232, 232, 8);
+    ctx.stroke();
+
+    // Account number
+    ctx.fillStyle = '#1A1A1A';
+    ctx.font = 'bold 22px Consolas, monospace';
+    ctx.textAlign = 'center';
+    const accDisplay = accountNo.replace(/(\d{4})(?=\d)/g, '$1 ');
+    ctx.fillText(accDisplay, W/2, 354);
+
+    // Owner name
+    ctx.fillStyle = '#555555';
+    ctx.font = '500 13px Inter, sans-serif';
+    ctx.fillText(accountName.toUpperCase(), W/2, 374);
+
+    // Amount (if set)
+    if (amount > 0) {
+      ctx.fillStyle = '#0078D4';
+      ctx.font = '600 12px Inter, sans-serif';
+      ctx.fillText(amount.toLocaleString('vi-VN') + ' VND', W/2, 393);
+    }
+
+    // Footer hint
+    ctx.fillStyle = '#AAAAAA';
+    ctx.font = '11px Inter, sans-serif';
+    ctx.fillText('Quét mã để chuyển khoản · hugQR.hugmass.com', W/2, 416);
+
+    URL.revokeObjectURL(blobUrl);
+
+    // Trigger download
+    out.toBlob(dlBlob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(dlBlob);
+      a.download = `hugQR_${bankCode}_${accountNo}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    }, 'image/png');
+
+  } catch(e) {
+    // Fallback: open VietQR compact2 template directly
+    const cleanName = encodeURIComponent(removeDiacritics(accountName).toUpperCase());
+    let fallback = `https://img.vietqr.io/image/${bankBin}-${accountNo}-compact2.png?accountName=${cleanName}`;
+    if (amount > 0) fallback += `&amount=${amount}`;
+    window.open(fallback, '_blank');
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+  ctx.beginPath();
+  ctx.moveTo(x + r.tl, y);
+  ctx.lineTo(x + w - r.tr, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+  ctx.lineTo(x + w, y + h - r.br);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+  ctx.lineTo(x + r.bl, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+  ctx.lineTo(x, y + r.tl);
+  ctx.quadraticCurveTo(x, y, x + r.tl, y);
+  ctx.closePath();
+}
+
+// ── Copy QR ──
+async function copyQR() {
+  const qrImgEl = document.getElementById('qrCanvas');
+  const qrUrl = qrImgEl.dataset.qrUrl || qrImgEl.src;
+  if (!qrUrl) { alert('Chưa có QR để sao chép.'); return; }
+  try {
+    const resp = await fetch(qrUrl);
+    if (!resp.ok) throw new Error('fetch ' + resp.status);
+    const blob = await resp.blob();
+    // Convert to PNG for clipboard (some browsers only accept image/png)
+    const pngBlob = blob.type === 'image/png' ? blob : await convertToPng(blob);
+    await navigator.clipboard.write([
+      new ClipboardItem({ 'image/png': pngBlob })
+    ]);
+    const a = document.getElementById('alertCopied');
+    a.classList.add('show');
+    setTimeout(() => a.classList.remove('show'), 2500);
+  } catch (e) {
+    alert('Trình duyệt không hỗ trợ sao chép ảnh. Hãy nhấn Tải xuống để lưu.');
+  }
+}
+
+// Helper: re-encode any image blob to PNG via canvas
+async function convertToPng(blob) {
+  const blobUrl = URL.createObjectURL(blob);
+  const img = await new Promise((res, rej) => {
+    const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = blobUrl;
+  });
+  const cv = document.createElement('canvas');
+  cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+  cv.getContext('2d').drawImage(img, 0, 0);
+  URL.revokeObjectURL(blobUrl);
+  return new Promise(res => cv.toBlob(res, 'image/png'));
+}
+
+// ── Share QR ──
+async function shareQR() {
+  const qrImgEl = document.getElementById('qrCanvas');
+  const bankCode = document.getElementById('bankCode').value;
+  const accountNo = document.getElementById('accountNo').value;
+  const accountName = document.getElementById('accountName').value;
+  const qrUrl = qrImgEl.dataset.qrUrl || qrImgEl.src;
+  if (!qrUrl) return;
+  try {
+    const resp = await fetch(qrUrl);
+    if (!resp.ok) throw new Error('fetch ' + resp.status);
+    const blob = await resp.blob();
+    const file = new File([blob], `hugQR_${bankCode}_${accountNo}.png`, { type: 'image/png' });
+    await navigator.share({
+      title: 'QR Chuyển Khoản – ' + (BANKS.find(b=>b.code===bankCode)?.name || bankCode),
+      text: `Mã QR chuyển khoản tới ${accountName} – ${bankCode} ${accountNo}`,
+      files: [file]
+    });
+  } catch (e) {
+    if (e.name !== 'AbortError') alert('Không thể chia sẻ. Hãy thử Tải xuống.');
+  }
+}
+
+// ── Format amount input with commas ──
+document.getElementById('amount').addEventListener('input', function() {
+  const raw = this.value.replace(/\D/g,'');
+  if (raw) this.value = parseInt(raw).toLocaleString('vi-VN');
+  else this.value = '';
+});
+
+// ── Uppercase account name ──
+document.getElementById('accountName').addEventListener('input', function() {
+  const pos = this.selectionStart;
+  this.value = this.value.toUpperCase();
+  this.setSelectionRange(pos, pos);
+});
+
+// Enter key submits form
+['accountNo','accountName','noteField'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') generateQR();
+  });
+});
+</script>
+</body>
+</html>

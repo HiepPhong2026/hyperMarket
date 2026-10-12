@@ -1843,6 +1843,9 @@ textarea { resize: vertical; min-height: 68px; }
         <span class="nav-icon">💬</span> Phòng Chat Chung
         <span style="margin-left:auto;background:var(--accent,#0A7A6E);color:#fff;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:10px;line-height:1.4">MỚI</span>
       </a>
+      <button class="nav-item" onclick="openContactModal()">
+        <span class="nav-icon">📧</span> Liên hệ &amp; Hỗ trợ
+      </button>
     </div>
 
     <div class="sidebar-footer">
@@ -3839,5 +3842,62 @@ function renderInsideView() {
 })();
 
 
+
+/* ─── CONTACT MODAL ─── */
+function openContactModal(){
+  document.getElementById('contact-modal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal(e){
+  if(!e || e.target === document.getElementById('contact-modal')){
+    document.getElementById('contact-modal').hidden = true;
+    document.body.style.overflow = '';
+  }
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') closeContactModal();
+});
 </script>
+
+<!-- ─── CONTACT MODAL ─── -->
+<div class="modal-overlay" id="contact-modal" hidden onclick="closeContactModal(event)" role="dialog" aria-modal="true" aria-label="Liên hệ & Hỗ trợ">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="modal-header">
+      <span class="modal-title">📧 Liên hệ &amp; Hỗ trợ</span>
+      <button class="modal-close" onclick="closeContactModal()" aria-label="Đóng">✕</button>
+    </div>
+
+    <div style="text-align:center;padding:8px 0 4px">
+      <div style="width:72px;height:72px;margin:0 auto 14px;background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px">📬</div>
+      <p style="color:var(--fg-muted);font-size:13.5px;line-height:1.55;margin:0 0 20px">
+        Có câu hỏi, góp ý hoặc cần hỗ trợ?<br>Chúng tôi luôn sẵn sàng lắng nghe bạn!
+      </p>
+    </div>
+
+    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="flex-shrink:0;width:40px;height:40px;background:color-mix(in srgb,var(--accent) 15%,transparent);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:20px">✉️</div>
+      <div style="min-width:0">
+        <div style="font-size:11px;color:var(--fg-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Email hỗ trợ</div>
+        <div style="font-size:15px;font-weight:700;color:var(--accent);word-break:break-all">ba@hugmass.com</div>
+      </div>
+      <button onclick="navigator.clipboard.writeText('ba@hugmass.com').then(()=>{ this.textContent='✅'; setTimeout(()=>this.textContent='📋',1500); })"
+        title="Sao chép email"
+        style="flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);width:34px;height:34px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--fg-muted);transition:background .15s">📋</button>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-direction:column">
+      <a href="mailto:ba@hugmass.com" class="btn btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-size:14px;height:40px;border-radius:var(--r-md)">
+        ✉️ Soạn email ngay
+      </a>
+      <button class="btn btn-secondary" onclick="closeContactModal()" style="height:38px;font-size:14px;border-radius:var(--r-md)">
+        Đóng
+      </button>
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:var(--fg-muted);margin:14px 0 0;line-height:1.5">
+      Thường phản hồi trong vòng 24 giờ làm việc 🕐
+    </p>
+  </div>
+</div>
+
 </body></html>

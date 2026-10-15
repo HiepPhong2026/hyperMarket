@@ -856,6 +856,20 @@ body {
   .msg-stack { max-width: 85%; }
   .chat-desc { display: none; }
 }
+
+/* Profanity filter */
+.name-error {
+  color: #E53935; font-size: .8rem; font-weight: 600;
+  margin-top: -8px; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+.name-error[hidden] { display: none !important; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}   60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+.shake { animation: shake .4s ease; }
 </style>
 </head>
 <body>
@@ -870,6 +884,7 @@ body {
     <label class="form-label" for="nickname-input">Tên của bạn</label>
     <input class="form-input" id="nickname-input" type="text"
            placeholder="Ví dụ: Minh, Anh Hùng, shop_khanh..." maxlength="30" autocomplete="off">
+    <p class="name-error" id="name-error" hidden>🚫 Tên chứa từ ngữ không phù hợp. Vui lòng chọn tên khác.</p>
 
     <label class="form-label">Màu đại diện</label>
     <div class="color-grid" id="color-grid"></div>
@@ -1143,6 +1158,16 @@ function buildSetupUI() {
 function joinChat() {
   const name = document.getElementById('nickname-input').value.trim();
   if (!name) return;
+
+  const errEl = document.getElementById('name-error');
+  if (window.hasProfanity && window.hasProfanity(name)) {
+    if (errEl) errEl.hidden = false;
+    const input = document.getElementById('nickname-input');
+    input.classList.add('shake');
+    setTimeout(() => input.classList.remove('shake'), 500);
+    return;
+  }
+  if (errEl) errEl.hidden = true;
 
   user = { uuid: crypto.randomUUID(), nickname: name, color: selectedColor };
   saveUser(user);
@@ -2200,6 +2225,23 @@ async function sendMessage() {
     return;
   }
 
+  // ── Kiểm tra từ ngữ không phù hợp ───────────────────────────
+  if (window.hasProfanity && window.hasProfanity(text)) {
+    textarea.classList.add('shake');
+    setTimeout(() => textarea.classList.remove('shake'), 500);
+    // Hiện cảnh báo tạm thời
+    const existing = document.getElementById('profanity-warn');
+    if (!existing) {
+      const warn = document.createElement('div');
+      warn.id = 'profanity-warn';
+      warn.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#c0392b;color:#fff;padding:8px 18px;border-radius:8px;font-size:.85rem;z-index:9999;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+      warn.textContent = '🚫 Tin nhắn chứa từ ngữ không phù hợp.';
+      document.body.appendChild(warn);
+      setTimeout(() => warn.remove(), 2500);
+    }
+    return;
+  }
+
   // ── Gửi bình thường ──────────────────────────────────────────
   textarea.value = '';
   autoResizeTextarea(textarea);
@@ -2383,6 +2425,36 @@ function maybeScrollDown() {
   if (isNearBottom()) scrollToBottom(false);
   else document.getElementById('scroll-fab').hidden = false;
 }
+
+// ─── Profanity Filter ────────────────────────────────────────────────
+(function () {
+  /* Danh sách từ / cụm từ bị cấm */
+  const BANNED = [
+    // Tiếng Việt có dấu
+    'đụ','địt','lồn','cặc','chịch','đéo','đĩ','phò','cứt','ỉa','đái',
+    'đụ mẹ','đụ má','đụ mày','địt mẹ','địt má','địt mày','địt con',
+    'vãi lồn','vãi cặc','bú cặc','bú lồn','đụ nhau',
+    'con lồn','thằng cặc','đồ điếm',
+    // Viết tắt thông dụng
+    'đmm','đcm','đkm','dmm','dcm','dkm','đm','dm',
+    'vcl','clm','vkl','klm',
+    // Bypass không dấu phổ biến
+    'dit','lon','cac','duc nhau',
+    // Tiếng Anh
+    'fuck','fucking','fucker','shit','bitch','cunt','bastard','asshole','whore',
+    'f*ck','sh*t','b*tch','c*nt',
+  ];
+
+  const escaped = BANNED.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const MAIN_RE = new RegExp(escaped.join('|'), 'i');
+
+  // Bắt bypass kiểu chèn dấu chấm/gạch ngang
+  const BYPASS_RE = /\bv\.?c\.?l\b|\bd\.?c\.?m\b|\bd\.?m\.?m?\b|\bd\.?k\.?m\b|\bd[i!1\*]t\b/i;
+
+  window.hasProfanity = function (text) {
+    return MAIN_RE.test(text) || BYPASS_RE.test(text);
+  };
+})();
 
 // ─── Font Size Control ────────────────────────────────────────────────
 (function () {

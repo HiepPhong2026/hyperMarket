@@ -16,6 +16,15 @@
         ".read": true,
         ".write": true
       }
+    },
+    "hugqr_saved": {
+      "$deviceId": {
+        ".read": true,
+        ".write": true,
+        "$entry": {
+          ".validate": "newData.hasChildren(['bankCode','bankBin','accountNo','accountName','savedAt'])"
+        }
+      }
     }
   }
 }

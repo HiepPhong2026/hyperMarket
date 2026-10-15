@@ -137,6 +137,7 @@ const FIREBASE_CONFIG = {
   --shadow:       0 1px 3px rgba(0,0,0,.07), 0 6px 20px rgba(0,0,0,.05);
   --r:            16px;
   --r-sm:         10px;
+  --font-size:    15px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -182,7 +183,7 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
-  font-size: 15px;
+  font-size: var(--font-size);
   line-height: 1.5;
   display: flex;
   flex-direction: column;
@@ -331,6 +332,27 @@ body {
   transition: background .15s;
 }
 .user-chip:hover { background: var(--surface-2); }
+
+/* ─── Font Size Control ─────────────────────────── */
+.fs-ctrl {
+  display: flex; align-items: center; gap: 1px;
+  background: var(--surface-2); border-radius: 20px;
+  padding: 3px 4px;
+}
+.fs-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--fg-muted); font-size: .7rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 14px;
+  transition: background .15s, color .15s;
+  line-height: 1; font-family: inherit;
+}
+.fs-btn:hover:not(:disabled) { background: var(--border); color: var(--fg); }
+.fs-btn:disabled { opacity: .35; cursor: default; }
+.fs-val {
+  font-size: .68rem; font-weight: 700; color: var(--fg-muted);
+  min-width: 24px; text-align: center;
+}
+
 .mini-avatar {
   width: 22px; height: 22px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -876,6 +898,11 @@ body {
           <div class="online-pill">
             <div class="online-pulse"></div>
             <span id="online-count">...</span> online
+          </div>
+          <div class="fs-ctrl" title="Cỡ chữ">
+            <button class="fs-btn" id="fs-dec" aria-label="Giảm cỡ chữ">A−</button>
+            <span class="fs-val" id="fs-val">15</span>
+            <button class="fs-btn" id="fs-inc" aria-label="Tăng cỡ chữ">A+</button>
           </div>
           <div class="user-chip" id="user-chip" title="Nhấn để đổi tên">
             <div class="mini-avatar" id="mini-avatar"></div>
@@ -2356,6 +2383,43 @@ function maybeScrollDown() {
   if (isNearBottom()) scrollToBottom(false);
   else document.getElementById('scroll-fab').hidden = false;
 }
+
+// ─── Font Size Control ────────────────────────────────────────────────
+(function () {
+  const FS_KEY = 'hm_chat_font';
+  const MIN = 12, MAX = 22, DEF = 15;
+  const root = document.documentElement;
+
+  function applySize(px) {
+    px = Math.max(MIN, Math.min(MAX, px));
+    root.style.setProperty('--font-size', px + 'px');
+    const val = document.getElementById('fs-val');
+    const dec = document.getElementById('fs-dec');
+    const inc = document.getElementById('fs-inc');
+    if (val) val.textContent = px;
+    if (dec) dec.disabled = (px <= MIN);
+    if (inc) inc.disabled = (px >= MAX);
+    try { localStorage.setItem(FS_KEY, px); } catch (e) {}
+  }
+
+  let saved = DEF;
+  try { const s = parseInt(localStorage.getItem(FS_KEY)); if (s >= MIN && s <= MAX) saved = s; } catch (e) {}
+  applySize(saved);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    applySize(saved);
+    const dec = document.getElementById('fs-dec');
+    const inc = document.getElementById('fs-inc');
+    if (dec) dec.addEventListener('click', () => {
+      const cur = parseInt(root.style.getPropertyValue('--font-size')) || DEF;
+      applySize(cur - 1);
+    });
+    if (inc) inc.addEventListener('click', () => {
+      const cur = parseInt(root.style.getPropertyValue('--font-size')) || DEF;
+      applySize(cur + 1);
+    });
+  });
+})();
 
 // ─── Bootstrap ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {

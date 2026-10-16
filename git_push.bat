@@ -1,0 +1,2859 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<!-- SEO Primary -->
+<title>HugMass – Phòng Chat Cộng Đồng Lớn | Kết Nối & Kinh Doanh Online</title>
+<meta name="description" content="HugMass – Phòng chat cộng đồng lớn nhất để kết nối, trao đổi, mua bán và kinh doanh trực tuyến. Hàng nghìn người đang online tại hugmass.com – Tham gia ngay hôm nay!">
+<meta name="keywords" content="hugmass, phòng chat lớn, chat trực tuyến, chat cộng đồng, hug mass, hugmass.com, chat online, phòng chat online, cộng đồng chat, mạng xã hội, bán hàng online, quản lý chợ, kết nối cộng đồng, chat miễn phí">
+<meta name="author" content="HugMass">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0078D4">
+<link rel="canonical" href="https://hugmass.com/">
+
+<!-- Open Graph (Facebook, Zalo, Messenger, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HugMass – Phòng Chat Cộng Đồng Lớn">
+<meta property="og:title" content="HugMass – Phòng Chat Cộng Đồng Lớn | hugmass.com">
+<meta property="og:description" content="🗣️ Phòng chat cộng đồng lớn – hàng nghìn người đang kết nối, trao đổi và kinh doanh online. Tham gia ngay tại hugmass.com!">
+<meta property="og:url" content="https://hugmass.com/">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:image" content="https://hugmass.com/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="HugMass – Phòng Chat Cộng Đồng Lớn">
+
+<!-- Twitter / X Card (cũng dùng cho TikTok khi share link) -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@hugmass">
+<meta name="twitter:title" content="HugMass – Phòng Chat Cộng Đồng Lớn">
+<meta name="twitter:description" content="🗣️ Phòng chat lớn nhất – kết nối hàng nghìn người, mua bán và trao đổi trực tuyến. Vào ngay hugmass.com!">
+<meta name="twitter:image" content="https://hugmass.com/og-cover.png">
+<meta name="twitter:image:alt" content="HugMass – Phòng Chat Cộng Đồng">
+
+<!-- TikTok / Bytedance meta -->
+<meta name="bytedance-verification-code" content="REPLACE_WITH_TIKTOK_CODE">
+
+<!-- Zalo specific -->
+<meta property="zalo:app_id" content="">
+
+<!-- Google Discovery / Mobile SEO -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HugMass Chat">
+
+<!-- Structured Data (JSON-LD) – Google hiểu trang là gì -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "HugMass",
+  "alternateName": ["hugmass", "hug mass", "Hug Mass", "HugMass Chat", "phòng chat HugMass"],
+  "url": "https://hugmass.com",
+  "description": "Phòng chat cộng đồng lớn – kết nối, trao đổi, mua bán và kinh doanh trực tuyến",
+  "inLanguage": "vi",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://hugmass.com/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "HugMass – Phòng Chat Cộng Đồng Lớn",
+  "url": "https://hugmass.com",
+  "applicationCategory": "SocialNetworkingApplication",
+  "operatingSystem": "Web",
+  "browserRequirements": "Requires JavaScript",
+  "description": "Phòng chat cộng đồng lớn – nơi hàng nghìn người kết nối, trao đổi, mua bán trực tuyến mỗi ngày tại hugmass.com",
+  "inLanguage": "vi",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "VND"
+  },
+  "featureList": [
+    "Phòng chat cộng đồng lớn",
+    "Kết nối người mua và người bán",
+    "Quản lý gian hàng và dự án",
+    "Chat trực tuyến miễn phí",
+    "Cộng đồng mua bán sôi động"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "HugMass",
+  "url": "https://hugmass.com",
+  "logo": "https://hugmass.com/og-cover.png",
+  "description": "Phòng chat cộng đồng lớn tại hugmass.com",
+  "sameAs": [
+    "https://github.com/HiepPhong2026/hyperMarket",
+    "https://www.facebook.com/hugmass",
+    "https://www.tiktok.com/@hugmass"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "url": "https://hugmass.com"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+
+<style>
+/* =============================================
+   DESIGN TOKENS
+   Layout: responsive sidebar ↔ bottom-nav ↔ drawer
+   ============================================= */
+:root {
+  --bg:        #F2F2F2;
+  --surface:   #FFFFFF;
+  --surface-2: #F5F5F5;
+  --border:    #D6D6D6;
+  --fg:        #1F1F1F;
+  --fg-muted:  #616161;
+  --accent:    #0078D4;
+  --accent-2:  #106EBE;
+  --success:   #107C10;
+  --warning:   #CA5010;
+  --danger:    #D13438;
+  --info:      #0078D4;
+
+  --font-ui:   'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Cascadia Code', 'Consolas', monospace;
+
+  --r-sm: 2px;
+  --r-md: 4px;
+  --r-lg: 6px;
+
+  /* Sidebar width — used as a CSS variable so js can read it */
+  --sidebar-w: 240px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #1F1F1F;
+    --surface:   #292929;
+    --surface-2: #323232;
+    --border:    #404040;
+    --fg:        #F2F2F2;
+    --fg-muted:  #9E9E9E;
+    --accent:    #4DB2FF;
+    --accent-2:  #2196F3;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:        #1F1F1F;
+  --surface:   #292929;
+  --surface-2: #323232;
+  --border:    #404040;
+  --fg:        #F2F2F2;
+  --fg-muted:  #9E9E9E;
+  --accent:    #4DB2FF;
+  --accent-2:  #2196F3;
+  color-scheme: dark;
+}
+
+/* === OCEAN (xanh biển sâu) === */
+:root[data-theme="ocean"] {
+  --bg:        #0A1628;
+  --surface:   #0F2040;
+  --surface-2: #162C54;
+  --border:    #1E3A6E;
+  --fg:        #E0F2FE;
+  --fg-muted:  #7DB3D8;
+  --accent:    #38BDF8;
+  --accent-2:  #818CF8;
+  --success:   #34D399;
+  --warning:   #FBBF24;
+  --danger:    #F87171;
+  --info:      #38BDF8;
+  color-scheme: dark;
+}
+
+/* === FOREST (xanh rừng) === */
+:root[data-theme="forest"] {
+  --bg:        #0C1A0E;
+  --surface:   #142418;
+  --surface-2: #1C3020;
+  --border:    #254228;
+  --fg:        #DCFCE7;
+  --fg-muted:  #6EAB7A;
+  --accent:    #4ADE80;
+  --accent-2:  #A3E635;
+  --success:   #4ADE80;
+  --warning:   #FACC15;
+  --danger:    #F87171;
+  --info:      #34D399;
+  color-scheme: dark;
+}
+
+/* === SUNSET (hoàng hôn ấm) === */
+:root[data-theme="sunset"] {
+  --bg:        #1A0E08;
+  --surface:   #2D1810;
+  --surface-2: #3D2218;
+  --border:    #5C3020;
+  --fg:        #FEF3C7;
+  --fg-muted:  #C4936A;
+  --accent:    #FB923C;
+  --accent-2:  #F472B6;
+  --success:   #4ADE80;
+  --warning:   #FCD34D;
+  --danger:    #F87171;
+  --info:      #FB923C;
+  color-scheme: dark;
+}
+
+/* =============================================
+   MODAL
+   ============================================= */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: color-mix(in srgb, #000 45%, transparent);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 16px;
+}
+.modal-overlay[hidden] { display: none !important; }
+
+.modal {
+  background: var(--surface); border-radius: var(--r-sm);
+  padding: 24px; width: 100%; max-width: 500px;
+  display: flex; flex-direction: column; gap: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  max-height: 90dvh; overflow-y: auto;
+  border: 1px solid var(--border);
+}
+
+.modal-header { display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 15px; font-weight: 600; }
+.modal-close {
+  background: none; border: none; border-radius: var(--r-sm);
+  width: 32px; height: 32px; cursor: pointer; color: var(--fg-muted);
+  font-size: 15px; display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s; flex-shrink: 0;
+}
+.modal-close:hover { background: var(--surface-2); color: var(--fg); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+
+label { font-size: 12px; font-weight: 400; color: var(--fg); letter-spacing: 0; }
+
+input, select, textarea {
+  padding: 7px 10px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--fg); font-family: var(--font-ui); font-size: 13px;
+  outline: none; transition: border-color 0.1s, box-shadow 0.1s; width: 100%;
+  min-height: 32px;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+textarea { resize: vertical; min-height: 68px; }
+
+.range-group { display: flex; align-items: center; gap: 10px; }
+.range-group input[type="range"] {
+  flex: 1; padding: 0; accent-color: var(--accent); cursor: pointer;
+  height: 20px;
+}
+
+.color-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; border: 2.5px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.color-dot.selected, .color-dot:hover {
+  transform: scale(1.2); border-color: var(--fg);
+}
+
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 8px; padding-top: 2px;
+}
+
+/* Delete button in modal */
+.btn-danger {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent);
+  margin-right: auto;
+}
+.btn-danger:hover { background: color-mix(in srgb, var(--danger) 18%, transparent); }
+
+/* =============================================
+   MOBILE DRAWER (sidebar overlay on small screens)
+   ============================================= */
+.drawer-overlay {
+  display: none;
+  position: fixed; inset: 0; background: color-mix(in srgb, #000 40%, transparent);
+  z-index: 50; backdrop-filter: blur(2px);
+}
+.drawer-overlay.open { display: block; }
+
+/* =============================================
+   BOTTOM NAV (mobile)
+   ============================================= */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 8px 0 max(8px, env(safe-area-inset-bottom, 8px));
+  z-index: 45;
+  justify-content: space-around;
+}
+
+.bottom-nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 4px 8px; border: none; background: none;
+  cursor: pointer; font-family: var(--font-ui); min-width: 56px;
+  color: var(--fg-muted); flex: 1; min-height: 44px;
+  border-radius: var(--r-sm); transition: color 0.15s;
+}
+.bottom-nav-item.active { color: var(--accent); }
+.bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
+.bottom-nav-item .bnav-label { font-size: 10px; font-weight: 600; }
+
+/* FAB (floating add button on mobile) */
+.fab {
+  display: none;
+  position: fixed;
+  /* trên mobile: đẩy lên trên cả clock bar (44px) + bottom-nav (62px) + khoảng cách 8px */
+  bottom: calc(62px + 44px + 8px + env(safe-area-inset-bottom, 0px));
+  right: 18px; z-index: 46;
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--accent); color: white; border: none;
+  font-size: 26px; cursor: pointer;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 50%, transparent);
+  display: none; align-items: center; justify-content: center;
+  transition: transform 0.18s, opacity 0.25s, box-shadow 0.18s;
+  /* bán trong suốt khi không dùng → thấy nội dung phía sau */
+  opacity: 0.55;
+}
+.fab:hover  { opacity: 0.85; }
+.fab:active { opacity: 1; transform: scale(0.92); box-shadow: 0 6px 22px color-mix(in srgb, var(--accent) 65%, transparent); }
+.fab:focus-visible { opacity: 1; outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* =============================================
+   VISITOR COUNTER
+   ============================================= */
+.visitor-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  margin: 24px 0 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--text-muted);
+  user-select: none;
+  transition: background 0.3s;
+}
+.visitor-counter .vc-icon {
+  font-size: 18px;
+  opacity: 0.85;
+}
+.visitor-counter .vc-num {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  transition: color 0.3s;
+}
+.visitor-counter .vc-sep {
+  width: 1px; height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+.visitor-counter .vc-label { line-height: 1.3; }
+.visitor-counter .vc-sub {
+  display: block;
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 1px;
+}
+@keyframes vc-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.18); }
+  70%  { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+.vc-num.pop { animation: vc-pop 0.45s ease; }
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .project-card { animation: fadeInUp 0.28s ease both; }
+}
+
+/* =============================================
+   RESPONSIVE — TABLET  ≤ 1024px
+   ============================================= */
+@media (max-width: 1024px) {
+  :root { --sidebar-w: 200px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* =============================================
+   RESPONSIVE — TABLET PORTRAIT  ≤ 768px
+   Sidebar collapses to a drawer, bottom nav appears
+   ============================================= */
+@media (max-width: 768px) {
+  /* App shell becomes single column */
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  /* Topbar spans full width */
+  .topbar { grid-column: 1; }
+  .menu-btn { display: flex; }
+  .topbar-add-btn { display: none; } /* hide desktop add — use FAB */
+
+  /* Sidebar turns into a drawer sliding from left */
+  .sidebar {
+    grid-column: 1; grid-row: 1;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 260px;
+    transform: translateX(-100%);
+    box-shadow: none;
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1),
+                box-shadow 0.28s;
+    height: 100dvh;
+    /* Must be above drawer-overlay (z-index: 50) so buttons inside are tappable */
+    z-index: 60;
+    /* Overflow must scroll so footer is reachable */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px color-mix(in srgb, #000 25%, transparent);
+  }
+  /* Extra bottom padding so theme picker scrolls above the bottom nav bar */
+  .sidebar-footer {
+    padding-bottom: 28px;
+  }
+
+  /* Main fills full width */
+  .main { grid-column: 1; padding: 16px 16px 90px; }
+
+  /* Stats 2 columns — ẩn Ngân sách & Tiến độ TB, chỉ giữ Tổng + Hoàn thành */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card  { padding: 12px 14px; }
+  .stat-value { font-size: 22px; }
+  .stat-card--budget, .stat-card--progress { display: none; }
+
+  /* Panel Thông báo — chỉ hiện trên mobile */
+  .notif-panel { display: flex; }
+
+  /* Bottom nav visible */
+  .bottom-nav { display: flex; }
+
+  /* FAB */
+  .fab { display: flex; }
+
+  /* Projects single col on small tablet */
+  .projects-grid { grid-template-columns: 1fr; }
+
+  /* Modal takes more screen */
+  .modal {
+    max-width: 100%; border-radius: var(--r-lg) var(--r-lg) 0 0;
+    max-height: 92dvh; padding: 20px 18px;
+  }
+  .modal-overlay { align-items: flex-end; padding: 0; }
+
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: auto; }
+
+  /* ── Showcase: 2 cột, ẩn hero banner ── */
+  .showcase-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .sc-hero { display: none; }
+}
+
+/* =============================================
+   RESPONSIVE — PHONE  ≤ 480px
+   Ultra-compact list layout
+   ============================================= */
+@media (max-width: 480px) {
+  /* ── Topbar: slim single-line ── */
+  .topbar { padding: 8px 12px; gap: 8px; }
+  .topbar-title h1 { font-size: 14px; }
+  .topbar-title p  { display: none; }
+  .search-box { max-width: 130px; padding: 5px 8px; }
+  .search-box input { font-size: 12px; }
+  .search-icon { font-size: 13px; }
+
+  /* ── Stats: 2 inline pills (ẩn budget + progress) ── */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .stat-card {
+    padding: 8px 6px; gap: 2px;
+    border-radius: var(--r-sm);
+    align-items: center; text-align: center;
+  }
+  .stat-header { flex-direction: column-reverse; gap: 2px; justify-content: center; align-items: center; }
+  .stat-icon   { font-size: 14px; }
+  .stat-label  { font-size: 9px; text-align: center; }
+  .stat-value  { font-size: 16px; }
+  .stat-sub    { display: none; }
+  .stat-delta  { display: none; }
+
+  /* ── Filter: slim horizontal scroll ── */
+  .filter-bar {
+    flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    gap: 5px; padding-bottom: 2px; scrollbar-width: none; margin-bottom: 10px;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-label { display: none; }
+  .filter-chips { flex-wrap: nowrap; gap: 4px; }
+  .filter-chip  { padding: 3px 9px; font-size: 10.5px; white-space: nowrap; min-height: 26px; border-radius: 99px; }
+  .filter-right { flex-shrink: 0; }
+  .sort-select  { font-size: 11px; padding: 3px 6px; height: 26px; }
+
+  /* ── Cards → ultra-compact list rows ── */
+  .projects-grid {
+    grid-template-columns: 1fr; gap: 0;
+    border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden;
+  }
+
+  .project-card {
+    padding: 10px 12px 10px 14px;
+    gap: 4px;
+    flex-direction: column;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    border-left: 3px solid var(--card-accent, var(--accent)) !important;
+  }
+  .project-card:last-child { border-bottom: none; }
+  .project-card::before { display: none; }
+
+  /* Top row: avatar + title + badge */
+  .card-top { gap: 8px; align-items: center; }
+  .card-title-area { gap: 8px; align-items: center; }
+  .project-avatar { width: 26px; height: 26px; font-size: 12px; border-radius: 5px; }
+  .card-title  { font-size: 12.5px; font-weight: 600; }
+  .card-client { font-size: 10.5px; }
+  .status-badge { font-size: 9.5px; padding: 2px 6px; }
+
+  /* Progress row: bar + % inline, no label */
+  .progress-section { flex-direction: row; align-items: center; gap: 8px; }
+  .progress-header  { display: contents; }
+  .progress-label   { display: none; }
+  .progress-pct     { font-size: 10.5px; font-weight: 700; color: var(--fg-muted); white-space: nowrap; order: 2; }
+  .progress-bar-track { flex: 1; height: 4px; order: 1; }
+
+  /* Meta row: price + deadline inline */
+  .card-meta { grid-template-columns: 1fr 1fr; gap: 0 12px; }
+  .meta-key  { font-size: 9px; }
+  .meta-val  { font-size: 11px; }
+
+  /* Hide desc + footer on phone */
+  .card-desc   { display: none; }
+  .card-footer { display: none; }
+  .mobile-price-chip { display: none !important; }
+
+  /* Main */
+  .main { padding: 8px 10px 86px; }
+
+  /* ── Reports compact ── */
+  .report-header { margin-bottom: 12px; }
+  .report-title  { font-size: 16px; }
+  .report-card   { padding: 12px; }
+  .report-card-title { font-size: 13px; margin-bottom: 10px; }
+  .barchart-label { width: 100px; font-size: 10.5px; }
+  .barchart-pct   { font-size: 10.5px; }
+  .barchart-row   { gap: 6px; }
+  .donut-wrap svg { width: 120px; height: 120px; }
+  .legend-item    { font-size: 11px; }
+  .deadline-row   { gap: 8px; padding: 8px 0; }
+  .deadline-badge { font-size: 10px; padding: 2px 6px; }
+  .fin-table th, .fin-table td { padding: 6px 8px; font-size: 11px; }
+
+  /* ── Showcase phone: 1 cột, ẩn hero banner ── */
+  .showcase-grid { grid-template-columns: 1fr; gap: 8px; }
+  .sc-hero { display: none; }
+}
+
+/* =============================================
+   MEDIA — trong modal + card gallery
+   ============================================= */
+.media-section { margin-top: 4px; }
+.media-add-row {
+  display: flex; gap: 8px; margin-bottom: 10px;
+}
+.media-add-row input {
+  flex: 1; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 13px; font-family: var(--font-ui);
+  color: var(--fg); background: var(--bg); outline: none;
+}
+.media-add-row input:focus { border-color: var(--accent); }
+.media-add-btn {
+  white-space: nowrap; flex-shrink: 0; padding: 8px 14px; font-size: 13px;
+}
+.media-list {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.media-item-row {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface-2); border-radius: var(--r-sm); padding: 7px 10px;
+}
+.media-item-thumb {
+  width: 36px; height: 36px; border-radius: 5px; object-fit: cover; flex-shrink: 0;
+  background: var(--border);
+}
+.media-item-icon { font-size: 20px; flex-shrink: 0; width: 36px; text-align: center; }
+.media-item-label {
+  flex: 1; font-size: 12px; color: var(--fg-muted); overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.media-item-del {
+  background: none; border: none; color: var(--fg-muted); cursor: pointer;
+  font-size: 14px; padding: 2px 4px; flex-shrink: 0;
+}
+.media-item-del:hover { color: var(--danger); }
+
+/* Card media strip */
+.card-media-strip {
+  display: flex; gap: 5px; overflow-x: auto; padding-bottom: 2px;
+  scrollbar-width: none; margin-top: 4px;
+}
+.card-media-strip::-webkit-scrollbar { display: none; }
+.card-media-thumb {
+  width: 52px; height: 38px; border-radius: 5px; object-fit: cover;
+  flex-shrink: 0; cursor: pointer; border: 1.5px solid var(--border);
+  transition: transform 0.15s;
+}
+.card-media-thumb:hover { transform: scale(1.06); }
+.card-media-chip {
+  display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 38px; border-radius: 5px; background: var(--surface-2);
+  border: 1.5px solid var(--border); cursor: pointer; font-size: 18px;
+  flex-shrink: 0; transition: transform 0.15s;
+}
+.card-media-chip:hover { transform: scale(1.06); }
+
+/* ── Card Hover Media Panel (guest-accessible) ── */
+.card-media-popup {
+  display: none;
+  position: fixed;
+  z-index: 1999;
+  width: 296px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 14px 44px rgba(0,0,0,.18), 0 2px 10px rgba(0,0,0,.09);
+  animation: cmpIn .16s ease;
+}
+@keyframes cmpIn {
+  from { opacity: 0; transform: translateY(8px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+.card-media-popup.cmp-open { display: block; }
+.cmp-header {
+  padding: 9px 13px 8px;
+  font-size: 12px; font-weight: 700; color: var(--fg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+}
+.cmp-header-count {
+  margin-left: auto; font-size: 11px; font-weight: 500;
+  color: var(--fg-muted); background: var(--surface-2);
+  padding: 1px 7px; border-radius: 99px;
+}
+.cmp-items { display: flex; flex-direction: column; }
+.cmp-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 13px; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+.cmp-item:last-child { border-bottom: none; }
+.cmp-item:hover { background: var(--surface-2); }
+.cmp-thumb {
+  width: 84px; height: 52px; border-radius: 6px; object-fit: cover;
+  flex-shrink: 0; border: 1px solid var(--border); display: block;
+}
+.cmp-icon-box {
+  width: 84px; height: 52px; border-radius: 6px; flex-shrink: 0;
+  background: var(--surface-2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; font-size: 26px;
+}
+.cmp-item-info { flex: 1; min-width: 0; }
+.cmp-item-platform {
+  font-size: 11px; font-weight: 700; color: var(--fg-muted);
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.cmp-item-hint { font-size: 11px; color: var(--fg-muted); margin-top: 3px; }
+.cmp-play-arrow {
+  font-size: 13px; color: var(--fg-muted); flex-shrink: 0;
+}
+/* Ẩn hoàn toàn trên thiết bị cảm ứng */
+@media (hover: none) { .card-media-popup { display: none !important; } }
+
+/* Media Viewer Popup */
+.media-viewer-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.85); align-items: center; justify-content: center; padding: 16px;
+}
+.media-viewer-overlay.open { display: flex; }
+.media-viewer-box {
+  position: relative; background: #000; border-radius: var(--r-lg);
+  max-width: 640px; width: 100%; max-height: 90dvh; overflow: hidden;
+}
+.media-viewer-close {
+  position: absolute; top: 10px; right: 10px; z-index: 1;
+  background: rgba(0,0,0,0.6); color: #fff; border: none; border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer; font-size: 16px; line-height: 1;
+}
+.media-viewer-content img {
+  width: 100%; max-height: 85dvh; object-fit: contain; display: block;
+}
+.media-viewer-content .video-wrap {
+  position: relative; width: 100%; padding-bottom: 56.25%;
+}
+.media-viewer-content .video-wrap iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+}
+
+/* =============================================
+   THÔNG BÁO PANEL — chỉ hiện trên mobile ≤ 768px
+   ============================================= */
+.notif-panel {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.notif-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.notif-title {
+  font-size: 13px; font-weight: 700; color: var(--fg);
+  display: flex; align-items: center; gap: 6px;
+}
+.notif-title span { font-size: 15px; }
+.notif-add-btn {
+  background: var(--accent); color: #fff; border: none; border-radius: 99px;
+  padding: 4px 12px; font-size: 11px; font-weight: 600; cursor: pointer;
+  font-family: var(--font-ui);
+}
+.notif-list {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.notif-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-md); overflow: hidden;
+  border-left: 3px solid var(--accent);
+}
+.notif-item-body {
+  padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
+}
+.notif-item-top {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+}
+.notif-text {
+  font-size: 12.5px; color: var(--fg); line-height: 1.5; flex: 1;
+}
+.notif-time {
+  font-size: 10px; color: var(--fg-muted); white-space: nowrap; margin-top: 2px;
+}
+.notif-delete-btn {
+  background: none; border: none; color: var(--fg-muted); cursor: pointer;
+  font-size: 14px; padding: 0 2px; line-height: 1; flex-shrink: 0;
+}
+.notif-delete-btn:hover { color: var(--danger); }
+.notif-video-wrap {
+  position: relative; width: 100%; padding-bottom: 56.25%; border-radius: var(--r-sm); overflow: hidden;
+}
+.notif-video-wrap iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+}
+.notif-empty {
+  text-align: center; font-size: 12px; color: var(--fg-muted); padding: 14px 0;
+}
+
+/* Modal thông báo */
+.notif-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.45); align-items: flex-end;
+}
+.notif-modal-overlay.open { display: flex; }
+.notif-modal {
+  background: var(--surface); width: 100%; border-radius: var(--r-lg) var(--r-lg) 0 0;
+  padding: 20px 18px 30px; display: flex; flex-direction: column; gap: 14px;
+  max-height: 85dvh; overflow-y: auto;
+}
+.notif-modal-title { font-size: 15px; font-weight: 700; color: var(--fg); }
+.notif-modal textarea {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 10px 12px; font-size: 13px; font-family: var(--font-ui);
+  color: var(--fg); background: var(--bg); resize: none; outline: none;
+  min-height: 80px;
+}
+.notif-modal textarea:focus { border-color: var(--accent); }
+.notif-modal input[type=text] {
+  width: 100%; border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  padding: 9px 12px; font-size: 13px; font-family: var(--font-ui);
+  color: var(--fg); background: var(--bg); outline: none;
+}
+.notif-modal input[type=text]:focus { border-color: var(--accent); }
+.notif-modal-label { font-size: 11px; font-weight: 600; color: var(--fg-muted); margin-bottom: 4px; }
+.notif-modal-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.notif-modal-actions button { font-family: var(--font-ui); }
+
+/* =============================================
+   RESPONSIVE — LARGE DESKTOP  ≥ 1280px
+   ============================================= */
+@media (min-width: 1280px) {
+  :root { --sidebar-w: 256px; }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  .projects-grid { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+  .main { padding: 24px 32px; }
+}
+
+/* =============================================
+   WORLD CLOCK BAR (đồng hồ thế giới)
+   ============================================= */
+#world-clock-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 43; height: 44px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: stretch; overflow: hidden;
+  box-shadow: 0 -2px 10px color-mix(in srgb, #000 6%, transparent);
+}
+.wc-item {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 0 10px;
+  border-right: 1px solid var(--border);
+  transition: background 0.15s; cursor: default;
+}
+.wc-item:last-child { border-right: none; }
+.wc-item:hover { background: var(--surface-2); }
+.wc-flag { font-size: 17px; line-height: 1; flex-shrink: 0; }
+.wc-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.wc-city {
+  font-size: 8.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--fg-muted); line-height: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.wc-time {
+  font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono, monospace);
+  color: var(--fg); line-height: 1.3; white-space: nowrap;
+}
+/* Đẩy nội dung main lên để không bị che bởi clock bar */
+.main { padding-bottom: 62px; }
+@media (max-width: 768px) {
+  #world-clock-bar { bottom: 62px; }
+  .main { padding-bottom: 136px; }
+}
+@media (max-width: 480px) {
+  .wc-city { font-size: 7.5px; }
+  .wc-time  { font-size: 11px; }
+  .wc-flag  { font-size: 13px; }
+  .wc-item  { padding: 0 4px; gap: 3px; }
+  .main     { padding-bottom: 130px; }
+}
+@media (min-width: 1280px) { .main { padding-bottom: 68px; } }
+</style>
+
+<!-- =============================================
+     DRAWER OVERLAY (mobile)
+     ============================================= -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeSidebar()"></div>
+
+<!-- =============================================
+     APP SHELL
+     ============================================= -->
+<div class="app-shell">
+
+  <!-- SIDEBAR / DRAWER -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a class="logo-mark" href="#">
+        <div class="logo-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="6.5" height="6.5" fill="white"/>
+            <rect x="8.5" y="1" width="6.5" height="6.5" fill="white" opacity="0.8"/>
+            <rect x="1" y="8.5" width="6.5" height="6.5" fill="white" opacity="0.8"/>
+            <rect x="8.5" y="8.5" width="6.5" height="6.5" fill="white" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <strong>HyperMarket</strong>
+          <span>Quản lý Dự án</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Chính</div>
+      <button class="nav-item active" data-filter="all" onclick="setFilter('all')">
+        <span class="nav-icon">📋</span> Tất cả Dự án
+        <span class="nav-badge" id="total-badge">0</span>
+      </button>
+      <button class="nav-item" data-filter="active" onclick="setFilter('active')">
+        <span class="nav-icon">🚀</span> Đang thực hiện
+      </button>
+      <button class="nav-item" data-filter="done" onclick="setFilter('done')">
+        <span class="nav-icon">✅</span> Hoàn thành
+      </button>
+      <button class="nav-item" data-filter="planning" onclick="setFilter('planning')">
+        <span class="nav-icon">📐</span> Lên kế hoạch
+      </button>
+      <button class="nav-item" data-filter="overdue" onclick="setFilter('overdue')">
+        <span class="nav-icon">⚠️</span> Quá hạn
+      </button>
+    </div>
+
+    <div class="nav-section" style="margin-top:12px">
+      <div class="nav-label">Báo cáo</div>
+      <button class="nav-item" data-view="report-overview" onclick="setView('report-overview')"><span class="nav-icon">📊</span> Tổng quan</button>
+      <button class="nav-item" data-view="report-finance" onclick="setView('report-finance')"><span class="nav-icon">💰</span> Tài chính</button>
+      <button class="nav-item" data-view="inside" onclick="setView('inside')"><span class="nav-icon">🔬</span> Bên trong</button>
+    </div>
+
+    <div class="nav-section" style="margin-top:12px">
+      <div class="nav-label">Cộng Đồng</div>
+      <a href="chat.html" class="nav-item" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px">
+        <span class="nav-icon">💬</span> Phòng Chat Chung
+        <span style="margin-left:auto;background:var(--accent,#0A7A6E);color:#fff;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:10px;line-height:1.4">MỚI</span>
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="theme-picker-label">Giao diện</div>
+      <div class="theme-picker">
+        <button class="theme-swatch" data-theme-val="light"  onclick="setTheme('light')"  title="Sáng">☀️</button>
+        <button class="theme-swatch" data-theme-val="dark"   onclick="setTheme('dark')"   title="Tối">🌙</button>
+        <button class="theme-swatch" data-theme-val="ocean"  onclick="setTheme('ocean')"  title="Ocean">🌊</button>
+        <button class="theme-swatch" data-theme-val="forest" onclick="setTheme('forest')" title="Forest">🌿</button>
+        <button class="theme-swatch" data-theme-val="sunset" onclick="setTheme('sunset')" title="Sunset">🌅</button>
+      </div>
+      <div class="theme-current-label" id="theme-current-label">☀️ Chế độ sáng</div>
+    </div>
+  </aside>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="openSidebar()" aria-label="Menu">☰</button>
+      <div class="topbar-title">
+        <h1>Dự án</h1>
+        <p>Theo dõi và quản lý toàn bộ dự án</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Tìm dự án..." id="search-input" autocomplete="off">
+      </div>
+      <button class="btn btn-primary topbar-add-btn" id="topbar-add-btn" onclick="openModal()">＋ Thêm Dự án</button>
+      <span class="admin-badge" id="admin-badge">ADMIN</span>
+      <button class="admin-lock-btn" id="admin-lock-btn" onclick="toggleAdminModal()" title="Đăng nhập Admin">🔒</button>
+      <div class="sync-dot-wrap" title="Trạng thái đồng bộ">
+        <span id="sync-dot"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header"><span class="stat-label">Tổng Dự án</span><span class="stat-icon">📁</span></div>
+        <div class="stat-value" id="st-total">0</div>
+        <div class="stat-sub"><span class="stat-delta up" id="st-active">0</span>&nbsp;đang hoạt động</div>
+      </div>
+      <div class="stat-card stat-card--budget">
+        <div class="stat-header"><span class="stat-label">Ngân sách</span><span class="stat-icon">💵</span></div>
+        <div class="stat-value" id="st-budget">0đ</div>
+        <div class="stat-sub">Tổng giá trị dự án</div>
+      </div>
+      <div class="stat-card stat-card--progress">
+        <div class="stat-header"><span class="stat-label">Tiến độ TB</span><span class="stat-icon">📈</span></div>
+        <div class="stat-value" id="st-avg">0%</div>
+        <div class="stat-sub">Trung bình hoàn thành</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header"><span class="stat-label">Hoàn thành</span><span class="stat-icon">🏆</span></div>
+        <div class="stat-value" id="st-done">0</div>
+        <div class="stat-sub">Dự án đã hoàn tất</div>
+      </div>
+    </div>
+
+    <!-- Panel Thông báo (chỉ hiện mobile) -->
+    <div class="notif-panel" id="notif-panel">
+      <div class="notif-header">
+        <div class="notif-title"><span>🔔</span> Thông báo</div>
+        <button class="notif-add-btn" id="notif-add-btn" onclick="openNotifModal()">＋ Thêm</button>
+      </div>
+      <div class="notif-list" id="notif-list">
+        <div class="notif-empty">Chưa có thông báo nào</div>
+      </div>
+    </div>
+
+    <!-- Modal thêm thông báo -->
+    <div class="notif-modal-overlay" id="notif-modal-overlay" onclick="closeNotifModal(event)">
+      <div class="notif-modal" onclick="event.stopPropagation()">
+        <div class="notif-modal-title">🔔 Thêm Thông báo</div>
+        <div>
+          <div class="notif-modal-label">Nội dung thông báo *</div>
+          <textarea id="notif-text-input" placeholder="Nhập nội dung thông báo..." rows="3"></textarea>
+        </div>
+        <div>
+          <div class="notif-modal-label">Link video YouTube (tuỳ chọn)</div>
+          <input type="text" id="notif-yt-input" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div class="notif-modal-actions">
+          <button class="btn btn-secondary" onclick="closeNotifModal()">Huỷ</button>
+          <button class="btn btn-primary" onclick="addNotif()">Đăng thông báo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <span class="filter-label">Lọc:</span>
+      <div class="filter-chips">
+        <button class="filter-chip active" data-chip="all">Tất cả</button>
+        <button class="filter-chip" data-chip="active">Đang thực hiện</button>
+        <button class="filter-chip" data-chip="planning">Lên kế hoạch</button>
+        <button class="filter-chip" data-chip="paused">Tạm dừng</button>
+        <button class="filter-chip" data-chip="done">Hoàn thành</button>
+        <button class="filter-chip" data-chip="overdue">Quá hạn</button>
+      </div>
+      <div class="filter-right">
+        <select class="sort-select" id="sort-select">
+          <option value="date">Mới nhất</option>
+          <option value="name">Tên A→Z</option>
+          <option value="progress">Tiến độ</option>
+          <option value="price">Giá trị</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="projects-grid" id="projects-grid"></div>
+
+    <!-- REPORT: OVERVIEW -->
+    <div id="view-report-overview" hidden>
+      <div class="report-header">
+        <h2 class="report-title">📊 Báo cáo Tổng quan</h2>
+        <p class="report-sub">Cập nhật theo thời gian thực từ dữ liệu dự án</p>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="stats-grid" id="rpt-stats"></div>
+
+      <!-- Charts row -->
+      <div class="report-grid">
+        <!-- Status donut -->
+        <div class="report-card">
+          <div class="report-card-title">Phân bố Trạng thái</div>
+          <div class="donut-wrap">
+            <svg id="donut-svg" viewBox="0 0 160 160" width="160" height="160"></svg>
+            <div class="donut-center" id="donut-center"></div>
+          </div>
+          <div class="legend" id="donut-legend"></div>
+        </div>
+
+        <!-- Progress bar chart -->
+        <div class="report-card">
+          <div class="report-card-title">Tiến độ từng Dự án</div>
+          <div class="bar-chart" id="progress-bars"></div>
+        </div>
+      </div>
+
+      <!-- Timeline / deadline list -->
+      <div class="report-card" style="margin-top:16px">
+        <div class="report-card-title">📅 Deadline sắp tới</div>
+        <div id="deadline-list"></div>
+      </div>
+    </div>
+
+    <!-- REPORT: FINANCE -->
+    <div id="view-report-finance" hidden>
+      <div class="report-header">
+        <h2 class="report-title">💰 Báo cáo Tài chính</h2>
+        <p class="report-sub">Tổng hợp ngân sách và giá trị dự án</p>
+      </div>
+
+      <div class="stats-grid" id="fin-stats"></div>
+
+      <div class="report-grid">
+        <!-- Budget bar chart -->
+        <div class="report-card">
+          <div class="report-card-title">Ngân sách theo Dự án</div>
+          <div class="budget-chart" id="budget-bars"></div>
+        </div>
+
+        <!-- Budget by status donut -->
+        <div class="report-card">
+          <div class="report-card-title">Ngân sách theo Trạng thái</div>
+          <div class="donut-wrap">
+            <svg id="fin-donut-svg" viewBox="0 0 160 160" width="160" height="160"></svg>
+            <div class="donut-center" id="fin-donut-center"></div>
+          </div>
+          <div class="legend" id="fin-donut-legend"></div>
+        </div>
+      </div>
+
+      <!-- Finance table -->
+      <div class="report-card" style="margin-top:16px;overflow-x:auto">
+        <div class="report-card-title">Chi tiết Tài chính</div>
+        <table class="fin-table" id="fin-table"></table>
+      </div>
+    </div>
+
+    <!-- INSIDE VIEW -->
+    <div id="view-inside" hidden>
+      <div class="report-header">
+        <h2 class="report-title">🔬 Bên trong HyperMarket</h2>
+        <p class="report-sub">Phân tích cấu trúc mã nguồn ứng dụng</p>
+      </div>
+      <div id="inside-content"></div>
+    </div>
+
+    <!-- VISITOR COUNTER -->
+    <div class="visitor-counter" id="visitor-counter">
+      <span class="vc-icon">👁️</span>
+      <span class="vc-num" id="vc-total">—</span>
+      <div class="vc-sep"></div>
+      <span class="vc-label">
+        Lượt truy cập
+        <span class="vc-sub" id="vc-session-line">Phiên này: <strong id="vc-session">—</strong></span>
+      </span>
+    </div>
+  </main>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" aria-label="Điều hướng chính">
+  <button class="bottom-nav-item active" data-bnav="all" onclick="setFilter('all');setBottomNav('all')">
+    <span class="bnav-icon">📋</span><span class="bnav-label">Tất cả</span>
+  </button>
+  <button class="bottom-nav-item" data-bnav="active" onclick="setFilter('active');setBottomNav('active')">
+    <span class="bnav-icon">🚀</span><span class="bnav-label">Đang làm</span>
+  </button>
+  <button class="bottom-nav-item" data-bnav="done" onclick="setFilter('done');setBottomNav('done')">
+    <span class="bnav-icon">✅</span><span class="bnav-label">Xong</span>
+  </button>
+  <button class="bottom-nav-item" data-bnav="overdue" onclick="setFilter('overdue');setBottomNav('overdue')">
+    <span class="bnav-icon">⚠️</span><span class="bnav-label">Quá hạn</span>
+  </button>
+  <button class="bottom-nav-item" onclick="location.href='chat.html'">
+    <span class="bnav-icon">💬</span><span class="bnav-label">Chat</span>
+  </button>
+</nav>
+
+<!-- FAB -->
+<button class="fab" id="fab-btn" onclick="openModal()" aria-label="Thêm dự án">＋</button>
+
+<!-- WORLD CLOCK BAR -->
+<div id="world-clock-bar" role="region" aria-label="Đồng hồ thế giới">
+  <div class="wc-item">
+    <span class="wc-flag">🇻🇳</span>
+    <div class="wc-info"><span class="wc-city">Việt Nam</span><span class="wc-time" id="wc-0">--:--:--</span></div>
+  </div>
+  <div class="wc-item">
+    <span class="wc-flag">🇬🇧</span>
+    <div class="wc-info"><span class="wc-city">Anh</span><span class="wc-time" id="wc-1">--:--:--</span></div>
+  </div>
+  <div class="wc-item">
+    <span class="wc-flag">🇯🇵</span>
+    <div class="wc-info"><span class="wc-city">Nhật</span><span class="wc-time" id="wc-2">--:--:--</span></div>
+  </div>
+  <div class="wc-item">
+    <span class="wc-flag">🇺🇸</span>
+    <div class="wc-info"><span class="wc-city">Mỹ (NY)</span><span class="wc-time" id="wc-3">--:--:--</span></div>
+  </div>
+  <div class="wc-item">
+    <span class="wc-flag">🇩🇪</span>
+    <div class="wc-info"><span class="wc-city">Đức</span><span class="wc-time" id="wc-4">--:--:--</span></div>
+  </div>
+  <div class="wc-item">
+    <span class="wc-flag">🇨🇳</span>
+    <div class="wc-info"><span class="wc-city">Bắc Kinh</span><span class="wc-time" id="wc-5">--:--:--</span></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-el">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title-el">Thêm Dự án mới</h2>
+      <button class="modal-close" onclick="closeModal()" aria-label="Đóng">✕</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label for="f-name">Tên dự án *</label>
+        <input type="text" id="f-name" placeholder="VD: Website thương mại điện tử" autocomplete="off">
+      </div>
+      <div class="form-group full">
+        <label for="f-client">Khách hàng / Bộ phận</label>
+        <input type="text" id="f-client" placeholder="VD: Công ty ABC" autocomplete="off">
+      </div>
+      <div class="form-group full">
+        <label for="f-desc">Mô tả ngắn</label>
+        <textarea id="f-desc" placeholder="Mô tả về mục tiêu và phạm vi dự án..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="f-price">Giá trị (VNĐ)</label>
+        <input type="text" id="f-price" placeholder="0" inputmode="numeric" autocomplete="off"
+               oninput="formatPriceInput(this)" onblur="formatPriceInput(this)">
+      </div>
+      <div class="form-group">
+        <label for="f-status">Trạng thái</label>
+        <select id="f-status">
+          <option value="planning">Lên kế hoạch</option>
+          <option value="active" selected>Đang thực hiện</option>
+          <option value="paused">Tạm dừng</option>
+          <option value="done">Hoàn thành</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="f-deadline">Deadline</label>
+        <input type="date" id="f-deadline">
+      </div>
+      <div class="form-group">
+        <label for="f-members">Số thành viên</label>
+        <input type="text" id="f-members" placeholder="1" inputmode="numeric" autocomplete="off"
+               oninput="formatMembersInput(this)" onblur="formatMembersInput(this)">
+      </div>
+      <div class="form-group full">
+        <label>Tiến độ: <span id="range-display" style="color:var(--accent);font-weight:700">0%</span></label>
+        <div class="range-group">
+          <input type="range" id="f-progress" min="0" max="100" value="0"
+                 oninput="document.getElementById('range-display').textContent=this.value+'%'">
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>Màu sắc</label>
+        <div class="color-grid" id="color-grid"></div>
+      </div>
+      <div class="form-group">
+        <label for="f-icon">Biểu tượng</label>
+        <select id="f-icon">
+          <option value="🏗️">🏗️ Xây dựng</option>
+          <option value="💻">💻 Công nghệ</option>
+          <option value="📱">📱 Mobile</option>
+          <option value="🛒">🛒 Thương mại</option>
+          <option value="📊">📊 Phân tích</option>
+          <option value="🎨">🎨 Thiết kế</option>
+          <option value="🔧">🔧 Kỹ thuật</option>
+          <option value="📦">📦 Logistics</option>
+          <option value="🌐">🌐 Website</option>
+          <option value="🏪">🏪 Cửa hàng</option>
+          <option value="📢">📢 Marketing</option>
+          <option value="🔬">🔬 Nghiên cứu</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- MEDIA SECTION -->
+    <div class="form-group full media-section">
+      <label>🎬 Media đính kèm</label>
+      <div class="media-add-row">
+        <input type="text" id="f-media-url" placeholder="Dán link YouTube, TikTok hoặc URL ảnh..." autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addMediaItem();}">
+        <button type="button" class="btn btn-secondary media-add-btn" onclick="addMediaItem()">＋ Thêm</button>
+      </div>
+      <div class="media-list" id="f-media-list"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="delete-btn" onclick="deleteProject()" hidden>🗑 Xoá</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Huỷ</button>
+      <button class="btn btn-primary" onclick="saveProject()">Lưu Dự án</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIN ADMIN MODAL -->
+<div class="pin-overlay" id="pin-overlay" onclick="if(event.target===this)closePinModal()">
+  <div class="pin-box">
+    <h3>🔐 Đăng nhập Admin</h3>
+    <p>Nhập mã PIN để mở khóa chức năng thêm / sửa / xoá</p>
+    <input class="pin-input" id="pin-input" type="password" inputmode="numeric"
+      maxlength="10" placeholder="••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')submitPin()">
+    <div class="pin-error" id="pin-error"></div>
+    <div class="pin-actions">
+      <button class="btn btn-ghost" onclick="closePinModal()">Huỷ</button>
+      <button class="btn btn-primary" onclick="submitPin()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEDIA VIEWER POPUP -->
+<div class="media-viewer-overlay" id="media-viewer-overlay" onclick="closeMediaViewer()">
+  <div class="media-viewer-box" onclick="event.stopPropagation()">
+    <button class="media-viewer-close" onclick="closeMediaViewer()">✕</button>
+    <div class="media-viewer-content" id="media-viewer-content"></div>
+  </div>
+</div>
+
+<!-- Card Hover Media Panel (hiện khi rà chuột vào dự án có clip) -->
+<div id="card-media-popup" class="card-media-popup"
+     onmouseenter="keepCardPreview()" onmouseleave="hideCardPreview()">
+  <div id="cmp-inner"></div>
+</div>
+
+<!-- Firebase SDK (compat v10) — phải load TRƯỚC script chính -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.5/firebase-database-compat.min.js"></script>
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const COLORS = [
+  '#4F6EF7','#7C3AED','#DC2626','#D97706','#16A34A',
+  '#0891B2','#DB2777','#EA580C','#65A30D','#0D9488'
+];
+const MEMBER_COLORS = ['#4F6EF7','#7C3AED','#16A34A','#DC2626','#D97706','#0891B2'];
+const INITIALS = ['An','Bình','Chi','Dung','Em','Hà','Minh','Nam','Phúc','Quân'];
+
+const DEFAULTS = [
+  { id:1,  name:'Website Thương mại điện tử', client:'Công ty Bách Hóa Xanh',
+    desc:'Xây dựng nền tảng mua sắm trực tuyến tích hợp thanh toán và quản lý kho.',
+    price:120000000, status:'active', progress:68, deadline:'2026-12-15', members:4, color:'#4F6EF7', icon:'🛒', created:Date.now()-5*86400000 },
+  { id:2,  name:'App Mobile Giao hàng', client:'FastShip Vietnam',
+    desc:'Ứng dụng di động theo dõi đơn hàng real-time cho tài xế và khách hàng.',
+    price:85000000,  status:'active', progress:42, deadline:'2027-02-28', members:3, color:'#7C3AED', icon:'📱', created:Date.now()-10*86400000 },
+  { id:3,  name:'Hệ thống ERP Nội bộ', client:'HyperMarket Group',
+    desc:'Triển khai hệ thống quản lý doanh nghiệp tích hợp kế toán, nhân sự, kho.',
+    price:320000000, status:'active', progress:25, deadline:'2027-06-30', members:6, color:'#0891B2', icon:'🏗️', created:Date.now()-2*86400000 },
+  { id:4,  name:'Dashboard Phân tích Dữ liệu', client:'Phòng Kinh doanh',
+    desc:'Bảng điều khiển trực quan hóa số liệu bán hàng và xu hướng thị trường.',
+    price:45000000,  status:'done',   progress:100, deadline:'2026-09-30', members:2, color:'#16A34A', icon:'📊', created:Date.now()-30*86400000 },
+  { id:5,  name:'Chiến dịch Marketing Q4', client:'Phòng Marketing',
+    desc:'Lập kế hoạch và triển khai chiến dịch digital marketing cuối năm.',
+    price:55000000,  status:'planning', progress:10, deadline:'2026-11-01', members:3, color:'#DB2777', icon:'📢', created:Date.now()-1*86400000 },
+  { id:6,  name:'Nâng cấp Server Hạ tầng', client:'Phòng IT',
+    desc:'Di chuyển hệ thống lên cloud AWS, tối ưu hiệu suất và bảo mật.',
+    price:98000000,  status:'paused', progress:55, deadline:'2026-10-01', members:2, color:'#D97706', icon:'🔧', created:Date.now()-20*86400000 }
+];
+
+let projects = (() => { try { const s=localStorage.getItem('hm_projects_v2'); return s?JSON.parse(s):[...DEFAULTS]; } catch{ return [...DEFAULTS]; } })();
+let currentFilter='all', searchQuery='', sortBy='date', editingId=null, selectedColor=COLORS[0];
+
+/* ============================================================
+   ADMIN MODE — Phân quyền xem / chỉnh sửa
+   Đổi ADMIN_PIN thành mã PIN bạn muốn dùng
+   ============================================================ */
+const ADMIN_PIN = '1234'; // ← ĐỔI THÀNH MÃ PIN CỦA BẠN
+
+let isAdmin = (() => { try { return sessionStorage.getItem('hm_admin')==='1'; } catch { return false; } })();
+
+function updateAdminUI() {
+  const on = isAdmin;
+  // Nút lock
+  const lb = document.getElementById('admin-lock-btn');
+  if (lb) { lb.textContent = on ? '🔓' : '🔒'; lb.classList.toggle('is-admin', on); lb.title = on ? 'Đăng xuất Admin' : 'Đăng nhập Admin'; }
+  // Badge
+  const badge = document.getElementById('admin-badge');
+  if (badge) badge.classList.toggle('show', on);
+  // Nút Thêm Dự án
+  const taBtn = document.getElementById('topbar-add-btn');
+  if (taBtn) taBtn.hidden = !on;
+  // FAB
+  const fab = document.getElementById('fab-btn');
+  if (fab) fab.hidden = !on;
+  // Notif add
+  const na = document.getElementById('notif-add-btn');
+  if (na) na.hidden = !on;
+  // Re-render để ẩn/hiện nút xóa thông báo
+  renderNotifs();
+  renderAll();
+}
+
+function toggleAdminModal() {
+  if (isAdmin) {
+    // Đăng xuất
+    isAdmin = false;
+    try { sessionStorage.removeItem('hm_admin'); } catch {}
+    updateAdminUI();
+  } else {
+    openPinModal();
+  }
+}
+
+function openPinModal() {
+  const overlay = document.getElementById('pin-overlay');
+  const input = document.getElementById('pin-input');
+  const err = document.getElementById('pin-error');
+  if (overlay) { overlay.classList.add('open'); }
+  if (input)  { input.value = ''; input.focus(); }
+  if (err)    { err.textContent = ''; }
+}
+
+function closePinModal() {
+  const overlay = document.getElementById('pin-overlay');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function submitPin() {
+  const val = (document.getElementById('pin-input')?.value || '').trim();
+  const err = document.getElementById('pin-error');
+  if (val === ADMIN_PIN) {
+    isAdmin = true;
+    try { sessionStorage.setItem('hm_admin', '1'); } catch {}
+    closePinModal();
+    updateAdminUI();
+  } else {
+    if (err) { err.textContent = 'Mã PIN không đúng, thử lại'; }
+    const inp = document.getElementById('pin-input');
+    if (inp) { inp.value = ''; inp.focus(); }
+  }
+}
+
+function saveProjects(){
+  try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{}
+  if(window._hmDb){
+    window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+  }
+}
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+const STATUS_MAP = {
+  active:   { label:'Đang thực hiện', cls:'status-active'   },
+  done:     { label:'Hoàn thành',     cls:'status-done'     },
+  paused:   { label:'Tạm dừng',       cls:'status-paused'   },
+  planning: { label:'Lên kế hoạch',   cls:'status-planning' },
+  overdue:  { label:'Quá hạn',        cls:'status-overdue'  }
+};
+
+function effectiveStatus(p){
+  if(p.status!=='done' && p.deadline && new Date(p.deadline)<new Date()) return 'overdue';
+  return p.status;
+}
+
+/* ============================================================
+   FORMAT
+   ============================================================ */
+function fmtPrice(n){
+  n=Number(n)||0;
+  if(n>=1e9)  return (n/1e9).toFixed(1).replace('.0','')+ ' tỷ';
+  if(n>=1e6)  return (n/1e6).toFixed(1).replace('.0','')+ ' triệu';
+  return n.toLocaleString('vi-VN')+'đ';
+}
+function fmtDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function daysLeft(d){ if(!d) return null; return Math.ceil((new Date(d)-new Date())/86400000); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ============================================================
+   STATS
+   ============================================================ */
+function updateStats(){
+  const tot    = projects.length;
+  const active = projects.filter(p=>p.status==='active').length;
+  const done   = projects.filter(p=>p.status==='done').length;
+  const budget = projects.reduce((s,p)=>s+(Number(p.price)||0),0);
+  const avg    = tot ? Math.round(projects.reduce((s,p)=>s+p.progress,0)/tot) : 0;
+  document.getElementById('st-total').textContent  = tot;
+  document.getElementById('st-active').textContent = active;
+  document.getElementById('st-done').textContent   = done;
+  document.getElementById('st-avg').textContent    = avg+'%';
+  document.getElementById('st-budget').textContent = fmtPrice(budget);
+  document.getElementById('total-badge').textContent = tot;
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function getFiltered(){
+  let list=[...projects];
+  if(currentFilter==='overdue') list=list.filter(p=>effectiveStatus(p)==='overdue');
+  else if(currentFilter!=='all') list=list.filter(p=>p.status===currentFilter);
+  if(searchQuery){ const q=searchQuery.toLowerCase(); list=list.filter(p=>p.name.toLowerCase().includes(q)||(p.client||'').toLowerCase().includes(q)||(p.desc||'').toLowerCase().includes(q)); }
+  list.sort((a,b)=>{
+    if(sortBy==='date')     return b.created-a.created;
+    if(sortBy==='name')     return a.name.localeCompare(b.name,'vi');
+    if(sortBy==='progress') return b.progress-a.progress;
+    if(sortBy==='price')    return b.price-a.price;
+    return 0;
+  });
+  return list;
+}
+
+function memberAvatars(count,color){
+  return Array.from({length:Math.min(count||1,5)},(_,i)=>{
+    const c=MEMBER_COLORS[i%MEMBER_COLORS.length];
+    const init=INITIALS[i%INITIALS.length];
+    return `<div class="member-avatar" style="background:${c}" title="${init}">${init.charAt(0)}</div>`;
+  }).join('') + (count>5?`<div class="member-avatar" style="background:var(--fg-muted)">+${count-5}</div>`:'');
+}
+
+function renderCard(p,delay){
+  const eff=effectiveStatus(p);
+  const st=STATUS_MAP[eff]||STATUS_MAP.active;
+  const dl=daysLeft(p.deadline);
+  const dlClass=dl!==null&&dl<0?'deadline-overdue':'';
+  const dlText=dl===null?'':dl<0?`Quá hạn ${Math.abs(dl)} ngày`:dl===0?'Hôm nay!':`Còn ${dl} ngày`;
+  const editAttrs = isAdmin
+    ? `onclick="editProject(${p.id})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')editProject(${p.id})"`
+    : '';
+  // Hover preview clip cho khách vãng lai (chỉ khi có youtube/tiktok)
+  const hasClip = (p.media||[]).some(u => { const t=detectMediaType(u); return t==='youtube'||t==='tiktok'; });
+  const previewAttrs = hasClip
+    ? `onmouseenter="showCardPreview(this,${p.id})" onmouseleave="hideCardPreview()"`
+    : '';
+  return `<div class="project-card" style="animation-delay:${delay}ms;--card-accent:${p.color};--card-bg:${p.color}22${isAdmin?'':';cursor:default'}"
+      ${editAttrs} ${previewAttrs}>
+    <div class="card-top">
+      <div class="card-title-area">
+        <div class="project-avatar" style="background:${p.color}22">${p.icon||'📁'}</div>
+        <div style="min-width:0">
+          <div class="card-title">${esc(p.name)}</div>
+          <div class="card-client">${esc(p.client||'—')}</div>
+        </div>
+      </div>
+      <span class="status-badge ${st.cls}">${st.label}</span>
+    </div>
+    ${p.desc?`<div class="card-desc">${esc(p.desc)}</div>`:''}
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="progress-label">Tiến độ</span>
+        <span class="progress-pct">${p.progress}%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" style="width:${p.progress}%;background:${p.color}"></div>
+      </div>
+    </div>
+    <div class="card-meta">
+      <div class="meta-item"><span class="meta-key">Giá trị</span><span class="meta-val price">${fmtPrice(p.price)}</span></div>
+      <div class="meta-item"><span class="meta-key">Deadline</span><span class="meta-val ${dlClass}" style="font-size:12px">${fmtDate(p.deadline)}</span></div>
+      <div class="meta-item"><span class="meta-key">Share</span><span class="meta-val price" title="Giá trị / Nhân sự">💰 ${(p.price && p.members) ? Math.round((p.price||0)/Math.max(Number(p.members)||1,1)).toLocaleString('vi-VN')+'đ' : '—'}</span></div>
+      <div class="meta-item" style="grid-column:1/-1"><span class="meta-key">Divide</span><span class="meta-val price">÷ ${(p.price && p.members) ? Math.round((p.price||0)/Math.max(Number(p.members)||1,1)).toLocaleString('vi-VN')+'đ / người' : '—'}</span></div>
+    </div>
+    <div class="card-footer">
+      <div class="members">${memberAvatars(p.members,p.color)}</div>
+      ${dlText?`<span class="card-deadline ${dlClass}">📅 ${dlText}</span>`:''}
+    </div>
+    ${renderCardMediaStrip(p)}
+    <!-- Mobile price chip: shown via CSS only on phone -->
+    <div class="mobile-price-chip" style="display:none">${fmtPrice(p.price)}</div>
+  </div>`;
+}
+
+/* ─── SHOWCASE CARD (viewer mode) ─── */
+function renderCardViewer(p, delay) {
+  const statusMap = {
+    active:   ['Đang thực hiện','#2563eb'],
+    done:     ['Hoàn thành',    '#16a34a'],
+    paused:   ['Tạm dừng',      '#d97706'],
+    planning: ['Kế hoạch',      '#7c3aed'],
+    overdue:  ['Trễ hạn',       '#dc2626'],
+  };
+  const [statusLabel] = statusMap[p.status] || ['Không xác định','#6b7280'];
+
+  // hero image: first media item (image or yt thumb)
+  let heroImgHtml = '';
+  const firstMedia = (p.media||[]).find(u=>u && u.trim());
+  if (firstMedia) {
+    const mt = detectMediaType(firstMedia);
+    const thumbUrl = mt==='youtube' ? `https://img.youtube.com/vi/${getYtId(firstMedia)}/mqdefault.jpg` : firstMedia;
+    if (mt !== 'tiktok') heroImgHtml = `<img class="sc-hero-img" src="${esc(thumbUrl)}" alt="" loading="lazy">`;
+  }
+
+  // days left label
+  let daysHtml = '';
+  if (p.deadline) {
+    const dl = daysLeft(p.deadline);
+    if (p.status !== 'done') {
+      if (dl < 0) daysHtml = `<span class="sc-days-badge">⚠️ Trễ ${Math.abs(dl)} ngày</span>`;
+      else if (dl === 0) daysHtml = `<span class="sc-days-badge">⏰ Hôm nay</span>`;
+      else daysHtml = `<span class="sc-days-badge">📅 Còn ${dl} ngày</span>`;
+    }
+  }
+
+  // media gallery (skip first if used as hero, max 4 shown)
+  let mediaHtml = '';
+  const mediaList = (p.media||[]).filter(u=>u&&u.trim());
+  const galleryItems = mediaList.slice(heroImgHtml ? 1 : 0, (heroImgHtml ? 1 : 0) + 5);
+  if (galleryItems.length) {
+    const thumbs = galleryItems.map(url => {
+      const mt = detectMediaType(url);
+      if (mt === 'youtube') {
+        const tid = getYtId(url);
+        return `<div class="sc-media-thumb" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')">
+          <img src="https://img.youtube.com/vi/${esc(tid)}/mqdefault.jpg" alt="" loading="lazy">
+          <div class="sc-media-play">▶️</div></div>`;
+      } else if (mt === 'tiktok') {
+        return `<div class="sc-media-thumb" onclick="event.stopPropagation();window.open('${esc(url)}','_blank')" title="Xem TikTok">
+          <div style="width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-size:22px;">🎵</div></div>`;
+      } else {
+        return `<div class="sc-media-thumb" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')">
+          <img src="${esc(url)}" alt="" loading="lazy"></div>`;
+      }
+    }).join('');
+    mediaHtml = `<div class="sc-media">${thumbs}</div>`;
+  }
+
+  const pct = Math.min(100, Math.max(0, p.progress || 0));
+  const animDelay = `${delay}ms`;
+
+  // Hover preview clip cho khách vãng lai
+  const hasClip = (p.media||[]).some(u => { const t=detectMediaType(u); return t==='youtube'||t==='tiktok'; });
+  const previewHover = hasClip
+    ? `onmouseenter="showCardPreview(this,${p.id})" onmouseleave="hideCardPreview()"`
+    : '';
+  return `<div class="showcase-card" onclick="viewProject(${p.id})" style="--sc-accent:${esc(p.color||'var(--accent)')};animation-delay:${animDelay};cursor:pointer" ${previewHover}>
+  <div class="sc-hero" style="background:${esc(p.color||'var(--accent)')}">
+    ${heroImgHtml}
+    <div class="sc-hero-icon">${esc(p.icon||'📁')}</div>
+    <span class="sc-status-badge">${esc(statusLabel)}</span>
+    ${daysHtml}
+  </div>
+  <div class="sc-body" style="animation-delay:${animDelay}">
+    <div>
+      <div class="sc-name">${esc(p.name)}</div>
+      ${p.client ? `<div class="sc-client">🏢 ${esc(p.client)}</div>` : ''}
+    </div>
+    ${p.desc ? `<div class="sc-desc">${esc(p.desc)}</div>` : ''}
+    <div class="sc-progress-wrap" style="animation-delay:${animDelay}">
+      <div class="sc-progress-header">
+        <span class="sc-progress-label">Tiến độ</span>
+        <span class="sc-progress-pct">${pct}%</span>
+      </div>
+      <div class="sc-progress-track">
+        <div class="sc-progress-fill" style="width:${pct}%;animation-delay:${animDelay}"></div>
+      </div>
+    </div>
+    <div class="sc-stats">
+      <div class="sc-stat">
+        <span class="sc-stat-key">Giá trị</span>
+        <span class="sc-stat-val price">${fmtPrice(p.price)}</span>
+      </div>
+      <div class="sc-stat">
+        <span class="sc-stat-key">Divide</span>
+        <span class="sc-stat-val price">💰 ${(p.price && p.members) ? Math.round((p.price||0)/Math.max(Number(p.members)||1,1)).toLocaleString('vi-VN')+'đ' : '—'}</span>
+      </div>
+      ${p.deadline ? `<div class="sc-stat">
+        <span class="sc-stat-key">Hạn chót</span>
+        <span class="sc-stat-val">${fmtDate(p.deadline)}</span>
+      </div>` : ''}
+      ${p.created ? `<div class="sc-stat">
+        <span class="sc-stat-key">Khởi tạo</span>
+        <span class="sc-stat-val">${fmtDate(p.created)}</span>
+      </div>` : ''}
+    </div>
+  </div>
+  ${mediaHtml}
+</div>`;
+}
+
+function renderAll(){
+  const grid=document.getElementById('projects-grid');
+  const list=getFiltered();
+  if (!isAdmin) {
+    grid.className = 'showcase-grid';
+    grid.innerHTML = list.length
+      ? list.map((p,i)=>renderCardViewer(p, Math.min(i*60,500))).join('')
+      : `<div class="empty-state"><div class="empty-icon">🏗️</div><h3>Chưa có dự án nào</h3><p>Các dự án sẽ hiển thị tại đây.</p></div>`;
+  } else {
+    grid.className = 'projects-grid';
+    grid.innerHTML = list.length
+      ? list.map((p,i)=>renderCard(p,Math.min(i*35,250))).join('')
+      : `<div class="empty-state"><div class="empty-icon">📭</div><h3>Không có dự án nào</h3><p>Thêm dự án mới hoặc thay đổi bộ lọc.</p></div>`;
+  }
+  updateStats();
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function buildColorGrid(){
+  document.getElementById('color-grid').innerHTML=COLORS.map(c=>
+    `<div class="color-dot ${c===selectedColor?'selected':''}" style="background:${c}" onclick="selectColor('${c}')" role="radio" aria-checked="${c===selectedColor}" tabindex="0"></div>`
+  ).join('');
+}
+function selectColor(c){ selectedColor=c; buildColorGrid(); }
+
+const MODAL_FIELDS = ['f-name','f-client','f-desc','f-price','f-status','f-deadline','f-members','f-progress','f-icon','f-media-url'];
+
+function openModal(id=null, viewOnly=false){
+  if(!isAdmin && !viewOnly) return; // chỉ admin mới được thêm/sửa
+  editingId = viewOnly ? null : id; // viewer không cần editingId
+  const overlay=document.getElementById('modal-overlay');
+  const titleEl=document.getElementById('modal-title-el');
+  const deleteBtn=document.getElementById('delete-btn');
+  const saveBtn=document.querySelector('.modal-actions .btn-primary');
+  const cancelBtn=document.querySelector('.modal-actions .btn-ghost');
+  const mediaAddRow=document.querySelector('.media-add-row');
+
+  if(id){
+    const p=projects.find(x=>x.id===id); if(!p) return;
+    if(viewOnly){
+      titleEl.textContent='Chi tiết Dự án 👁';
+      deleteBtn.hidden=true;
+      if(saveBtn) saveBtn.hidden=true;
+      if(cancelBtn) cancelBtn.textContent='Đóng';
+      if(mediaAddRow) mediaAddRow.style.display='none';
+    } else {
+      titleEl.textContent='Chỉnh sửa Dự án'; deleteBtn.hidden=false;
+      if(saveBtn) saveBtn.hidden=false;
+      if(cancelBtn) cancelBtn.textContent='Huỷ';
+      if(mediaAddRow) mediaAddRow.style.display='';
+    }
+    document.getElementById('f-name').value=p.name;
+    document.getElementById('f-client').value=p.client||'';
+    document.getElementById('f-desc').value=p.desc||'';
+    document.getElementById('f-price').value=formatPriceDisplay(p.price||0);
+    document.getElementById('f-status').value=p.status;
+    document.getElementById('f-deadline').value=p.deadline||'';
+    document.getElementById('f-members').value=(p.members||1).toLocaleString('vi-VN');
+    document.getElementById('f-progress').value=p.progress;
+    document.getElementById('f-icon').value=p.icon||'📁';
+    document.getElementById('range-display').textContent=p.progress+'%';
+    selectedColor=p.color||COLORS[0];
+    editingMedia=[...(p.media||[])];
+  } else {
+    titleEl.textContent='Thêm Dự án mới'; deleteBtn.hidden=true;
+    if(saveBtn) saveBtn.hidden=false;
+    if(cancelBtn) cancelBtn.textContent='Huỷ';
+    if(mediaAddRow) mediaAddRow.style.display='';
+    ['f-name','f-client','f-desc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-price').value='';
+    document.getElementById('f-status').value='active';
+    document.getElementById('f-deadline').value='';
+    document.getElementById('f-members').value='1';
+    document.getElementById('f-progress').value=0;
+    document.getElementById('f-icon').value='🛒';
+    document.getElementById('range-display').textContent='0%';
+    selectedColor=COLORS[0];
+    editingMedia=[];
+  }
+  // enable/disable fields based on viewOnly
+  MODAL_FIELDS.forEach(fid=>{
+    const el=document.getElementById(fid);
+    if(el) el.disabled=viewOnly;
+  });
+  // also disable color grid interaction and progress range
+  const colorGrid=document.getElementById('color-grid');
+  if(colorGrid) colorGrid.style.pointerEvents=viewOnly?'none':'';
+  const progressRange=document.getElementById('f-progress');
+  if(progressRange) progressRange.style.pointerEvents=viewOnly?'none':'';
+  // hide/show delete buttons on media items
+  overlay.dataset.viewOnly=viewOnly?'1':'';
+
+  renderModalMediaList();
+  buildColorGrid();
+  overlay.hidden=false;
+  if(!viewOnly) setTimeout(()=>document.getElementById('f-name').focus(),100);
+}
+
+function closeModal(){
+  // re-enable all fields when closing
+  MODAL_FIELDS.forEach(fid=>{
+    const el=document.getElementById(fid);
+    if(el) el.disabled=false;
+  });
+  const colorGrid=document.getElementById('color-grid');
+  if(colorGrid) colorGrid.style.pointerEvents='';
+  const mediaAddRow=document.querySelector('.media-add-row');
+  if(mediaAddRow) mediaAddRow.style.display='';
+  const saveBtn=document.querySelector('.modal-actions .btn-primary');
+  if(saveBtn) saveBtn.hidden=false;
+  const cancelBtn=document.querySelector('.modal-actions .btn-ghost');
+  if(cancelBtn) cancelBtn.textContent='Huỷ';
+  const overlay=document.getElementById('modal-overlay');
+  overlay.hidden=true;
+  overlay.dataset.viewOnly='';
+  editingId=null;
+}
+
+function editProject(id){ openModal(id); }
+function viewProject(id){ openModal(id, true); }
+
+function saveProject(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){ document.getElementById('f-name').focus(); return; }
+  const data={
+    name,
+    client:   document.getElementById('f-client').value.trim(),
+    desc:     document.getElementById('f-desc').value.trim(),
+    price:    parsePriceInput(document.getElementById('f-price').value),
+    status:   document.getElementById('f-status').value,
+    deadline: document.getElementById('f-deadline').value,
+    members:  parseMembersInput(document.getElementById('f-members').value),
+    progress: Number(document.getElementById('f-progress').value)||0,
+    icon:     document.getElementById('f-icon').value,
+    color:    selectedColor,
+    media:    [...editingMedia],
+  };
+  if(editingId){
+    const idx=projects.findIndex(p=>p.id===editingId);
+    if(idx>-1) projects[idx]={...projects[idx],...data};
+  } else {
+    projects.unshift({id:Date.now(),created:Date.now(),...data});
+  }
+  saveProjects(); renderAll(); closeModal();
+}
+
+function deleteProject(){
+  if(!isAdmin || !editingId) return;
+  projects=projects.filter(p=>p.id!==editingId);
+  saveProjects(); renderAll(); closeModal();
+}
+
+/* ============================================================
+   FILTERS + SEARCH
+   ============================================================ */
+function setFilter(f){
+  currentFilter=f;
+  // if we're in a report view, switch back to project list
+  if (currentView !== 'projects') {
+    currentView = 'projects';
+    document.getElementById('view-report-overview').hidden = true;
+    document.getElementById('view-report-finance').hidden = true;
+    document.getElementById('view-inside').hidden = true;
+    document.getElementById('projects-grid').hidden = false;
+    const statsGrid = document.querySelector('.stats-grid');
+    const filterBar = document.querySelector('.filter-bar');
+    if (statsGrid) statsGrid.style.display = '';
+    if (filterBar) filterBar.style.display = '';
+    document.querySelector('.topbar-title h1').textContent = 'Dự án';
+    document.querySelector('.topbar-title p').textContent  = 'Theo dõi và quản lý toàn bộ dự án';
+    document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));
+  }
+  // sync sidebar
+  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));
+  // sync chips
+  document.querySelectorAll('[data-chip]').forEach(b=>b.classList.toggle('active',b.dataset.chip===f));
+  renderAll();
+  closeSidebar(); // close drawer on mobile after tap
+}
+
+function setBottomNav(f){
+  document.querySelectorAll('[data-bnav]').forEach(b=>b.classList.toggle('active',b.dataset.bnav===f));
+}
+
+document.querySelectorAll('[data-chip]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ setFilter(btn.dataset.chip); setBottomNav(btn.dataset.chip); });
+});
+
+document.getElementById('search-input').addEventListener('input',e=>{ searchQuery=e.target.value; renderAll(); });
+document.getElementById('sort-select').addEventListener('change',e=>{ sortBy=e.target.value; renderAll(); });
+
+// Overlay click closes modal
+document.getElementById('modal-overlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* ============================================================
+   SIDEBAR DRAWER (mobile)
+   ============================================================ */
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+/* ============================================================
+   THEME — multi-theme system
+   ============================================================ */
+const THEMES = {
+  light:  { icon: '☀️',  label: 'Chế độ sáng' },
+  dark:   { icon: '🌙',  label: 'Chế độ tối'  },
+  ocean:  { icon: '🌊',  label: 'Ocean'        },
+  forest: { icon: '🌿',  label: 'Forest'       },
+  sunset: { icon: '🌅',  label: 'Sunset'       },
+};
+
+function setTheme(t) {
+  const root = document.documentElement;
+  root.setAttribute('data-theme', t);
+  try { localStorage.setItem('hm_theme', t); } catch {}
+  // update picker active state
+  document.querySelectorAll('.theme-swatch').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.themeVal === t);
+  });
+  // update label
+  const meta = THEMES[t] || THEMES.light;
+  const lbl = document.getElementById('theme-current-label');
+  if (lbl) lbl.textContent = meta.icon + ' ' + meta.label;
+}
+
+// Keep backward compat
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  setTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+// Load saved theme on init
+(()=>{
+  try {
+    const t = localStorage.getItem('hm_theme') || 'light';
+    setTheme(t);
+  } catch { setTheme('light'); }
+})();
+
+/* ============================================================
+   VISITOR COUNTER
+   ============================================================ */
+(()=>{
+  try {
+    // Total visit count (persists across sessions in this browser)
+    let total = parseInt(localStorage.getItem('hm_visits') || '0', 10);
+    total++;
+    localStorage.setItem('hm_visits', String(total));
+
+    // Session visit count (resets when tab is closed)
+    let session = parseInt(sessionStorage.getItem('hm_session_visits') || '0', 10);
+    session++;
+    sessionStorage.setItem('hm_session_visits', String(session));
+
+    // Display
+    const vcTotal   = document.getElementById('vc-total');
+    const vcSession = document.getElementById('vc-session');
+    if (vcTotal)   vcTotal.textContent   = total.toLocaleString('vi-VN');
+    if (vcSession) vcSession.textContent = session.toLocaleString('vi-VN');
+
+    // Pop animation on the number
+    if (vcTotal) {
+      vcTotal.classList.add('pop');
+      vcTotal.addEventListener('animationend', () => vcTotal.classList.remove('pop'), { once: true });
+    }
+  } catch(e) {
+    // localStorage blocked — hide gracefully
+    const el = document.getElementById('visitor-counter');
+    if (el) el.style.display = 'none';
+  }
+})();
+
+/* ============================================================
+   VIEW SWITCHING
+   ============================================================ */
+let currentView = 'projects';
+
+function setView(v) {
+  currentView = v;
+
+  // hide all view panels
+  document.getElementById('projects-grid').hidden = false;
+  document.getElementById('view-report-overview').hidden = true;
+  document.getElementById('view-report-finance').hidden = true;
+  document.getElementById('view-inside').hidden = true;
+  // hide stats/filter bar for report views
+  const statsGrid = document.querySelector('.stats-grid');
+  const filterBar = document.querySelector('.filter-bar');
+
+  // sync sidebar nav-items for views
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  // deactivate filter nav items when in report view
+  if (v === 'report-overview' || v === 'report-finance') {
+    document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+    document.getElementById('projects-grid').hidden = true;
+    if (statsGrid) statsGrid.style.display = 'none';
+    if (filterBar) filterBar.style.display = 'none';
+    // update topbar title
+    document.querySelector('.topbar-title h1').textContent = v === 'report-overview' ? 'Báo cáo Tổng quan' : 'Báo cáo Tài chính';
+    document.querySelector('.topbar-title p').textContent  = v === 'report-overview' ? 'Thống kê và phân tích dự án' : 'Tổng hợp ngân sách và tài chính';
+    if (v === 'report-overview') { document.getElementById('view-report-overview').hidden = false; renderReportOverview(); }
+    else                         { document.getElementById('view-report-finance').hidden  = false; renderReportFinance(); }
+  } else if (v === 'inside') {
+    document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+    document.getElementById('projects-grid').hidden = true;
+    if (statsGrid) statsGrid.style.display = 'none';
+    if (filterBar) filterBar.style.display = 'none';
+    document.querySelector('.topbar-title h1').textContent = 'Bên trong';
+    document.querySelector('.topbar-title p').textContent  = 'Phân tích cấu trúc mã nguồn';
+    document.getElementById('view-inside').hidden = false;
+    renderInsideView();
+  } else {
+    // back to projects view
+    if (statsGrid) statsGrid.style.display = '';
+    if (filterBar) filterBar.style.display = '';
+    document.querySelector('.topbar-title h1').textContent = 'Dự án';
+    document.querySelector('.topbar-title p').textContent  = 'Theo dõi và quản lý toàn bộ dự án';
+    setFilter(v); // v is a filter like 'all','active', etc.
+  }
+  closeSidebar();
+}
+
+/* ============================================================
+   DONUT CHART HELPER
+   ============================================================ */
+function drawDonut(svgId, segments, centerHtml, legendId) {
+  const svg = document.getElementById(svgId);
+  const legend = document.getElementById(legendId);
+  const center = document.getElementById(centerHtml);
+  const total = segments.reduce((s, x) => s + x.value, 0);
+  if (!total) { svg.innerHTML = '<circle cx="80" cy="80" r="55" fill="none" stroke="var(--border)" stroke-width="22"/>'; legend.innerHTML='<span style="color:var(--fg-muted)">Không có dữ liệu</span>'; return; }
+
+  const R = 55, cx = 80, cy = 80, circumference = 2 * Math.PI * R;
+  let offset = -circumference / 4; // start at top
+  let paths = '';
+  segments.forEach(seg => {
+    const pct = seg.value / total;
+    const dash = pct * circumference;
+    paths += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${seg.color}" stroke-width="22"
+      stroke-dasharray="${dash} ${circumference - dash}" stroke-dashoffset="${-offset}" style="transition:stroke-dasharray .4s">
+      <title>${seg.label}: ${seg.value}</title></circle>`;
+    offset += dash;
+  });
+  svg.innerHTML = paths;
+  legend.innerHTML = segments.map(s =>
+    `<div class="legend-item"><span class="legend-dot" style="background:${s.color}"></span>${s.label} <b>${s.value}</b></div>`
+  ).join('');
+}
+
+/* ============================================================
+   REPORT: OVERVIEW
+   ============================================================ */
+function renderReportOverview() {
+  const tot    = projects.length;
+  const byStatus = {};
+  projects.forEach(p => { const s = effectiveStatus(p); byStatus[s] = (byStatus[s]||0)+1; });
+  const done    = byStatus.done    || 0;
+  const active  = byStatus.active  || 0;
+  const overdue = byStatus.overdue || 0;
+  const avg     = tot ? Math.round(projects.reduce((s,p)=>s+p.progress,0)/tot) : 0;
+
+  // Stats row
+  document.getElementById('rpt-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Tổng dự án</span><span class="stat-icon">📁</span></div><div class="stat-value">${tot}</div><div class="stat-sub">${active} đang hoạt động</div></div>
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Hoàn thành</span><span class="stat-icon">🏆</span></div><div class="stat-value">${done}</div><div class="stat-sub">${tot?Math.round(done/tot*100):0}% tỷ lệ hoàn thành</div></div>
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Tiến độ TB</span><span class="stat-icon">📈</span></div><div class="stat-value">${avg}%</div><div class="stat-sub">Trung bình tất cả dự án</div></div>
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Quá hạn</span><span class="stat-icon">⚠️</span></div><div class="stat-value" style="color:var(--danger)">${overdue}</div><div class="stat-sub">Cần xử lý ngay</div></div>
+  `;
+
+  // Donut: status
+  const STATUS_COLORS = { active:'#4F6EF7', done:'#16A34A', paused:'#D97706', planning:'#0891B2', overdue:'#DC2626' };
+  const STATUS_LABELS = { active:'Đang làm', done:'Hoàn thành', paused:'Tạm dừng', planning:'Kế hoạch', overdue:'Quá hạn' };
+  const segs = Object.entries(byStatus).filter(([,v])=>v>0).map(([k,v])=>({ label:STATUS_LABELS[k]||k, value:v, color:STATUS_COLORS[k]||'#888' }));
+  drawDonut('donut-svg', segs, 'donut-center', 'donut-legend');
+  const dcEl = document.getElementById('donut-center');
+  if (dcEl) dcEl.innerHTML = `<div style="font-size:22px;font-weight:700;color:var(--fg)">${tot}</div><div style="font-size:11px;color:var(--fg-muted)">Dự án</div>`;
+
+  // Progress bars
+  const sorted = [...projects].sort((a,b)=>b.progress-a.progress);
+  document.getElementById('progress-bars').innerHTML = sorted.map(p=>`
+    <div class="barchart-row">
+      <div class="barchart-label" title="${p.name}">${p.icon||'📁'} ${p.name.length>22?p.name.slice(0,22)+'…':p.name}</div>
+      <div class="barchart-track"><div class="barchart-fill" style="width:${p.progress}%;background:${p.color}"></div></div>
+      <div class="barchart-pct">${p.progress}%</div>
+    </div>
+  `).join('');
+
+  // Deadlines
+  const upcoming = projects
+    .filter(p => p.deadline && p.status !== 'done')
+    .sort((a,b)=>new Date(a.deadline)-new Date(b.deadline))
+    .slice(0, 8);
+  document.getElementById('deadline-list').innerHTML = upcoming.length ? upcoming.map(p=>{
+    const dl = daysLeft(p.deadline);
+    const cls = dl < 0 ? 'danger' : dl <= 7 ? 'warning' : 'success';
+    const label = dl < 0 ? `Quá hạn ${Math.abs(dl)} ngày` : dl === 0 ? 'Hôm nay!' : `Còn ${dl} ngày`;
+    return `<div class="deadline-row">
+      <div class="deadline-dot" style="background:${p.color}"></div>
+      <div class="deadline-info"><b>${p.name}</b><span>${p.client||''}</span></div>
+      <div class="deadline-date">${fmtDate(p.deadline)}</div>
+      <div class="deadline-badge badge-${cls}">${label}</div>
+    </div>`;
+  }).join('') : '<p style="color:var(--fg-muted);padding:12px 0">Không có deadline nào sắp tới.</p>';
+}
+
+/* ============================================================
+   REPORT: FINANCE
+   ============================================================ */
+function renderReportFinance() {
+  const total  = projects.reduce((s,p)=>s+(p.price||0),0);
+  const done   = projects.filter(p=>p.status==='done').reduce((s,p)=>s+(p.price||0),0);
+  const active = projects.filter(p=>p.status==='active').reduce((s,p)=>s+(p.price||0),0);
+  const avgProgress = projects.length ? Math.round(projects.reduce((s,p)=>s+p.progress,0)/projects.length) : 0;
+  const earned = Math.round(total * avgProgress / 100);
+
+  document.getElementById('fin-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Tổng Ngân sách</span><span class="stat-icon">💵</span></div><div class="stat-value">${fmtPrice(total)}</div><div class="stat-sub">Toàn bộ dự án</div></div>
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Đã hoàn thành</span><span class="stat-icon">✅</span></div><div class="stat-value" style="color:var(--success)">${fmtPrice(done)}</div><div class="stat-sub">${total?Math.round(done/total*100):0}% tổng ngân sách</div></div>
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Đang thực hiện</span><span class="stat-icon">🚀</span></div><div class="stat-value" style="color:var(--accent)">${fmtPrice(active)}</div><div class="stat-sub">Dự án đang chạy</div></div>
+    <div class="stat-card"><div class="stat-header"><span class="stat-label">Giá trị đã làm</span><span class="stat-icon">💎</span></div><div class="stat-value" style="color:var(--accent-2)">${fmtPrice(earned)}</div><div class="stat-sub">Dựa trên tiến độ TB ${avgProgress}%</div></div>
+  `;
+
+  // Budget bar chart (sorted by price)
+  const sorted = [...projects].sort((a,b)=>(b.price||0)-(a.price||0));
+  const maxPrice = sorted[0]?.price || 1;
+  document.getElementById('budget-bars').innerHTML = sorted.map(p=>`
+    <div class="barchart-row">
+      <div class="barchart-label" title="${p.name}">${p.icon||'📁'} ${p.name.length>20?p.name.slice(0,20)+'…':p.name}</div>
+      <div class="barchart-track"><div class="barchart-fill" style="width:${Math.round((p.price||0)/maxPrice*100)}%;background:${p.color}"></div></div>
+      <div class="barchart-pct" style="min-width:70px;text-align:right">${fmtPrice(p.price||0)}</div>
+    </div>
+  `).join('');
+
+  // Budget donut by status
+  const STATUS_COLORS = { active:'#4F6EF7', done:'#16A34A', paused:'#D97706', planning:'#0891B2', overdue:'#DC2626' };
+  const STATUS_LABELS = { active:'Đang làm', done:'Hoàn thành', paused:'Tạm dừng', planning:'Kế hoạch', overdue:'Quá hạn' };
+  const byStatus = {};
+  projects.forEach(p=>{ const s=effectiveStatus(p); byStatus[s]=(byStatus[s]||0)+(p.price||0); });
+  const finSegs = Object.entries(byStatus).filter(([,v])=>v>0).map(([k,v])=>({ label:STATUS_LABELS[k]||k, value:v, color:STATUS_COLORS[k]||'#888' }));
+  // override value display in legend to show price
+  drawDonut('fin-donut-svg', finSegs.map(s=>({...s,value:1})), 'fin-donut-center', 'fin-donut-legend');
+  // redraw legend with prices
+  document.getElementById('fin-donut-legend').innerHTML = finSegs.map(s=>
+    `<div class="legend-item"><span class="legend-dot" style="background:${s.color}"></span>${s.label} <b>${fmtPrice(s.value)}</b></div>`
+  ).join('');
+  const fdcEl = document.getElementById('fin-donut-center');
+  if (fdcEl) fdcEl.innerHTML = `<div style="font-size:13px;font-weight:700;color:var(--fg)">${fmtPrice(total)}</div><div style="font-size:10px;color:var(--fg-muted)">Tổng</div>`;
+
+  // Finance table
+  const tableRows = sorted.map((p,i)=>{
+    const eff = effectiveStatus(p);
+    const st = STATUS_MAP[eff]||STATUS_MAP.active;
+    return `<tr>
+      <td>${i+1}</td>
+      <td><span style="font-size:18px">${p.icon||'📁'}</span> <b>${esc(p.name)}</b><br><small style="color:var(--fg-muted)">${esc(p.client||'—')}</small></td>
+      <td><span class="status-badge ${st.cls}">${st.label}</span></td>
+      <td style="text-align:right"><b>${fmtPrice(p.price||0)}</b></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:6px;background:var(--surface-2);border-radius:3px;min-width:60px">
+            <div style="height:100%;width:${p.progress}%;background:${p.color};border-radius:3px"></div>
+          </div>
+          <span style="font-size:12px;color:var(--fg-muted);white-space:nowrap">${p.progress}%</span>
+        </div>
+      </td>
+      <td style="text-align:right;color:var(--success)">${fmtPrice(Math.round((p.price||0)*p.progress/100))}</td>
+      <td style="color:var(--fg-muted);font-size:12px">${fmtDate(p.deadline)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('fin-table').innerHTML = `
+    <thead><tr>
+      <th>#</th><th>Dự án</th><th>Trạng thái</th>
+      <th style="text-align:right">Ngân sách</th>
+      <th>Tiến độ</th>
+      <th style="text-align:right">Giá trị đã làm</th>
+      <th>Deadline</th>
+    </tr></thead>
+    <tbody>${tableRows}</tbody>
+    <tfoot><tr>
+      <th colspan="3">Tổng cộng</th>
+      <th style="text-align:right">${fmtPrice(total)}</th>
+      <th></th>
+      <th style="text-align:right;color:var(--success)">${fmtPrice(earned)}</th>
+      <th></th>
+    </tr></tfoot>
+  `;
+}
+
+/* ============================================================
+   PRICE INPUT — dấu phân cách hàng nghìn
+   ============================================================ */
+function parsePriceInput(val) {
+  // Xoá tất cả ký tự không phải số
+  return Number(String(val).replace(/[^\d]/g, '')) || 0;
+}
+
+function formatPriceDisplay(n) {
+  // Format: 1.500.000 (dấu chấm phân cách hàng nghìn kiểu VN)
+  if (!n) return '';
+  return Number(n).toLocaleString('vi-VN');
+}
+
+function formatPriceInput(input) {
+  const raw = parsePriceInput(input.value);
+  // Giữ con trỏ ở cuối sau khi format
+  input.value = raw ? raw.toLocaleString('vi-VN') : '';
+}
+
+/* ============================================================
+   MEMBERS INPUT — dấu phân cách hàng nghìn
+   ============================================================ */
+function parseMembersInput(val) {
+  return Math.max(1, Number(String(val).replace(/[^\d]/g, '')) || 1);
+}
+
+function formatMembersInput(input) {
+  const raw = parseMembersInput(input.value);
+  input.value = raw.toLocaleString('vi-VN');
+}
+
+/* ============================================================
+   MEDIA HELPERS
+   ============================================================ */
+let editingMedia = []; // temporary list while modal is open
+
+function detectMediaType(url) {
+  if (!url) return null;
+  const u = url.trim();
+  // YouTube
+  if (/youtube\.com\/watch|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\//.test(u)) return 'youtube';
+  // TikTok
+  if (/tiktok\.com/.test(u)) return 'tiktok';
+  // Image
+  if (/\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?|$)/i.test(u)) return 'image';
+  // Try to treat as image anyway if no other match
+  if (/^https?:\/\//i.test(u)) return 'image';
+  return null;
+}
+
+function getYtId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function getTikTokVideoId(url) {
+  const m = url.match(/video\/(\d+)/);
+  return m ? m[1] : null;
+}
+
+function mediaIcon(type) {
+  if (type === 'youtube') return '▶️';
+  if (type === 'tiktok') return '🎵';
+  return '🖼️';
+}
+
+function renderModalMediaList() {
+  const el = document.getElementById('f-media-list');
+  if (!el) return;
+  if (editingMedia.length === 0) { el.innerHTML = ''; return; }
+  const viewOnly = document.getElementById('modal-overlay').dataset.viewOnly === '1';
+  el.innerHTML = editingMedia.map((m, i) => {
+    const type = detectMediaType(m);
+    let thumbHtml;
+    if (type === 'youtube') {
+      const ytId = getYtId(m);
+      thumbHtml = ytId
+        ? `<img class="media-item-thumb" src="https://img.youtube.com/vi/${ytId}/default.jpg" alt="yt">`
+        : `<div class="media-item-icon">▶️</div>`;
+    } else if (type === 'tiktok') {
+      thumbHtml = `<div class="media-item-icon">🎵</div>`;
+    } else {
+      thumbHtml = `<img class="media-item-thumb" src="${esc(m)}" alt="img" onerror="this.style.display='none'">`;
+    }
+    const label = m.length > 50 ? m.slice(0, 48) + '…' : m;
+    return `<div class="media-item-row">
+      ${thumbHtml}
+      <span class="media-item-label">${esc(label)}</span>
+      ${viewOnly ? '' : `<button class="media-item-del" onclick="removeMediaItem(${i})" title="Xoá">✕</button>`}
+    </div>`;
+  }).join('');
+}
+
+function addMediaItem() {
+  const inp = document.getElementById('f-media-url');
+  const url = inp.value.trim();
+  if (!url) { inp.focus(); return; }
+  const type = detectMediaType(url);
+  if (!type) { inp.style.borderColor = 'var(--danger)'; setTimeout(() => inp.style.borderColor = '', 1200); return; }
+  editingMedia.push(url);
+  inp.value = '';
+  inp.focus();
+  renderModalMediaList();
+}
+
+function removeMediaItem(i) {
+  editingMedia.splice(i, 1);
+  renderModalMediaList();
+}
+
+// Card media strip (thumbnails inline in card)
+function renderCardMediaStrip(p) {
+  const media = p.media;
+  if (!media || media.length === 0) return '';
+  const items = media.slice(0, 5).map(url => {
+    const type = detectMediaType(url);
+    if (type === 'youtube') {
+      const ytId = getYtId(url);
+      return ytId
+        ? `<img class="card-media-thumb" src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" alt="video" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" title="Xem video">`
+        : `<div class="card-media-chip" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" title="Xem video">▶️</div>`;
+    } else if (type === 'tiktok') {
+      return `<div class="card-media-chip" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" title="Xem TikTok">🎵</div>`;
+    } else {
+      return `<img class="card-media-thumb" src="${esc(url)}" alt="ảnh" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')" onerror="this.style.display='none'">`;
+    }
+  }).join('');
+  const more = media.length > 5 ? `<div class="card-media-chip" style="font-size:12px;font-weight:700;color:var(--fg-muted)">+${media.length-5}</div>` : '';
+  return `<div class="card-media-strip">${items}${more}</div>`;
+}
+
+// Media viewer popup
+function openMediaViewer(url) {
+  const type = detectMediaType(url);
+  let html = '';
+  if (type === 'youtube') {
+    const ytId = getYtId(url);
+    html = ytId
+      ? `<div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allowfullscreen allow="autoplay"></iframe></div>`
+      : `<div style="color:#fff;padding:20px">Không đọc được link YouTube</div>`;
+  } else if (type === 'tiktok') {
+    // TikTok embed
+    const vidId = getTikTokVideoId(url);
+    html = vidId
+      ? `<div class="video-wrap"><iframe src="https://www.tiktok.com/embed/v2/${vidId}" allowfullscreen></iframe></div>`
+      : `<div style="color:#fff;padding:20px;text-align:center">
+          <div style="font-size:40px">🎵</div>
+          <p style="margin:10px 0">Mở TikTok để xem video</p>
+          <a href="${esc(url)}" target="_blank" style="color:#4F6EF7">Mở TikTok ↗</a>
+        </div>`;
+  } else {
+    html = `<img src="${esc(url)}" alt="media" style="width:100%;max-height:85dvh;object-fit:contain;display:block">`;
+  }
+  document.getElementById('media-viewer-content').innerHTML = html;
+  document.getElementById('media-viewer-overlay').classList.add('open');
+}
+
+function closeMediaViewer() {
+  document.getElementById('media-viewer-overlay').classList.remove('open');
+  document.getElementById('media-viewer-content').innerHTML = ''; // stop video
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMediaViewer();
+});
+
+/* ── Card Hover Media Preview (guest-accessible) ───────────────── */
+let _cmpTimer = null;
+
+function showCardPreview(cardEl, projectId) {
+  clearTimeout(_cmpTimer);
+  const p = projects.find(x => x.id === projectId);
+  if (!p) return;
+  const clips = (p.media || []).filter(u => {
+    const t = detectMediaType(u); return t === 'youtube' || t === 'tiktok';
+  });
+  if (clips.length === 0) return;
+
+  const popup = document.getElementById('card-media-popup');
+  const inner = document.getElementById('cmp-inner');
+  if (!popup || !inner) return;
+
+  // Build items HTML
+  const itemsHtml = clips.map(url => {
+    const type = detectMediaType(url);
+    let thumb = '', platform = '', hint = 'Click để xem';
+    if (type === 'youtube') {
+      const ytId = getYtId(url);
+      thumb    = ytId
+        ? `<img class="cmp-thumb" src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" alt="YouTube"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          + `<div class="cmp-icon-box" style="display:none">▶️</div>`
+        : `<div class="cmp-icon-box">▶️</div>`;
+      platform = 'YouTube';
+    } else {
+      thumb    = `<div class="cmp-icon-box">🎵</div>`;
+      platform = 'TikTok';
+      hint     = 'Click để mở TikTok';
+    }
+    return `<div class="cmp-item" onclick="event.stopPropagation();openMediaViewer('${esc(url)}')">
+      ${thumb}
+      <div class="cmp-item-info">
+        <div class="cmp-item-platform">${platform}</div>
+        <div class="cmp-item-hint">${hint}</div>
+      </div>
+      <span class="cmp-play-arrow">▶</span>
+    </div>`;
+  }).join('');
+
+  inner.innerHTML =
+    `<div class="cmp-header">
+       🎬 Clip trong dự án
+       <span class="cmp-header-count">${clips.length}</span>
+     </div>
+     <div class="cmp-items">${itemsHtml}</div>`;
+
+  // Định vị: ưu tiên bên phải thẻ, nếu không đủ chỗ thì bên trái
+  const rect = popup.getBoundingClientRect ? null : null; // reset
+  popup.style.visibility = 'hidden';
+  popup.classList.add('cmp-open');
+
+  const cRect = cardEl.getBoundingClientRect();
+  const PW = 296;
+  const PH = popup.offsetHeight || 160;
+  let left = cRect.right + 12;
+  let top  = cRect.top;
+
+  if (left + PW > window.innerWidth - 8) left = cRect.left - PW - 12;
+  if (left < 8) { left = Math.max(cRect.left, 8); top = cRect.bottom + 10; }
+  if (top + PH > window.innerHeight - 8) top = window.innerHeight - PH - 8;
+  if (top < 8) top = 8;
+
+  popup.style.top        = top  + 'px';
+  popup.style.left       = left + 'px';
+  popup.style.visibility = '';
+}
+
+function hideCardPreview() {
+  _cmpTimer = setTimeout(() => {
+    const popup = document.getElementById('card-media-popup');
+    if (!popup) return;
+    popup.classList.remove('cmp-open');
+    document.getElementById('cmp-inner').innerHTML = '';
+  }, 130);
+}
+
+function keepCardPreview() { clearTimeout(_cmpTimer); }
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderAll();
+
+/* ============================================================
+   THÔNG BÁO
+   ============================================================ */
+let notifs = (() => {
+  try { const s = localStorage.getItem('hm_notifs_v1'); return s ? JSON.parse(s) : []; } catch { return []; }
+})();
+
+function saveNotifs() {
+  try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
+  if(window._hmDb) window._hmDb.ref('hm/notifs').set(notifs).catch(()=>{});
+}
+
+function getYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/
+  ];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+  return null;
+}
+
+function formatNotifTime(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return 'Vừa xong';
+  if (diff < 3600000) return Math.floor(diff/60000) + ' phút trước';
+  if (diff < 86400000) return Math.floor(diff/3600000) + ' giờ trước';
+  return d.toLocaleDateString('vi-VN');
+}
+
+function renderNotifs() {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+  if (notifs.length === 0) {
+    list.innerHTML = '<div class="notif-empty">Chưa có thông báo nào</div>';
+    return;
+  }
+  list.innerHTML = notifs.slice().reverse().map((n, ri) => {
+    const i = notifs.length - 1 - ri; // real index
+    const ytId = getYouTubeId(n.ytUrl);
+    const videoHtml = ytId ? `
+      <div class="notif-video-wrap">
+        <iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen loading="lazy"></iframe>
+      </div>` : '';
+    return `
+      <div class="notif-item">
+        <div class="notif-item-body">
+          <div class="notif-item-top">
+            <div class="notif-text">${n.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div>
+            ${isAdmin ? `<button class="notif-delete-btn" onclick="deleteNotif(${i})" title="Xoá">✕</button>` : ''}
+          </div>
+          <div class="notif-time">${formatNotifTime(n.ts)}</div>
+          ${videoHtml}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openNotifModal() {
+  document.getElementById('notif-text-input').value = '';
+  document.getElementById('notif-yt-input').value = '';
+  document.getElementById('notif-modal-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('notif-text-input').focus(), 100);
+}
+
+function closeNotifModal(e) {
+  if (e && e.target !== document.getElementById('notif-modal-overlay')) return;
+  document.getElementById('notif-modal-overlay').classList.remove('open');
+}
+
+function addNotif() {
+  if (!isAdmin) return;
+  const text = document.getElementById('notif-text-input').value.trim();
+  if (!text) { document.getElementById('notif-text-input').focus(); return; }
+  const ytUrl = document.getElementById('notif-yt-input').value.trim();
+  notifs.push({ text, ytUrl, ts: Date.now() });
+  saveNotifs();
+  renderNotifs();
+  document.getElementById('notif-modal-overlay').classList.remove('open');
+}
+
+function deleteNotif(i) {
+  if (!isAdmin) return;
+  notifs.splice(i, 1);
+  saveNotifs();
+  renderNotifs();
+}
+
+// Đóng modal notif bằng Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { document.getElementById('notif-modal-overlay').classList.remove('open'); closePinModal(); }
+});
+
+renderNotifs();
+updateAdminUI(); // áp dụng trạng thái admin ngay khi load
+
+/* ============================================================
+   FIREBASE REALTIME DATABASE — Đồng bộ đa thiết bị
+   Thay các giá trị PLACEHOLDER bên dưới bằng firebaseConfig
+   thật từ Firebase Console của bạn.
+   ============================================================ */
+const _HM_FB_CONFIG = {
+  apiKey:            "AIzaSyA27SO7Ss4Wo6HbAqdr4_qnfCo-uC1NH48",
+  authDomain:        "hypermarket-44c63.firebaseapp.com",
+  databaseURL:       "https://hypermarket-44c63-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "hypermarket-44c63",
+  storageBucket:     "hypermarket-44c63.firebasestorage.app",
+  messagingSenderId: "861221282395",
+  appId:             "1:861221282395:web:d02b5363011c56c6cb957e"
+};
+
+(function initFirebase() {
+  // Bỏ qua nếu chưa điền databaseURL thật
+  if (_HM_FB_CONFIG.databaseURL.startsWith('PASTE_')) return;
+  try {
+    firebase.initializeApp(_HM_FB_CONFIG);
+    window._hmDb = firebase.database();
+
+    // Lắng nghe trạng thái kết nối — cập nhật dot màu
+    const dot = document.getElementById('sync-dot');
+    window._hmDb.ref('.info/connected').on('value', snap => {
+      if (dot) {
+        dot.classList.toggle('online',  !!snap.val());
+        dot.classList.toggle('offline', !snap.val());
+      }
+    });
+
+    // Đồng bộ Dự án
+    window._hmDb.ref('hm/projects').on('value', snap => {
+      const data = snap.val();
+      if (data !== null) {
+        projects = Array.isArray(data) ? data : Object.values(data);
+        try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+        renderAll();
+      } else if (projects.length > 0) {
+        // Database trống lần đầu → seed dữ liệu hiện tại lên
+        window._hmDb.ref('hm/projects').set(projects).catch(() => {});
+      }
+    });
+
+    // Đồng bộ Thông báo
+    window._hmDb.ref('hm/notifs').on('value', snap => {
+      const data = snap.val();
+      if (data !== null) {
+        notifs = Array.isArray(data) ? data : Object.values(data);
+        try { localStorage.setItem('hm_notifs_v1', JSON.stringify(notifs)); } catch {}
+        renderNotifs();
+      }
+    });
+
+  } catch(e) {
+    console.warn('Firebase init failed:', e);
+  }
+})();
+
+/* ============================================================
+   INSIDE VIEW — Code Analytics
+   ============================================================ */
+function renderInsideView() {
+  const el = document.getElementById('inside-content');
+  if (!el) return;
+
+  // Static code stats (baked-in at dev time)
+  const totalLines   = 2200;
+  const cssLines     = 1009;
+  const jsLines      = 792;
+  const htmlLines    = 399;
+  const totalFns     = 48;
+  const cssClasses   = 230;
+  const eventListeners = 7;
+  const localStorageKeys = 3;
+
+  const functions = [
+    { name: 'renderAll',          type: 'render', desc: 'Render toàn bộ danh sách dự án' },
+    { name: 'renderCard',         type: 'render', desc: 'Render thẻ từng dự án' },
+    { name: 'renderNotifs',       type: 'render', desc: 'Render danh sách thông báo' },
+    { name: 'renderReportOverview', type: 'render', desc: 'Vẽ báo cáo tổng quan' },
+    { name: 'renderReportFinance',  type: 'render', desc: 'Vẽ báo cáo tài chính' },
+    { name: 'renderCardMediaStrip', type: 'render', desc: 'Render dải media trên thẻ' },
+    { name: 'renderModalMediaList', type: 'render', desc: 'Render danh sách media trong modal' },
+    { name: 'saveProjects',       type: 'save',   desc: 'Lưu dự án vào localStorage' },
+    { name: 'saveNotifs',         type: 'save',   desc: 'Lưu thông báo vào localStorage' },
+    { name: 'saveProject',        type: 'save',   desc: 'Lưu / cập nhật một dự án' },
+    { name: 'openModal',          type: 'ui',     desc: 'Mở modal thêm / sửa dự án' },
+    { name: 'closeModal',         type: 'ui',     desc: 'Đóng modal' },
+    { name: 'openNotifModal',     type: 'ui',     desc: 'Mở modal thông báo' },
+    { name: 'closeNotifModal',    type: 'ui',     desc: 'Đóng modal thông báo' },
+    { name: 'openMediaViewer',    type: 'ui',     desc: 'Mở trình xem media toàn màn hình' },
+    { name: 'closeMediaViewer',   type: 'ui',     desc: 'Đóng trình xem media' },
+    { name: 'openSidebar',        type: 'ui',     desc: 'Mở sidebar (mobile)' },
+    { name: 'closeSidebar',       type: 'ui',     desc: 'Đóng sidebar (mobile)' },
+    { name: 'setView',            type: 'ui',     desc: 'Chuyển đổi giữa các màn hình' },
+    { name: 'setFilter',          type: 'ui',     desc: 'Lọc dự án theo trạng thái' },
+    { name: 'setBottomNav',       type: 'ui',     desc: 'Cập nhật thanh điều hướng dưới' },
+    { name: 'toggleTheme',        type: 'ui',     desc: 'Chuyển sáng / tối' },
+    { name: 'drawDonut',          type: 'render', desc: 'Vẽ biểu đồ donut SVG' },
+    { name: 'updateStats',        type: 'render', desc: 'Cập nhật thẻ thống kê trên đầu' },
+    { name: 'addNotif',           type: 'save',   desc: 'Thêm thông báo mới' },
+    { name: 'deleteNotif',        type: 'ui',     desc: 'Xóa thông báo' },
+    { name: 'deleteProject',      type: 'ui',     desc: 'Xóa dự án' },
+    { name: 'editProject',        type: 'ui',     desc: 'Mở modal chỉnh sửa dự án' },
+    { name: 'detectMediaType',    type: 'ui',     desc: 'Nhận biết loại media (YT/TikTok/ảnh)' },
+    { name: 'addMediaItem',       type: 'ui',     desc: 'Thêm media vào dự án' },
+    { name: 'removeMediaItem',    type: 'ui',     desc: 'Xóa media khỏi dự án' },
+    { name: 'getYouTubeId',       type: 'ui',     desc: 'Trích xuất ID YouTube từ URL' },
+    { name: 'getTikTokVideoId',   type: 'ui',     desc: 'Trích xuất ID TikTok từ URL' },
+    { name: 'fmtDate',            type: 'ui',     desc: 'Định dạng ngày theo locale VI' },
+    { name: 'fmtPrice',           type: 'ui',     desc: 'Định dạng tiền VNĐ' },
+    { name: 'formatPriceDisplay', type: 'ui',     desc: 'Hiển thị giá trị tiền tệ' },
+    { name: 'parsePriceInput',    type: 'ui',     desc: 'Phân tích chuỗi nhập tiền tệ' },
+    { name: 'daysLeft',           type: 'ui',     desc: 'Tính số ngày còn lại' },
+    { name: 'effectiveStatus',    type: 'ui',     desc: 'Tính trạng thái hiệu quả của dự án' },
+    { name: 'getFiltered',        type: 'ui',     desc: 'Lọc và sắp xếp danh sách dự án' },
+    { name: 'memberAvatars',      type: 'render', desc: 'Tạo HTML avatar thành viên' },
+    { name: 'mediaIcon',          type: 'render', desc: 'Icon loại media' },
+    { name: 'buildColorGrid',     type: 'ui',     desc: 'Tạo bảng chọn màu dự án' },
+    { name: 'selectColor',        type: 'ui',     desc: 'Chọn màu cho dự án' },
+    { name: 'esc',                type: 'ui',     desc: 'Escape HTML để tránh XSS' },
+    { name: 'formatNotifTime',    type: 'ui',     desc: 'Định dạng thời gian thông báo' },
+    { name: 'renderInsideView',   type: 'render', desc: 'Render trang phân tích mã nguồn' },
+  ];
+
+  const features = [
+    { icon: '📋', name: 'Quản lý Dự án', desc: 'Thêm, sửa, xóa dự án với thẻ trực quan', color: '#4F6EF7' },
+    { icon: '🎨', name: 'Dark / Light Mode', desc: 'Chế độ tối và sáng, lưu lựa chọn', color: '#7C3AED' },
+    { icon: '📱', name: 'Responsive Mobile', desc: 'Bottom nav & drawer sidebar cho di động', color: '#059669' },
+    { icon: '🔔', name: 'Thông báo', desc: 'Gửi thông báo text và video cho dự án', color: '#D97706' },
+    { icon: '📺', name: 'Media Embed', desc: 'Nhúng YouTube, TikTok, hình ảnh vào dự án', color: '#DC2626' },
+    { icon: '💰', name: 'Theo dõi Tài chính', desc: 'Ngân sách và chi phí từng dự án', color: '#0891B2' },
+    { icon: '📊', name: 'Báo cáo & Biểu đồ', desc: 'Donut chart, bar chart, bảng tài chính', color: '#4F6EF7' },
+    { icon: '🔍', name: 'Tìm kiếm & Lọc', desc: 'Tìm kiếm realtime + lọc theo trạng thái', color: '#7C3AED' },
+    { icon: '💾', name: 'LocalStorage', desc: 'Lưu trữ dữ liệu ngay trên trình duyệt', color: '#059669' },
+    { icon: '🌐', name: 'GitHub Pages', desc: 'Triển khai tĩnh, không cần server', color: '#D97706' },
+  ];
+
+  const techStack = [
+    { icon: '📄', name: 'HTML5', note: 'Cấu trúc giao diện', type: 'built-in' },
+    { icon: '🎨', name: 'CSS3', note: 'Thiết kế & animation', type: 'built-in' },
+    { icon: '⚡', name: 'Vanilla JavaScript', note: 'Logic ứng dụng, không framework', type: 'built-in' },
+    { icon: '🗄️', name: 'Web Storage API', note: 'localStorage — lưu trữ cục bộ', type: 'built-in' },
+    { icon: '✒️', name: 'Google Fonts', note: 'Be Vietnam Pro + JetBrains Mono', type: 'external' },
+    { icon: '🎬', name: 'YouTube Embed API', note: 'Nhúng video trực tiếp', type: 'external' },
+    { icon: '📱', name: 'TikTok Embed', note: 'Nhúng video TikTok', type: 'external' },
+  ];
+
+  el.innerHTML = `
+    <div class="inside-hero">
+      <div class="inside-hero-title">⚙️ HyperMarket Source</div>
+      <div class="inside-hero-sub">Một file HTML duy nhất · Không framework · Không build tool</div>
+      <div class="inside-hero-badges">
+        <div class="inside-badge"><span class="badge-val">${totalLines.toLocaleString('vi-VN')}</span> dòng lệnh</div>
+        <div class="inside-badge"><span class="badge-val">${totalFns}</span> hàm</div>
+        <div class="inside-badge"><span class="badge-val">${cssClasses}</span> CSS class</div>
+        <div class="inside-badge"><span class="badge-val">1</span> file duy nhất</div>
+      </div>
+    </div>
+
+    <div class="inside-stats">
+      <div class="inside-stat-card" style="--isc-color:#4F6EF7">
+        <div class="isc-icon">🧾</div>
+        <div class="isc-val" data-target="${totalLines}">${totalLines.toLocaleString('vi-VN')}</div>
+        <div class="isc-label">Tổng dòng lệnh</div>
+      </div>
+      <div class="inside-stat-card" style="--isc-color:#7C3AED">
+        <div class="isc-icon">🎨</div>
+        <div class="isc-val" data-target="${cssLines}">${cssLines.toLocaleString('vi-VN')}</div>
+        <div class="isc-label">Dòng CSS</div>
+      </div>
+      <div class="inside-stat-card" style="--isc-color:#059669">
+        <div class="isc-icon">⚡</div>
+        <div class="isc-val" data-target="${jsLines}">${jsLines.toLocaleString('vi-VN')}</div>
+        <div class="isc-label">Dòng JavaScript</div>
+      </div>
+      <div class="inside-stat-card" style="--isc-color:#D97706">
+        <div class="isc-icon">📄</div>
+        <div class="isc-val" data-target="${htmlLines}">${htmlLines.toLocaleString('vi-VN')}</div>
+        <div class="isc-label">Dòng HTML</div>
+      </div>
+      <div class="inside-stat-card" style="--isc-color:#DC2626">
+        <div class="isc-icon">🔧</div>
+        <div class="isc-val" data-target="${totalFns}">${totalFns}</div>
+        <div class="isc-label">Hàm JS</div>
+      </div>
+      <div class="inside-stat-card" style="--isc-color:#0891B2">
+        <div class="isc-icon">🎭</div>
+        <div class="isc-val" data-target="${cssClasses}">${cssClasses}</div>
+        <div class="isc-label">CSS Classes</div>
+      </div>
+    </div>
+
+    <div class="inside-grid">
+      <!-- Code breakdown bar chart -->
+      <div class="inside-block">
+        <div class="inside-block-title">📏 Phân bổ dòng lệnh</div>
+        <div class="code-bar-row">
+          <div class="code-bar-label">CSS</div>
+          <div class="code-bar-track">
+            <div class="code-bar-fill" style="background:linear-gradient(90deg,#7C3AED,#a78bfa)" data-width="${Math.round(cssLines/totalLines*100)}%"></div>
+          </div>
+          <div class="code-bar-count">${cssLines.toLocaleString('vi-VN')} dòng</div>
+        </div>
+        <div class="code-bar-row">
+          <div class="code-bar-label">JS</div>
+          <div class="code-bar-track">
+            <div class="code-bar-fill" style="background:linear-gradient(90deg,#4F6EF7,#818cf8)" data-width="${Math.round(jsLines/totalLines*100)}%"></div>
+          </div>
+          <div class="code-bar-count">${jsLines.toLocaleString('vi-VN')} dòng</div>
+        </div>
+        <div class="code-bar-row">
+          <div class="code-bar-label">HTML</div>
+          <div class="code-bar-track">
+            <div class="code-bar-fill" style="background:linear-gradient(90deg,#D97706,#fbbf24)" data-width="${Math.round(htmlLines/totalLines*100)}%"></div>
+          </div>
+          <div class="code-bar-count">${htmlLines.toLocaleString('vi-VN')} dòng</div>
+        </div>
+        <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:14px">
+          <div class="code-bar-row">
+            <div class="code-bar-label" style="width:auto;flex:1;font-weight:700;font-size:13px">🔔 Event Listeners</div>
+            <div class="code-bar-count" style="font-weight:700;color:var(--accent)">${eventListeners}</div>
+          </div>
+          <div class="code-bar-row">
+            <div class="code-bar-label" style="width:auto;flex:1;font-weight:700;font-size:13px">💾 Storage Keys</div>
+            <div class="code-bar-count" style="font-weight:700;color:var(--success)">${localStorageKeys}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech stack -->
+      <div class="inside-block">
+        <div class="inside-block-title">🛠️ Công nghệ sử dụng</div>
+        <div class="feature-list">
+          ${techStack.map(t => `
+            <div class="tech-row">
+              <div class="tech-icon">${t.icon}</div>
+              <div class="tech-name">${t.name}<br><span style="font-size:11px;font-weight:400;color:var(--fg-muted)">${t.note}</span></div>
+              <div class="tech-badge ${t.type}">${t.type === 'built-in' ? 'Tích hợp' : 'Bên ngoài'}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Functions list -->
+    <div class="inside-block" style="margin-bottom:16px">
+      <div class="inside-block-title">⚡ ${totalFns} Hàm JavaScript chính
+        <span style="margin-left:auto;font-size:11px;font-weight:400;color:var(--fg-muted);display:flex;gap:10px;align-items:center">
+          <span style="color:var(--success)">● render</span>
+          <span style="color:var(--warning)">● lưu</span>
+          <span style="color:var(--accent-2)">● UI</span>
+        </span>
+      </div>
+      <div class="fn-grid">
+        ${functions.map(f => {
+          const cls = f.type === 'render' ? 'fn-render' : f.type === 'save' ? 'fn-save' : 'fn-ui';
+          return `<div class="fn-chip ${cls}" title="${f.desc}">${f.name}()</div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="inside-block">
+      <div class="inside-block-title">✨ Tính năng chính (${features.length})</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${features.map(f => `
+          <div class="feature-row">
+            <div class="feature-icon">${f.icon}</div>
+            <div class="feature-info">
+              <div class="feature-name">${f.name}</div>
+              <div class="feature-desc">${f.desc}</div>
+            </div>
+            <div class="feature-dot" style="background:${f.color}"></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Animate bars after render
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.querySelectorAll('.code-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width;
+        const pct = parseInt(bar.dataset.width);
+        if (pct > 12) bar.textContent = bar.dataset.width;
+      });
+    });
+  });
+}
+
+/* ─── WORLD CLOCK ─── */
+(function initWorldClock() {
+  const CLOCKS = [
+    { id: 'wc-0', tz: 'Asia/Ho_Chi_Minh' },
+    { id: 'wc-1', tz: 'Europe/London'    },
+    { id: 'wc-2', tz: 'Asia/Tokyo'       },
+    { id: 'wc-3', tz: 'America/New_York' },
+    { id: 'wc-4', tz: 'Europe/Berlin'    },
+    { id: 'wc-5', tz: 'Asia/Shanghai'    },
+  ];
+  function tick() {
+    const now = new Date();
+    CLOCKS.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (!el) return;
+      try {
+        el.textContent = now.toLocaleTimeString('vi-VN', {
+          timeZone: c.tz,
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        });
+      } catch(e) {
+        el.textContent = '--:--:--';
+      }
+    });
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+
+</script>
+</body></html>

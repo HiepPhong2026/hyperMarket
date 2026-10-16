@@ -677,11 +677,10 @@ const SOURCES = [
 
 // ─── PROXY URLS ─────────────────────────────────────────────────────────────
 const PROXIES = [
-  { build: u => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(u)}&count=30`, fmt: 'json' },
+  { build: u => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(u)}`, fmt: 'json' },
   { build: u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`, fmt: 'xml' },
   { build: u => `https://corsproxy.io/?${encodeURIComponent(u)}`, fmt: 'xml' },
   { build: u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, fmt: 'xml' },
-  { build: u => `https://thingproxy.freeboard.io/fetch/${u}`, fmt: 'xml' },
 ];
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
@@ -753,38 +752,63 @@ function mapCategory(raw) {
 // ─── FETCH via proxy ─────────────────────────────────────────────────────────
 async function fetchWithProxy(rssUrl, proxyIndex = 0) {
   if (proxyIndex >= PROXIES.length) throw new Error('All proxies failed');
-  const proxyUrl = PROXIES[proxyIndex](rssUrl);
+  const proxy = PROXIES[proxyIndex];
+  const proxyUrl = proxy.build(rssUrl);
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const res = await fetch(proxyUrl, { signal: controller.signal });
     clearTimeout(timeout);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    if (!text.includes('<item') && !text.includes('<entry')) throw new Error('Not RSS');
-    return text;
+    if (proxy.fmt === 'json') {
+      const data = await res.json();
+      if (data.status !== 'ok') throw new Error('rss2json: ' + data.status);
+      return { fmt: 'json', data };
+    } else {
+      const text = await res.text();
+      if (!text.includes('<item') && !text.includes('<entry')) throw new Error('Not RSS');
+      return { fmt: 'xml', text };
+    }
   } catch (err) {
     clearTimeout(timeout);
-    if (proxyIndex + 1 < PROXIES.length) {
-      return fetchWithProxy(rssUrl, proxyIndex + 1);
-    }
-    throw err;
+    return fetchWithProxy(rssUrl, proxyIndex + 1);
   }
+}
+
+function parseResult(result, sourceName, defaultCat) {
+  if (result.fmt === 'json') {
+    return (result.data.items || []).map(item => {
+      const rawDesc = item.description || item.content || '';
+      const tmp = document.createElement('div');
+      tmp.innerHTML = rawDesc;
+      const description = tmp.textContent?.trim().slice(0, 200) || '';
+      const cats = Array.isArray(item.categories) ? item.categories.join(' ') : (item.categories || '');
+      return {
+        title: item.title || '(Không có tiêu đề)',
+        description,
+        link: item.link || '#',
+        published: item.pubDate ? new Date(item.pubDate).getTime() : Date.now(),
+        source: sourceName,
+        category: mapCategory(cats || defaultCat),
+      };
+    }).filter(item => item.title && item.link !== '#');
+  }
+  return parseRSS(result.text, sourceName, defaultCat);
 }
 
 async function fetchSource(source) {
   const mainFeed = source.feeds[0];
   try {
-    const xml = await fetchWithProxy(mainFeed.url);
-    const items = parseRSS(xml, source.name, mainFeed.cat);
+    const result = await fetchWithProxy(mainFeed.url);
+    const items = parseResult(result, source.name, mainFeed.cat);
 
     // Fetch category-specific feeds for better categorization
     const extraFeeds = source.feeds.slice(1);
     const extraResults = await Promise.allSettled(
       extraFeeds.map(async feed => {
         try {
-          const x = await fetchWithProxy(feed.url);
-          return parseRSS(x, source.name, feed.cat);
+          const r = await fetchWithProxy(feed.url);
+          return parseResult(r, source.name, feed.cat);
         } catch { return []; }
       })
     );

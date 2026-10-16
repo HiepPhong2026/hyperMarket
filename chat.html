@@ -137,7 +137,6 @@ const FIREBASE_CONFIG = {
   --shadow:       0 1px 3px rgba(0,0,0,.07), 0 6px 20px rgba(0,0,0,.05);
   --r:            16px;
   --r-sm:         10px;
-  --font-size:    15px;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -179,11 +178,11 @@ const FIREBASE_CONFIG = {
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
-html { font-size: var(--font-size); }
 body {
   background: var(--bg);
   color: var(--fg);
   font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
   line-height: 1.5;
   display: flex;
   flex-direction: column;
@@ -332,27 +331,6 @@ body {
   transition: background .15s;
 }
 .user-chip:hover { background: var(--surface-2); }
-
-/* ─── Font Size Control ─────────────────────────── */
-.fs-ctrl {
-  display: flex; align-items: center; gap: 1px;
-  background: var(--surface-2); border-radius: 20px;
-  padding: 3px 4px;
-}
-.fs-btn {
-  background: none; border: none; cursor: pointer;
-  color: var(--fg-muted); font-size: .7rem; font-weight: 700;
-  padding: 2px 6px; border-radius: 14px;
-  transition: background .15s, color .15s;
-  line-height: 1; font-family: inherit;
-}
-.fs-btn:hover:not(:disabled) { background: var(--border); color: var(--fg); }
-.fs-btn:disabled { opacity: .35; cursor: default; }
-.fs-val {
-  font-size: .68rem; font-weight: 700; color: var(--fg-muted);
-  min-width: 24px; text-align: center;
-}
-
 .mini-avatar {
   width: 22px; height: 22px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -856,20 +834,6 @@ body {
   .msg-stack { max-width: 85%; }
   .chat-desc { display: none; }
 }
-
-/* Profanity filter */
-.name-error {
-  color: #E53935; font-size: .8rem; font-weight: 600;
-  margin-top: -8px; margin-bottom: 4px;
-  display: flex; align-items: center; gap: 5px;
-}
-.name-error[hidden] { display: none !important; }
-@keyframes shake {
-  0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)}
-  40%{transform:translateX(6px)}   60%{transform:translateX(-4px)}
-  80%{transform:translateX(4px)}
-}
-.shake { animation: shake .4s ease; }
 </style>
 </head>
 <body>
@@ -884,7 +848,6 @@ body {
     <label class="form-label" for="nickname-input">Tên của bạn</label>
     <input class="form-input" id="nickname-input" type="text"
            placeholder="Ví dụ: Minh, Anh Hùng, shop_khanh..." maxlength="30" autocomplete="off">
-    <p class="name-error" id="name-error" hidden>🚫 Tên chứa từ ngữ không phù hợp. Vui lòng chọn tên khác.</p>
 
     <label class="form-label">Màu đại diện</label>
     <div class="color-grid" id="color-grid"></div>
@@ -913,11 +876,6 @@ body {
           <div class="online-pill">
             <div class="online-pulse"></div>
             <span id="online-count">...</span> online
-          </div>
-          <div class="fs-ctrl" title="Cỡ chữ">
-            <button class="fs-btn" id="fs-dec" aria-label="Giảm cỡ chữ">A−</button>
-            <span class="fs-val" id="fs-val">15</span>
-            <button class="fs-btn" id="fs-inc" aria-label="Tăng cỡ chữ">A+</button>
           </div>
           <div class="user-chip" id="user-chip" title="Nhấn để đổi tên">
             <div class="mini-avatar" id="mini-avatar"></div>
@@ -1158,16 +1116,6 @@ function buildSetupUI() {
 function joinChat() {
   const name = document.getElementById('nickname-input').value.trim();
   if (!name) return;
-
-  const errEl = document.getElementById('name-error');
-  if (window.hasProfanity && window.hasProfanity(name)) {
-    if (errEl) errEl.hidden = false;
-    const input = document.getElementById('nickname-input');
-    input.classList.add('shake');
-    setTimeout(() => input.classList.remove('shake'), 500);
-    return;
-  }
-  if (errEl) errEl.hidden = true;
 
   user = { uuid: crypto.randomUUID(), nickname: name, color: selectedColor };
   saveUser(user);
@@ -2225,23 +2173,6 @@ async function sendMessage() {
     return;
   }
 
-  // ── Kiểm tra từ ngữ không phù hợp ───────────────────────────
-  if (window.hasProfanity && window.hasProfanity(text)) {
-    textarea.classList.add('shake');
-    setTimeout(() => textarea.classList.remove('shake'), 500);
-    // Hiện cảnh báo tạm thời
-    const existing = document.getElementById('profanity-warn');
-    if (!existing) {
-      const warn = document.createElement('div');
-      warn.id = 'profanity-warn';
-      warn.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#c0392b;color:#fff;padding:8px 18px;border-radius:8px;font-size:.85rem;z-index:9999;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.3)';
-      warn.textContent = '🚫 Tin nhắn chứa từ ngữ không phù hợp.';
-      document.body.appendChild(warn);
-      setTimeout(() => warn.remove(), 2500);
-    }
-    return;
-  }
-
   // ── Gửi bình thường ──────────────────────────────────────────
   textarea.value = '';
   autoResizeTextarea(textarea);
@@ -2425,73 +2356,6 @@ function maybeScrollDown() {
   if (isNearBottom()) scrollToBottom(false);
   else document.getElementById('scroll-fab').hidden = false;
 }
-
-// ─── Profanity Filter ────────────────────────────────────────────────
-(function () {
-  /* Danh sách từ / cụm từ bị cấm */
-  const BANNED = [
-    // Tiếng Việt có dấu
-    'đụ','địt','lồn','cặc','chịch','đéo','đĩ','phò','cứt','ỉa','đái',
-    'đụ mẹ','đụ má','đụ mày','địt mẹ','địt má','địt mày','địt con',
-    'vãi lồn','vãi cặc','bú cặc','bú lồn','đụ nhau',
-    'con lồn','thằng cặc','đồ điếm',
-    // Viết tắt thông dụng
-    'đmm','đcm','đkm','dmm','dcm','dkm','đm','dm',
-    'vcl','clm','vkl','klm',
-    // Bypass không dấu phổ biến
-    'dit','lon','cac','duc nhau',
-    // Tiếng Anh
-    'fuck','fucking','fucker','shit','bitch','cunt','bastard','asshole','whore',
-    'f*ck','sh*t','b*tch','c*nt',
-  ];
-
-  const escaped = BANNED.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const MAIN_RE = new RegExp(escaped.join('|'), 'i');
-
-  // Bắt bypass kiểu chèn dấu chấm/gạch ngang
-  const BYPASS_RE = /\bv\.?c\.?l\b|\bd\.?c\.?m\b|\bd\.?m\.?m?\b|\bd\.?k\.?m\b|\bd[i!1\*]t\b/i;
-
-  window.hasProfanity = function (text) {
-    return MAIN_RE.test(text) || BYPASS_RE.test(text);
-  };
-})();
-
-// ─── Font Size Control ────────────────────────────────────────────────
-(function () {
-  const FS_KEY = 'hm_chat_font';
-  const MIN = 12, MAX = 22, DEF = 15;
-  const root = document.documentElement;
-
-  function applySize(px) {
-    px = Math.max(MIN, Math.min(MAX, px));
-    root.style.setProperty('--font-size', px + 'px');
-    const val = document.getElementById('fs-val');
-    const dec = document.getElementById('fs-dec');
-    const inc = document.getElementById('fs-inc');
-    if (val) val.textContent = px;
-    if (dec) dec.disabled = (px <= MIN);
-    if (inc) inc.disabled = (px >= MAX);
-    try { localStorage.setItem(FS_KEY, px); } catch (e) {}
-  }
-
-  let saved = DEF;
-  try { const s = parseInt(localStorage.getItem(FS_KEY)); if (s >= MIN && s <= MAX) saved = s; } catch (e) {}
-  applySize(saved);
-
-  document.addEventListener('DOMContentLoaded', () => {
-    applySize(saved);
-    const dec = document.getElementById('fs-dec');
-    const inc = document.getElementById('fs-inc');
-    if (dec) dec.addEventListener('click', () => {
-      const cur = parseInt(root.style.getPropertyValue('--font-size')) || DEF;
-      applySize(cur - 1);
-    });
-    if (inc) inc.addEventListener('click', () => {
-      const cur = parseInt(root.style.getPropertyValue('--font-size')) || DEF;
-      applySize(cur + 1);
-    });
-  });
-})();
 
 // ─── Bootstrap ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {

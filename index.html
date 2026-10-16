@@ -252,16 +252,10 @@ body { overflow-x: hidden; }
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
   position: sticky;
   top: 0;
   height: 100dvh;
-}
-.sidebar-nav {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 8px;
 }
 .sidebar-logo {
   padding: 16px 14px 14px;
@@ -880,7 +874,9 @@ textarea { resize: vertical; min-height: 68px; }
     height: 100dvh;
     /* Must be above drawer-overlay (z-index: 50) so buttons inside are tappable */
     z-index: 60;
-    overflow: hidden; /* sidebar-nav handles inner scroll */
+    /* Overflow must scroll so footer is reachable */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .sidebar.open {
     transform: translateX(0);
@@ -1351,7 +1347,6 @@ textarea { resize: vertical; min-height: 68px; }
       </a>
     </div>
 
-    <div class="sidebar-nav">
     <div class="nav-section">
       <div class="nav-label">Chính</div>
       <button class="nav-item active" data-filter="all" onclick="setFilter('all')">
@@ -1388,20 +1383,10 @@ textarea { resize: vertical; min-height: 68px; }
       <a href="hugQR.html" class="nav-item" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px">
         <span class="nav-icon">🔳</span> hugQR – Mã Thanh Toán
       </a>
-      <a href="https://noi.hugmass.com" target="_top" class="nav-item" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px">
-        <span class="nav-icon">🗣️</span> Nói – Diễn đàn
-      </a>
-      <a href="https://vongquay.hugmass.com" target="_top" class="nav-item" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px">
-        <span class="nav-icon">🎡</span> Vòng Quay May Mắn
-      </a>
-      <a href="https://binhchon.hugmass.com/" target="_top" class="nav-item" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:8px">
-        <span class="nav-icon">🗳️</span> Biểu quyết
-      </a>
       <button class="nav-item" onclick="openContactModal()">
         <span class="nav-icon">📧</span> Liên hệ &amp; Hỗ trợ
       </button>
     </div>
-    </div><!-- /.sidebar-nav -->
 
     <div class="sidebar-footer">
       <div class="theme-picker-label">Giao diện</div>

@@ -1,31 +1,20 @@
 {
   "rules": {
-    "hm": {
-      "chat": {
-        "messages": {
-          ".read": true,
-          ".write": true,
-          "$msgId": {
-            ".validate": "newData.hasChildren(['uuid','nickname','color','text','ts'])"
-          }
-        },
-        "typing": {
-          ".read": true,
-          ".write": true
-        },
-        "online": {
-          ".read": true,
-          ".write": true
-        }
-      }
-    },
-    "hugqr_saved": {
-      "$deviceId": {
+    "hm_chat": {
+      "messages": {
         ".read": true,
         ".write": true,
-        "$entry": {
-          ".validate": "newData.hasChildren(['bankCode','bankBin','accountNo','accountName','savedAt'])"
+        "$msgId": {
+          ".validate": "newData.hasChildren(['uuid','nickname','color','text','ts'])"
         }
+      },
+      "typing": {
+        ".read": true,
+        ".write": true
+      },
+      "online": {
+        ".read": true,
+        ".write": true
       }
     }
   }

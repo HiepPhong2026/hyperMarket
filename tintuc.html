@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tin Việt Tổng hợp — Một nơi đọc tin, nhiều góc nhìn</title>
+  <meta name="description" content="Tin tức tiếng Việt đa nguồn, phi lợi nhuận. Tổng hợp RSS từ báo chí uy tín, tôn trọng báo chí và dẫn tới bài gốc." />
+  <meta property="og:title" content="Tin Việt Tổng hợp — Một nơi đọc tin, nhiều góc nhìn" />
+  <meta property="og:description" content="Tin tức tiếng Việt đa nguồn, phi lợi nhuận. Tổng hợp RSS từ báo chí uy tín." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --background: hsl(0 0% 99%);
+      --foreground: hsl(0 0% 13%);
+      --primary: hsl(4 76% 47%);
+      --primary-foreground: hsl(0 0% 100%);
+      --border: hsl(0 0% 87%);
+      --radius: .3rem;
+      --ink: #252525;
+      --signal: #d5352c;
+      --paper: #fcfcfb;
+      --soft: #f2f2f0;
+      --line: #dededb;
+      --muted-text: #777773;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+
+    body {
+      font-family: "Be Vietnam Pro", sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--background);
+      color: var(--foreground);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+    /* Shell */
+    .news-shell {
+      max-width: 1440px;
+      margin: 20px auto;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      padding: 28px 5%;
+      gap: 38px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    .brand > span { color: var(--signal); position: relative; }
+    .red-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--signal);
+      border-radius: 50%;
+      margin-left: 3px;
+      vertical-align: super;
+    }
+    .header-note {
+      font-size: 12px;
+      color: var(--muted-text);
+      line-height: 1.4;
+    }
+    .manage-button {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      transition: background .15s;
+    }
+    .manage-button:hover { background: var(--soft); }
+    .manage-button:active { transform: scale(.98); }
+
+    /* Main sections */
+    main { padding: 0 5%; }
+
+    /* Intro */
+    .intro {
+      padding: 64px 0 48px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: var(--muted-text);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .eyebrow > span {
+      display: inline-block;
+      width: 20px; height: 2px;
+      background: var(--signal);
+    }
+    h1 {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(56px, 7vw, 92px);
+      line-height: 1.04;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 32px;
+    }
+    h1 span { color: var(--signal); }
+    .intro-bottom {
+      display: flex;
+      align-items: flex-start;
+      gap: 48px;
+    }
+    .intro-bottom p { color: var(--muted-text); max-width: 420px; line-height: 1.7; }
+    .nonprofit {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted-text);
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+
+    /* Section heading */
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-top: 2px solid var(--ink);
+      padding-top: 18px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    h2 span {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 28px;
+      color: var(--muted-text);
+      font-weight: 400;
+    }
+    .small-note, .source-count {
+      font-size: 11px;
+      color: var(--muted-text);
+      letter-spacing: .3px;
+    }
+
+    /* News section */
+    .news-section { padding: 40px 0; border-bottom: 1px solid var(--line); }
+
+    /* Categories */
+    .categories {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 20px;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+    .categories button {
+      padding: 7px 15px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted-text);
+      border-radius: 2px;
+      white-space: nowrap;
+      transition: color .15s;
+      border-bottom: 2px solid transparent;
+    }
+    .categories button:hover { color: var(--ink); }
+    .categories button.selected {
+      color: var(--signal);
+      border-bottom-color: var(--signal);
+      font-weight: 600;
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 24px;
+    }
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      background: white;
+    }
+    .search input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 13px;
+      background: transparent;
+    }
+    .search svg { color: var(--muted-text); flex-shrink: 0; }
+    select {
+      min-width: 210px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      background: white;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Articles grid */
+    .articles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .articles article {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .15s;
+    }
+    .articles article:hover { border-color: var(--ink); }
+    .articles .eyebrow { margin-bottom: 0; }
+    .articles h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+    .articles p {
+      font-size: 13px;
+      color: var(--muted-text);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .articles a {
+      color: var(--signal);
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: auto;
+      transition: gap .15s;
+    }
+    .articles a:hover { gap: 8px; }
+
+    /* Loading & empty state */
+    .empty-news {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 335px;
+      padding: 48px 20px 24px;
+      gap: 14px;
+      text-align: center;
+    }
+    .empty-icon { color: var(--muted-text); }
+    .empty-news h3 { font-size: 20px; color: var(--ink); }
+    .empty-news p { color: var(--muted-text); line-height: 1.6; max-width: 380px; }
+    .empty-foot { font-size: 11px; color: var(--line); margin-top: 10px; letter-spacing: .5px; }
+
+    .loading-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted-text);
+      font-size: 13px;
+    }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--line);
+      border-top-color: var(--signal);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Primary button */
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .15s;
+    }
+    .primary-button:hover { background: var(--signal); }
+    .primary-button:active { transform: scale(.98); }
+
+    /* Sources section */
+    .sources-section { padding: 40px 0; border-bottom: 1px solid var(--line); }
+    .source-description {
+      color: var(--muted-text);
+      font-size: 13px;
+      margin-bottom: 24px;
+      max-width: 580px;
+    }
+    .source-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 32px;
+    }
+    .source-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .source-number {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 20px;
+      color: var(--muted-text);
+      min-width: 30px;
+    }
+    .source-row strong { flex: 1; font-weight: 600; font-size: 14px; }
+    .status {
+      font-size: 11px;
+      color: var(--muted-text);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--muted-text);
+    }
+    .status-dot.connected { background: #22c55e; }
+    .status-dot.error { background: var(--signal); }
+    .source-legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted-text);
+    }
+
+    /* Management panel */
+    .management {
+      display: flex;
+      gap: 14px;
+      padding: 16px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--muted-text);
+    }
+    .management h3 { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+
+    /* Principles */
+    .principles {
+      padding: 40px 0 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 50px;
+      border-bottom: 1px solid var(--line);
+    }
+    .principles .eyebrow { color: var(--signal); }
+    .principles h2 {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1.15;
+      display: block;
+    }
+    .principles p { color: var(--muted-text); line-height: 1.7; font-size: 13px; }
+
+    /* Footer */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 5%;
+      font-size: 12px;
+      color: var(--muted-text);
+    }
+    footer small { opacity: .7; }
+    footer a {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--muted-text);
+      font-size: 12px;
+    }
+    footer a:hover { color: var(--ink); }
+
+    /* Alert */
+    .alert {
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      margin-bottom: 8px;
+      border: 1px solid var(--line);
+    }
+    .alert.warn { background: #fff8e1; border-color: #ffe082; color: #7d5a00; }
+    .alert.err { background: #fff1f0; border-color: #ffa8a8; color: #b91c1c; }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+      font-size: 11px;
+      color: var(--muted-text);
+      margin-bottom: 20px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .stats-bar strong { color: var(--ink); }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .news-shell { margin: 0; border: none; }
+      h1 { font-size: 60px; }
+      .intro-bottom { flex-direction: column; gap: 16px; }
+      .source-grid, .articles, .principles { grid-template-columns: 1fr; }
+      .filter-bar { flex-direction: column; }
+      select { min-height: 44px; }
+      .empty-news { padding: 32px 16px 16px; }
+      .manage-button .btn-text { display: none; }
+    }
+
+    :focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
+  </style>
+</head>
+<body>
+<div class="news-shell">
+  <header>
+    <a class="brand" href="/">TIN VIỆT<span>TỔNG HỢP<span class="red-dot"></span></span></a>
+    <div class="header-note">Góc nhìn đa nguồn.<br>Thông tin có trách nhiệm.</div>
+    <button class="manage-button" id="toggleManage" aria-expanded="false">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+      <span class="btn-text"> Quản lý nguồn</span>
+    </button>
+  </header>
+
+  <main>
+    <!-- Intro -->
+    <section class="intro">
+      <div class="eyebrow"><span></span> ĐỌC TIN · HIỂU THẾ GIỚI</div>
+      <h1>Một nơi đọc tin.<br><span>Nhiều góc nhìn.</span></h1>
+      <div class="intro-bottom">
+        <p>Tổng hợp tin tức từ các nguồn báo chí Việt Nam.<br>Giữ nguyên nguồn dẫn. Tôn trọng nội dung gốc.</p>
+        <span class="nonprofit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+          Dự án phi lợi nhuận · Không quảng cáo
+        </span>
+      </div>
+    </section>
+
+    <!-- News feed -->
+    <section class="news-section">
+      <div class="section-heading">
+        <h2><span>01</span> Dòng tin mới</h2>
+        <span class="small-note">Chỉ hiển thị nội dung từ RSS chính thức</span>
+      </div>
+
+      <nav class="categories" aria-label="Danh mục tin" id="categories"></nav>
+
+      <div class="filter-bar">
+        <label class="search" for="search-input">
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="search-input" type="search" aria-label="Tìm kiếm tin tức" placeholder="Tìm kiếm tiêu đề, từ khóa…" />
+        </label>
+        <select id="source-filter" aria-label="Lọc theo nguồn">
+          <option value="all">Tất cả nguồn tin</option>
+        </select>
+      </div>
+
+      <div id="alerts"></div>
+      <div id="stats-bar" class="stats-bar" style="display:none"></div>
+      <div id="news-feed"></div>
+    </section>
+
+    <!-- Sources -->
+    <section id="sources" class="sources-section">
+      <div class="section-heading">
+        <h2><span>02</span> Nguồn tin</h2>
+        <span id="source-count" class="source-count">0 / 10 nguồn đã kết nối</span>
+      </div>
+      <p class="source-description">Minh bạch từ nguồn đầu tiên. Kết nối trực tiếp qua RSS chính thức, hiển thị chỉ tiêu đề và mô tả ngắn.</p>
+
+      <div id="manage-panel" style="display:none" class="management">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div>
+          <h3>Quản lý nguồn RSS</h3>
+          <p>Dữ liệu được tải trực tiếp qua RSS chính thức qua proxy công khai. Tin hiển thị ngay khi nguồn phản hồi thành công.</p>
+        </div>
+      </div>
+
+      <div id="source-grid" class="source-grid"></div>
+
+      <div class="source-legend">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        Dữ liệu lấy từ RSS chính thức. Không lưu trữ nội dung bài viết.
+      </div>
+    </section>
+
+    <!-- Principles -->
+    <section class="principles">
+      <div>
+        <div class="eyebrow">NGUYÊN TẮC BIÊN TẬP</div>
+        <h2>Đọc tin ở đây.<br>Đọc trọn vẹn tại báo gốc.</h2>
+      </div>
+      <p>Chúng tôi chỉ hiển thị tiêu đề, mô tả ngắn có trong RSS, thời gian đăng và tên nguồn. Mỗi tin luôn có liên kết rõ ràng tới bài gốc; không vượt paywall, không đăng lại toàn văn.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>Tin Việt Tổng hợp <small>© 2026 · Dự án phi lợi nhuận</small></span>
+    <a href="#sources">Nguồn &amp; quyền sử dụng
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+    </a>
+  </footer>
+</div>
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────────────
+const CATEGORIES = ['Tất cả', 'Thời sự', 'Thế giới', 'Kinh tế', 'Công nghệ', 'Đời sống', 'Thể thao', 'Giải trí'];
+
+const SOURCES = [
+  {
+    name: 'VnExpress',
+    feeds: [
+      { url: 'https://vnexpress.net/rss/tin-moi-nhat.rss', cat: 'Tất cả' },
+      { url: 'https://vnexpress.net/rss/thoi-su.rss', cat: 'Thời sự' },
+      { url: 'https://vnexpress.net/rss/the-gioi.rss', cat: 'Thế giới' },
+      { url: 'https://vnexpress.net/rss/kinh-doanh.rss', cat: 'Kinh tế' },
+      { url: 'https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss', cat: 'Công nghệ' },
+      { url: 'https://vnexpress.net/rss/the-thao.rss', cat: 'Thể thao' },
+      { url: 'https://vnexpress.net/rss/giai-tri.rss', cat: 'Giải trí' },
+    ]
+  },
+  {
+    name: 'Tuổi Trẻ',
+    feeds: [
+      { url: 'https://tuoitre.vn/rss/tin-moi-nhat.rss', cat: 'Tất cả' },
+      { url: 'https://tuoitre.vn/rss/thoi-su.rss', cat: 'Thời sự' },
+      { url: 'https://tuoitre.vn/rss/the-gioi.rss', cat: 'Thế giới' },
+      { url: 'https://tuoitre.vn/rss/kinh-doanh.rss', cat: 'Kinh tế' },
+      { url: 'https://tuoitre.vn/rss/cong-nghe.rss', cat: 'Công nghệ' },
+      { url: 'https://tuoitre.vn/rss/the-thao.rss', cat: 'Thể thao' },
+      { url: 'https://tuoitre.vn/rss/giai-tri.rss', cat: 'Giải trí' },
+    ]
+  },
+  {
+    name: 'Dân Trí',
+    feeds: [
+      { url: 'https://dantri.com.vn/rss/tin-moi-nhat.rss', cat: 'Tất cả' },
+      { url: 'https://dantri.com.vn/rss/xa-hoi.rss', cat: 'Thời sự' },
+      { url: 'https://dantri.com.vn/rss/the-gioi.rss', cat: 'Thế giới' },
+      { url: 'https://dantri.com.vn/rss/kinh-doanh.rss', cat: 'Kinh tế' },
+      { url: 'https://dantri.com.vn/rss/suc-manh-so.rss', cat: 'Công nghệ' },
+      { url: 'https://dantri.com.vn/rss/the-thao.rss', cat: 'Thể thao' },
+      { url: 'https://dantri.com.vn/rss/giai-tri.rss', cat: 'Giải trí' },
+    ]
+  },
+  {
+    name: 'Thanh Niên',
+    feeds: [
+      { url: 'https://thanhnien.vn/rss/home.rss', cat: 'Tất cả' },
+      { url: 'https://thanhnien.vn/rss/thoi-su.rss', cat: 'Thời sự' },
+      { url: 'https://thanhnien.vn/rss/the-gioi.rss', cat: 'Thế giới' },
+      { url: 'https://thanhnien.vn/rss/kinh-te.rss', cat: 'Kinh tế' },
+      { url: 'https://thanhnien.vn/rss/cong-nghe-game.rss', cat: 'Công nghệ' },
+      { url: 'https://thanhnien.vn/rss/the-thao.rss', cat: 'Thể thao' },
+      { url: 'https://thanhnien.vn/rss/giai-tri.rss', cat: 'Giải trí' },
+    ]
+  },
+  {
+    name: 'Lao Động',
+    feeds: [
+      { url: 'https://laodong.vn/rss/home.rss', cat: 'Tất cả' },
+      { url: 'https://laodong.vn/rss/thoi-su.rss', cat: 'Thời sự' },
+      { url: 'https://laodong.vn/rss/the-gioi.rss', cat: 'Thế giới' },
+      { url: 'https://laodong.vn/rss/kinh-te.rss', cat: 'Kinh tế' },
+    ]
+  },
+  {
+    name: 'VietnamNet',
+    feeds: [
+      { url: 'https://vietnamnet.vn/rss/tin-moi-nhat.rss', cat: 'Tất cả' },
+      { url: 'https://vietnamnet.vn/rss/thoi-su.rss', cat: 'Thời sự' },
+      { url: 'https://vietnamnet.vn/rss/the-gioi.rss', cat: 'Thế giới' },
+      { url: 'https://vietnamnet.vn/rss/kinh-doanh.rss', cat: 'Kinh tế' },
+      { url: 'https://vietnamnet.vn/rss/cong-nghe.rss', cat: 'Công nghệ' },
+    ]
+  },
+  {
+    name: 'Tiền Phong',
+    feeds: [
+      { url: 'https://tienphong.vn/rss/timeline.rss', cat: 'Tất cả' },
+      { url: 'https://tienphong.vn/rss/xa-hoi.rss', cat: 'Thời sự' },
+      { url: 'https://tienphong.vn/rss/kinh-te.rss', cat: 'Kinh tế' },
+      { url: 'https://tienphong.vn/rss/the-thao.rss', cat: 'Thể thao' },
+      { url: 'https://tienphong.vn/rss/giai-tri.rss', cat: 'Giải trí' },
+    ]
+  },
+  {
+    name: 'Kenh14',
+    feeds: [
+      { url: 'https://kenh14.vn/index.rss', cat: 'Giải trí' },
+    ]
+  },
+  {
+    name: '24h',
+    feeds: [
+      { url: 'https://www.24h.com.vn/upload/rss/thoisu.rss', cat: 'Thời sự' },
+      { url: 'https://www.24h.com.vn/upload/rss/thegioi.rss', cat: 'Thế giới' },
+      { url: 'https://www.24h.com.vn/upload/rss/thethao.rss', cat: 'Thể thao' },
+      { url: 'https://www.24h.com.vn/upload/rss/congnghe.rss', cat: 'Công nghệ' },
+      { url: 'https://www.24h.com.vn/upload/rss/xehay.rss', cat: 'Đời sống' },
+    ]
+  },
+  {
+    name: 'Báo Mới',
+    feeds: [
+      { url: 'https://baomoi.com/rss.epi', cat: 'Tất cả' },
+    ]
+  },
+];
+
+// ─── PROXY URLS ─────────────────────────────────────────────────────────────
+const PROXIES = [
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let allItems = [];
+let sourceStatus = {}; // { name: 'loading'|'ok'|'error'|'pending' }
+let activeCategory = 'Tất cả';
+let searchQuery = '';
+let sourceFilter = 'all';
+let loading = true;
+
+SOURCES.forEach(s => { sourceStatus[s.name] = 'loading'; });
+
+// ─── RSS PARSER ──────────────────────────────────────────────────────────────
+function textOf(el, tag) {
+  if (!el) return '';
+  const node = el.querySelector(tag);
+  if (!node) return '';
+  return node.textContent?.trim() || node.innerHTML?.trim() || '';
+}
+
+function parseRSS(xmlText, sourceName, defaultCat) {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    if (doc.querySelector('parsererror')) throw new Error('parse error');
+    const items = Array.from(doc.querySelectorAll('item'));
+    return items.map(item => {
+      const link = textOf(item, 'link') ||
+                   item.querySelector('link')?.getAttribute('href') || '';
+      const rawDesc = textOf(item, 'description') || textOf(item, 'summary') || '';
+      // Strip HTML tags from description
+      const tmp = document.createElement('div');
+      tmp.innerHTML = rawDesc;
+      const description = tmp.textContent?.trim().slice(0, 200) || '';
+
+      const catEl = item.querySelector('category');
+      const category = mapCategory(catEl?.textContent?.trim() || defaultCat);
+
+      const pubDate = textOf(item, 'pubDate') || textOf(item, 'dc:date') || textOf(item, 'updated') || '';
+      const published = pubDate ? new Date(pubDate).getTime() : Date.now();
+
+      return {
+        title: textOf(item, 'title') || '(Không có tiêu đề)',
+        description,
+        link: link || '#',
+        published,
+        source: sourceName,
+        category,
+      };
+    }).filter(item => item.title && item.link !== '#');
+  } catch {
+    return [];
+  }
+}
+
+function mapCategory(raw) {
+  if (!raw) return 'Thời sự';
+  const r = raw.toLowerCase();
+  if (r.includes('thời sự') || r.includes('xã hội') || r.includes('pháp luật') || r.includes('chính trị')) return 'Thời sự';
+  if (r.includes('thế giới') || r.includes('quốc tế')) return 'Thế giới';
+  if (r.includes('kinh tế') || r.includes('kinh doanh') || r.includes('tài chính') || r.includes('bất động sản')) return 'Kinh tế';
+  if (r.includes('công nghệ') || r.includes('kỹ thuật số') || r.includes('khoa học') || r.includes('số hóa') || r.includes('tech') || r.includes('game')) return 'Công nghệ';
+  if (r.includes('đời sống') || r.includes('sức khỏe') || r.includes('gia đình') || r.includes('du lịch') || r.includes('ẩm thực')) return 'Đời sống';
+  if (r.includes('thể thao') || r.includes('bóng đá') || r.includes('sport')) return 'Thể thao';
+  if (r.includes('giải trí') || r.includes('văn hóa') || r.includes('nghệ thuật') || r.includes('phim') || r.includes('âm nhạc')) return 'Giải trí';
+  return 'Thời sự';
+}
+
+// ─── FETCH via proxy ─────────────────────────────────────────────────────────
+async function fetchWithProxy(rssUrl, proxyIndex = 0) {
+  if (proxyIndex >= PROXIES.length) throw new Error('All proxies failed');
+  const proxyUrl = PROXIES[proxyIndex](rssUrl);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  try {
+    const res = await fetch(proxyUrl, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    if (!text.includes('<item') && !text.includes('<entry')) throw new Error('Not RSS');
+    return text;
+  } catch (err) {
+    clearTimeout(timeout);
+    if (proxyIndex + 1 < PROXIES.length) {
+      return fetchWithProxy(rssUrl, proxyIndex + 1);
+    }
+    throw err;
+  }
+}
+
+async function fetchSource(source) {
+  const mainFeed = source.feeds[0];
+  try {
+    const xml = await fetchWithProxy(mainFeed.url);
+    const items = parseRSS(xml, source.name, mainFeed.cat);
+
+    // Fetch category-specific feeds for better categorization
+    const extraFeeds = source.feeds.slice(1);
+    const extraResults = await Promise.allSettled(
+      extraFeeds.map(async feed => {
+        try {
+          const x = await fetchWithProxy(feed.url);
+          return parseRSS(x, source.name, feed.cat);
+        } catch { return []; }
+      })
+    );
+
+    const extraItems = extraResults.flatMap(r => r.status === 'fulfilled' ? r.value : []);
+
+    // Merge, dedupe by link
+    const merged = [...items, ...extraItems];
+    const seen = new Set();
+    const deduped = merged.filter(item => {
+      if (seen.has(item.link)) return false;
+      seen.add(item.link);
+      return true;
+    });
+
+    return { name: source.name, items: deduped, ok: true };
+  } catch (err) {
+    return { name: source.name, items: [], ok: false, error: err.message };
+  }
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function renderCategories() {
+  const nav = document.getElementById('categories');
+  nav.innerHTML = CATEGORIES.map(cat =>
+    `<button class="${activeCategory === cat ? 'selected' : ''}" data-cat="${cat}">${cat}</button>`
+  ).join('');
+  nav.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.cat;
+      renderCategories();
+      renderFeed();
+    });
+  });
+}
+
+function filteredItems() {
+  return allItems.filter(item => {
+    const matchCat = activeCategory === 'Tất cả' || item.category === activeCategory;
+    const matchSource = sourceFilter === 'all' || item.source === sourceFilter;
+    const q = searchQuery.toLowerCase();
+    const matchSearch = !q || (item.title + ' ' + item.description).toLowerCase().includes(q);
+    return matchCat && matchSource && matchSearch;
+  });
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'Vừa xong';
+  if (m < 60) return `${m} phút trước`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} giờ trước`;
+  const d = Math.floor(h / 24);
+  return `${d} ngày trước`;
+}
+
+function renderFeed() {
+  const feed = document.getElementById('news-feed');
+  const statsBar = document.getElementById('stats-bar');
+  const items = filteredItems();
+
+  if (loading) {
+    feed.innerHTML = `
+      <div class="empty-news">
+        <div class="loading-bar">
+          <div class="spinner"></div>
+          Đang tải tin từ RSS…
+        </div>
+      </div>`;
+    statsBar.style.display = 'none';
+    return;
+  }
+
+  if (!items.length) {
+    const connectedCount = Object.values(sourceStatus).filter(s => s === 'ok').length;
+    const hasConnected = connectedCount > 0;
+
+    feed.innerHTML = `
+      <div class="empty-news">
+        <div class="empty-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+        </div>
+        <span class="eyebrow">THÔNG TIN ĐÁNG TIN BẮT ĐẦU TỪ NGUỒN</span>
+        <h3>${searchQuery ? 'Chưa có kết quả tìm kiếm' : (hasConnected ? 'Không có tin trong danh mục này' : 'Chưa kết nối được nguồn nào')}</h3>
+        <p>${hasConnected
+          ? 'Thử chọn danh mục khác hoặc bỏ bộ lọc tìm kiếm.'
+          : 'Các nguồn đang được kết nối. Nếu lỗi kéo dài, mạng có thể chặn proxy RSS.'}</p>
+        ${!hasConnected ? `<button class="primary-button" onclick="retryAll()">
+          Thử kết nối lại
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+        </button>` : ''}
+        <div class="empty-foot">Không tạo tin giả. Không sao chép toàn văn.</div>
+      </div>`;
+    statsBar.style.display = 'none';
+    return;
+  }
+
+  // Show stats
+  const connectedCount = Object.values(sourceStatus).filter(s => s === 'ok').length;
+  statsBar.style.display = 'flex';
+  statsBar.innerHTML = `
+    <span>Hiển thị <strong>${items.length}</strong> tin</span>
+    <span><strong>${allItems.length}</strong> tổng bài trong cache</span>
+    <span><strong>${connectedCount}</strong> / ${SOURCES.length} nguồn đã kết nối</span>
+    <span>Cập nhật: <strong>${new Date().toLocaleTimeString('vi-VN')}</strong></span>`;
+
+  // Sort by date desc
+  const sorted = [...items].sort((a, b) => b.published - a.published);
+
+  feed.innerHTML = `<div class="articles">${sorted.map(item => `
+    <article>
+      <div class="eyebrow">
+        <span></span>
+        ${item.source} · ${item.published ? timeAgo(item.published) : ''}
+      </div>
+      <h3>${escapeHtml(item.title)}</h3>
+      ${item.description ? `<p>${escapeHtml(item.description)}</p>` : ''}
+      <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">
+        Đọc bài gốc tại ${escapeHtml(item.source)}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+      </a>
+    </article>`).join('')}</div>`;
+}
+
+function renderSourceGrid() {
+  const grid = document.getElementById('source-grid');
+  const countEl = document.getElementById('source-count');
+
+  const connected = Object.values(sourceStatus).filter(s => s === 'ok').length;
+  countEl.textContent = `${connected} / ${SOURCES.length} nguồn đã kết nối`;
+
+  grid.innerHTML = SOURCES.map((s, i) => {
+    const status = sourceStatus[s.name] || 'pending';
+    const dotClass = status === 'ok' ? 'connected' : status === 'error' ? 'error' : '';
+    const label = status === 'ok' ? 'Đã kết nối'
+                : status === 'error' ? 'Lỗi kết nối'
+                : status === 'loading' ? 'Đang tải…'
+                : 'Chờ kết nối';
+    return `
+      <div class="source-row">
+        <span class="source-number">${String(i + 1).padStart(2, '0')}</span>
+        <strong>${escapeHtml(s.name)}</strong>
+        <span class="status">
+          <span class="status-dot ${dotClass}"></span> ${label}
+        </span>
+      </div>`;
+  }).join('');
+}
+
+function renderAlerts(errors) {
+  const alertsEl = document.getElementById('alerts');
+  alertsEl.innerHTML = '';
+  // Only show alert if all sources failed
+  const failed = errors.length;
+  if (failed === SOURCES.length && !loading) {
+    alertsEl.innerHTML = `<div class="alert warn">Không kết nối được nguồn nào. Proxy RSS có thể bị chặn bởi trình duyệt hoặc mạng. Thử tắt VPN hoặc sử dụng Chrome/Firefox.</div>`;
+  }
+}
+
+function updateSourceFilter() {
+  const sel = document.getElementById('source-filter');
+  const currentVal = sel.value;
+  sel.innerHTML = `<option value="all">Tất cả nguồn tin</option>` +
+    SOURCES.map(s => `<option value="${escapeHtml(s.name)}" ${currentVal === s.name ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ─── LOAD ALL SOURCES ────────────────────────────────────────────────────────
+async function loadSources() {
+  loading = true;
+  renderFeed();
+  renderSourceGrid();
+
+  // Load sources concurrently
+  const promises = SOURCES.map(source =>
+    fetchSource(source).then(result => {
+      sourceStatus[source.name] = result.ok ? 'ok' : 'error';
+
+      if (result.ok && result.items.length > 0) {
+        // Add new items, dedupe globally
+        const newLinks = new Set(allItems.map(i => i.link));
+        const fresh = result.items.filter(i => !newLinks.has(i.link));
+        allItems = [...allItems, ...fresh];
+      }
+
+      // Update UI progressively
+      renderSourceGrid();
+
+      const allDone = Object.values(sourceStatus).every(s => s === 'ok' || s === 'error');
+      if (allDone) {
+        loading = false;
+        const errors = Object.entries(sourceStatus).filter(([, s]) => s === 'error').map(([n]) => n);
+        renderAlerts(errors);
+      }
+      renderFeed();
+    })
+  );
+
+  await Promise.allSettled(promises);
+  loading = false;
+  renderFeed();
+}
+
+async function retryAll() {
+  allItems = [];
+  SOURCES.forEach(s => { sourceStatus[s.name] = 'loading'; });
+  await loadSources();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+function init() {
+  renderCategories();
+  updateSourceFilter();
+  renderFeed();
+  renderSourceGrid();
+
+  // Search
+  document.getElementById('search-input').addEventListener('input', e => {
+    searchQuery = e.target.value;
+    renderFeed();
+  });
+
+  // Source filter
+  document.getElementById('source-filter').addEventListener('change', e => {
+    sourceFilter = e.target.value;
+    renderFeed();
+  });
+
+  // Manage panel toggle
+  document.getElementById('toggleManage').addEventListener('click', () => {
+    const panel = document.getElementById('manage-panel');
+    const isOpen = panel.style.display !== 'none';
+    panel.style.display = isOpen ? 'none' : 'flex';
+    document.getElementById('toggleManage').setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  // Start loading
+  loadSources();
+
+  // Auto-refresh every 10 minutes
+  setInterval(() => {
+    allItems = [];
+    SOURCES.forEach(s => { sourceStatus[s.name] = 'loading'; });
+    loadSources();
+  }, 10 * 60 * 1000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

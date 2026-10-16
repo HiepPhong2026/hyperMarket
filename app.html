@@ -2283,6 +2283,9 @@ let _fbLoaded = false;
 let _localSnapshot = projects.slice();
 // Debounce timer cho Firebase write — tránh ghi quá nhiều lần khi admin sửa nhanh
 let _saveDebounce = null;
+// Timestamp bản ghi cục bộ — so sánh với Firebase để xác định phiên bản nào MỚI HƠN
+let _localUpdatedAt = (() => { try { return parseInt(localStorage.getItem('hm_updated_at')||'0',10); } catch { return 0; } })();
+let _fbTs = 0; // Timestamp mới nhất từ Firebase (được cập nhật khi listener nhận data)
 
 /* ============================================================
    ADMIN MODE — Phân quyền xem / chỉnh sửa
@@ -2348,13 +2351,19 @@ function submitPin() {
     try { sessionStorage.setItem('hm_admin', '1'); } catch {}
     closePinModal();
     updateAdminUI();
-    // Tự động đẩy dữ liệu lên Cloud nếu phát hiện bộ nhớ phiên này có nhiều hơn Firebase
-    // (xảy ra khi hard-refresh làm mất sessionStorage trước khi Firebase load)
-    if (_fbLoaded && window._hmDb && _localSnapshot.length > projects.length) {
-      console.log(`[HM] Post-login sync: local=${_localSnapshot.length} > firebase=${projects.length} → pushing`);
+    // Tự động đẩy dữ liệu lên Cloud nếu local MỚI HƠN Firebase (so sánh timestamp)
+    // (xảy ra khi admin chỉnh sửa offline hoặc Firebase write lần trước thất bại)
+    if (_fbLoaded && window._hmDb && _localUpdatedAt > _fbTs && JSON.stringify(_localSnapshot) !== JSON.stringify(projects)) {
+      console.log(`[HM] Post-login sync: local ts=${_localUpdatedAt} > firebase ts=${_fbTs} → pushing local to Firebase`);
       projects = _localSnapshot.slice();
+      const syncTs = _localUpdatedAt;
       window._hmDb.ref('hm/projects').set(projects)
-        .then(() => { try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {} renderAll(); })
+        .then(() => {
+          window._hmDb.ref('hm/updatedAt').set(syncTs).catch(()=>{});
+          _fbTs = syncTs;
+          try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+          renderAll();
+        })
         .catch(() => {});
     } else {
       renderAll(); // re-render để hiện nút chỉnh sửa
@@ -2371,22 +2380,41 @@ function pushLocalToCloud(){
   if(!window._hmDb){ alert('Chưa kết nối Firebase'); return; }
   const count = projects.length;
   if(!confirm(`Đẩy ${count} dự án từ máy này lên Cloud?\nThao tác sẽ ghi đè dữ liệu trên Firebase.`)) return;
+  const ts = Date.now();
+  _localUpdatedAt = ts;
+  try{ localStorage.setItem('hm_updated_at',String(ts)); }catch{}
   window._hmDb.ref('hm/projects').set(projects)
     .then(()=>{
+      window._hmDb.ref('hm/updatedAt').set(ts).catch(()=>{});
+      _fbTs = ts;
+      const dot = document.getElementById('sync-dot');
+      if(dot){ dot.style.background=''; dot.title='Trạng thái đồng bộ'; }
       const btn = document.getElementById('push-cloud-btn');
-      if(btn){ btn.textContent='✅ Đã đồng bộ'; setTimeout(()=>{ btn.style.display='none'; }, 3000); }
+      if(btn){ btn.textContent='✅ Đã đồng bộ'; setTimeout(()=>{ btn.style.display='none'; btn.textContent='☁️ Đồng bộ'; }, 3000); }
     })
     .catch(e=>{ alert('Lỗi: ' + e.message); });
 }
 
 function saveProjects(){
+  // Cập nhật timestamp cục bộ để theo dõi phiên bản mới nhất
+  const ts = Date.now();
+  _localUpdatedAt = ts;
   // localStorage: lưu ngay để dùng offline
   try{ localStorage.setItem('hm_projects_v2',JSON.stringify(projects)); }catch{}
+  try{ localStorage.setItem('hm_updated_at',String(ts)); }catch{}
   // Firebase: debounce 300ms — tránh ghi liên tục khi admin chỉnh sửa nhanh
   if(window._hmDb){
     clearTimeout(_saveDebounce);
     _saveDebounce = setTimeout(()=>{
-      window._hmDb.ref('hm/projects').set(projects).catch(()=>{});
+      window._hmDb.ref('hm/projects').set(projects)
+        .catch(()=>{
+          // Firebase write thất bại → báo cho admin biết để thủ công đồng bộ
+          const dot = document.getElementById('sync-dot');
+          if(dot){ dot.style.background='#ef4444'; dot.title='⚠️ Lưu Cloud thất bại – nhấn ☁️ để đồng bộ lại'; }
+          const btn = document.getElementById('push-cloud-btn');
+          if(btn){ btn.style.display=''; }
+        });
+      window._hmDb.ref('hm/updatedAt').set(ts).catch(()=>{});
     }, 300);
   }
 }
@@ -3521,42 +3549,62 @@ const _HM_FB_CONFIG = {
       if (dot) { dot.classList.toggle('online', online); dot.classList.toggle('offline', !online); }
     });
 
-    /* ── Đồng bộ Dự án — Firebase là nguồn duy nhất ──────────────────────────
-       _localSnapshot (khai báo ở module level) chứa dữ liệu localStorage tại
-       thời điểm load — dùng để phát hiện Firebase bị thiếu dữ liệu.
+    /* ── Đồng bộ Dự án — dùng timestamp để xác định phiên bản nào MỚI HƠN ──
+       Quy trình:
+       1. Đọc hm/updatedAt trước (once) để lấy timestamp Firebase
+       2. Lắng nghe thay đổi liên tục cho hm/updatedAt
+       3. Sau khi có _fbTs, mới set up listener hm/projects → tránh race condition
     ─────────────────────────────────────────────────────────────────────────── */
-    window._hmDb.ref('hm/projects').on('value',
-      snap => {
-        const data = snap.val();
-        if (data !== null) {
-          const fbProjects = Array.isArray(data) ? data : Object.values(data);
+    // Lắng nghe thay đổi timestamp từ các thiết bị khác (liên tục)
+    window._hmDb.ref('hm/updatedAt').on('value', snap => {
+      _fbTs = snap.val() || 0;
+    });
+    // Đọc timestamp 1 lần trước để có giá trị chính xác trước khi projects listener chạy
+    window._hmDb.ref('hm/updatedAt').once('value', tsSnap => {
+      _fbTs = tsSnap.val() || 0;
 
-          // Admin: nếu localStorage có NHIỀU dự án hơn Firebase → Firebase bị thiếu
-          // (xảy ra khi Rules cũ chặn write) → tự động đẩy bản đầy đủ lên Cloud
-          if (isAdmin && !_fbLoaded && _localSnapshot.length > fbProjects.length) {
-            console.log(`[HM] Admin sync: local=${_localSnapshot.length} > firebase=${fbProjects.length} → pushing local to Firebase`);
+      window._hmDb.ref('hm/projects').on('value',
+        snap => {
+          const data = snap.val();
+          if (data !== null) {
+            const fbProjects = Array.isArray(data) ? data : Object.values(data);
+            // So sánh timestamp: local MỚI HƠN Firebase và nội dung khác nhau → admin chỉnh sửa offline
+            const localIsNewer = isAdmin && !_fbLoaded
+                                 && _localUpdatedAt > _fbTs
+                                 && JSON.stringify(_localSnapshot) !== JSON.stringify(fbProjects);
+            if (localIsNewer) {
+              console.log(`[HM] Admin sync: local ts=${_localUpdatedAt} > firebase ts=${_fbTs} → pushing local to Firebase`);
+              projects = _localSnapshot;
+              window._hmDb.ref('hm/projects').set(_localSnapshot).catch(()=>{});
+              window._hmDb.ref('hm/updatedAt').set(_localUpdatedAt).catch(()=>{});
+              try { localStorage.setItem('hm_projects_v2', JSON.stringify(_localSnapshot)); } catch {}
+            } else {
+              projects = fbProjects;
+              // Cập nhật timestamp local theo Firebase để tránh push ngược lại lần sau
+              if (_fbTs) {
+                _localUpdatedAt = _fbTs;
+                try { localStorage.setItem('hm_updated_at', String(_fbTs)); } catch {}
+              }
+              try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+            }
+          } else if (!_fbLoaded && _localSnapshot.length > 0 && isAdmin) {
+            // Firebase trống + admin có dữ liệu → seed lần đầu
             projects = _localSnapshot;
+            const seedTs = _localUpdatedAt || Date.now();
             window._hmDb.ref('hm/projects').set(_localSnapshot).catch(()=>{});
-            try { localStorage.setItem('hm_projects_v2', JSON.stringify(_localSnapshot)); } catch {}
-          } else {
-            projects = fbProjects;
-            try { localStorage.setItem('hm_projects_v2', JSON.stringify(projects)); } catch {}
+            window._hmDb.ref('hm/updatedAt').set(seedTs).catch(()=>{});
           }
-        } else if (!_fbLoaded && _localSnapshot.length > 0 && isAdmin) {
-          // Firebase trống + admin có dữ liệu → seed
-          projects = _localSnapshot;
-          window._hmDb.ref('hm/projects').set(_localSnapshot).catch(()=>{});
+          _fbLoaded = true;
+          renderAll();
+        },
+        err => {
+          console.warn('[HM] Firebase projects read denied:', err.code, err.message);
+          const dot = document.getElementById('sync-dot');
+          if (dot) { dot.title = '⚠️ Firebase bị chặn – cập nhật Security Rules'; dot.style.background = '#f59e0b'; }
+          if (!_fbLoaded) { _fbLoaded = true; renderAll(); }
         }
-        _fbLoaded = true;
-        renderAll();
-      },
-      err => {
-        console.warn('[HM] Firebase projects read denied:', err.code, err.message);
-        const dot = document.getElementById('sync-dot');
-        if (dot) { dot.title = '⚠️ Firebase bị chặn – cập nhật Security Rules'; dot.style.background = '#f59e0b'; }
-        if (!_fbLoaded) { _fbLoaded = true; renderAll(); }
-      }
-    );
+      );
+    });
 
     /* ── Fallback 3 giây: mất mạng hoàn toàn → dùng localStorage ── */
     setTimeout(() => {

@@ -677,8 +677,11 @@ const SOURCES = [
 
 // ─── PROXY URLS ─────────────────────────────────────────────────────────────
 const PROXIES = [
-  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  { build: u => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(u)}&count=30`, fmt: 'json' },
+  { build: u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`, fmt: 'xml' },
+  { build: u => `https://corsproxy.io/?${encodeURIComponent(u)}`, fmt: 'xml' },
+  { build: u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, fmt: 'xml' },
+  { build: u => `https://thingproxy.freeboard.io/fetch/${u}`, fmt: 'xml' },
 ];
 
 // ─── STATE ──────────────────────────────────────────────────────────────────
